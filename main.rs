@@ -168,33 +168,72 @@ fn generate_deployer(artifacts: &Vec<ArtifactJSON>, generated_folder: &str) {
 
     handlebars.set_strict_mode(true);
 
-    fs::create_dir_all(generated_folder).expect("create folder");
-
-    let folder_path_buf = Path::new(generated_folder);
+    let folder_path_buf = Path::new(generated_folder).join("deployer");
     let folder_path = folder_path_buf.to_str().unwrap();
 
-    fs::write(
-        format!("{}/Deployer.g.sol", folder_path),
-        format!(
-            "{}",
-            handlebars.render("Deployer.g.sol", artifacts).unwrap()
-        ),
-    )
-    .expect("could not write file");
-    fs::write(
-        format!("{}/Artifacts.g.sol", folder_path),
-        format!(
-            "{}",
-            handlebars.render("Artifacts.g.sol", artifacts).unwrap()
-        ),
-    )
-    .expect("could not write file");
-    fs::write(
-        format!("{}/DeployScript.g.sol", folder_path),
-        format!(
-            "{}",
-            handlebars.render("DeployScript.g.sol", artifacts).unwrap()
-        ),
-    )
-    .expect("could not write file");
+    fs::create_dir_all(folder_path).expect("create folder");
+
+    // fs::write(
+    //     format!("{}/Deployer.g.sol", folder_path),
+    //     format!(
+    //         "{}",
+    //         handlebars.render("Deployer.g.sol", artifacts).unwrap()
+    //     ),
+    // )
+    // .expect("could not write file");
+    // write_if_different(
+    //     format!("{}/Artifacts.g.sol", folder_path),
+    //     format!("{}",handlebars.render("Artifacts.g.sol", artifacts).unwrap()
+    // );
+    // fs::write(
+    //     format!("{}/Artifacts.g.sol", folder_path),
+    //     format!(
+    //         "{}",
+    //         handlebars.render("Artifacts.g.sol", artifacts).unwrap()
+    //     ),
+    // )
+    // .expect("could not write file");
+
+    // fs::write(
+    //     format!("{}/DeployScript.g.sol", folder_path),
+    //     format!(
+    //         "{}",
+    //         handlebars.render("DeployScript.g.sol", artifacts).unwrap()
+    //     ),
+    // )
+    // .expect("could not write file");
+
+    write_if_different(
+        &format!("{}/Deployer.g.sol", folder_path), format!("{}",
+        handlebars.render("Deployer.g.sol", artifacts).unwrap())
+    );
+    write_if_different(
+        &format!("{}/Artifacts.g.sol", folder_path), format!("{}",
+        handlebars.render("Artifacts.g.sol", artifacts).unwrap())
+    );
+    write_if_different(
+        &format!("{}/DeployScript.g.sol", folder_path), format!("{}",
+        handlebars.render("DeployScript.g.sol", artifacts).unwrap())
+    );
+
+
+    
+
+}
+
+
+fn write_if_different(path: &String, content: String) {
+    // let bytes_to_write = content.as_bytes();
+
+    let result = fs::read(path);
+    let same = match result {
+        Ok(existing) => String::from_utf8(existing).unwrap().eq(&content),
+        Err(_e) => false
+    };
+
+    if !same {
+        println!("writing new files...");
+        fs::write(path, content).expect("could not write file");
+    }
+    
 }
