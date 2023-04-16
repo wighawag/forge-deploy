@@ -1,0 +1,16 @@
+[package]
+name = "forge-deploy"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+handlebars = "3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+regex = "1.7.3"
+clap = { version = "4.2.2", features = ["derive"] }
+
+[[bin]]
+path= "main.rs"
+name= "forge-deploy"
