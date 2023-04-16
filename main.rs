@@ -24,7 +24,7 @@ enum Commands {
     /// Sync last broadcast with deployments
     Sync(SyncArgs),
     /// Generate Deployer Helper with Artifacts found
-    Artifacts(ArtifactsArgs),
+    GenDeployer(GenDeployerArgs),
 }
 
 #[derive(clap::Args)]
@@ -34,7 +34,7 @@ struct SyncArgs {
 }
 
 #[derive(clap::Args)]
-struct ArtifactsArgs {
+struct GenDeployerArgs {
     #[arg(short, long)]
     artifacts: Option<String>,
     #[arg(short, long)]
@@ -73,7 +73,7 @@ fn main() {
     match &cli.command {
         Some(command) => match command {
             Commands::Sync(args) => sync(&cli.root, &args.broadcasts),
-            Commands::Artifacts(args) => {
+            Commands::GenDeployer(args) => {
                 artifacts(&cli.root, &args.artifacts, &args.sources, &args.output)
             }
         },

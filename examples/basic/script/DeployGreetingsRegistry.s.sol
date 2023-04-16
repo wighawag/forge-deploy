@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {DeployScript} from "generated/deployer/DeployScript.g.sol";
 import {GreetingsRegistry} from "src/GreetingsRegistry.sol";
-import "generated/deployments/Deployments.g.sol";
+// import "generated/deployments/Deployments.g.sol";
 import "generated/deployer/Deployer.g.sol";
 
 
@@ -23,7 +23,9 @@ contract DeployGreetingsRegistry is DeployScript {
         
     function deploy() override internal {
         // we can get the existing registry thanks to generated code in generated/deployments/Deployments.g.sol
-        IMyTokens existing = Deployments.MyTokens;
+        
+        // IMyTokens existing = Deployments.MyTokens;
+        address existing = address(0);
 
         // // dynamic deploy of immutable contract
         // if (!_deployer.hasDeployed("MyRegistry")) {

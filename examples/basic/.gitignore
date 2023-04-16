@@ -5,3 +5,5 @@ broadcast/*/31337/
 
 lib/forge-std
 generated
+
+*.local

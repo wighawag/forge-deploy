@@ -1,0 +1,38 @@
+compile:
+    forge build --skip .g.sol --skip test --skip script && forge-deploy gen-deployer && forge build
+
+
+deploy $MODE="local": (compile)
+    ldenv just _deploy
+_deploy:
+    forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -vvvv && forge-deploy sync
+
+
+# -------------------------------------------------------------------------------------------------
+# TO REMOVE
+# -------------------------------------------------------------------------------------------------
+
+forge-deploy:
+    forge-deploy --help
+
+# # allow to set mode via `just --set mode sepolia <task>`
+# context := "local"
+# export CONTEXT := context
+
+# allow to use node_modules binaries
+# export PATH := "./node_modules/.bin:" + env_var('PATH')
+
+# # this allow ldenv to load the .env files
+# set shell := ["ldenv", "-n", "CONTEXT", "sh", "-c"]
+
+# Testing forge-deploy
+export PATH := "./node_modules/.bin:" + "../../target/debug:" + env_var('PATH')
+
+load context:
+    ldenv -m {{context}} env
+
+# for each command that require access to env in the command, we have to wrap just
+@test $MODE:
+    ldenv just _test
+_test:
+    echo ${MODE} ${TRIPLE_D}
