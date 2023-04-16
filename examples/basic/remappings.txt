@@ -1,0 +1,5 @@
+ds-test/=lib/forge-std/lib/ds-test/src/
+forge-std/=lib/forge-std/src/
+forge-exec/=lib/forge-exec/src/
+solidity-kit/=lib/solidity-kit/
+proxy/=lib/proxy/

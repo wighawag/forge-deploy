@@ -2,8 +2,8 @@ use std::{fs, path::Path};
 
 // use handlebars::Handlebars;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value};
 use serde_json;
+use serde_json::Value;
 // use serde_json::Value::Object;
 // use regex::Regex;
 use clap::{Parser, Subcommand};
@@ -48,7 +48,7 @@ struct ArtifactsArgs {
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct BytecodeJSON {
-    object: String
+    object: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
@@ -57,7 +57,6 @@ pub struct ASTJSON {
     absolute_path: String,
     node_type: String,
 }
-
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
@@ -68,30 +67,33 @@ pub struct ArtifactJSON {
     ast: ASTJSON,
 }
 
-
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(command) => {
-            match command {
-                Commands::Sync(args) => sync(&cli.root, &args.broadcasts),
-                Commands::Artifacts(args) => artifacts(&cli.root, &args.artifacts, &args.sources, &args.output)
+        Some(command) => match command {
+            Commands::Sync(args) => sync(&cli.root, &args.broadcasts),
+            Commands::Artifacts(args) => {
+                artifacts(&cli.root, &args.artifacts, &args.sources, &args.output)
             }
-        }
-        None => top()
+        },
+        None => top(),
     }
 }
 
 fn sync(root: &Option<String>, broadcasts: &Option<String>) {
     let root_folder = root.as_deref().unwrap_or(".");
     let broadcasts_folder = broadcasts.as_deref().unwrap_or("broadcast");
-    
-    println!("syncing broadcasts in {root_folder}/{broadcasts_folder} ...");
 
+    println!("syncing broadcasts in {root_folder}/{broadcasts_folder} ...");
 }
 
-fn artifacts(root: &Option<String>, artifacts: &Option<String>, sources: &Option<String>, output: &Option<String>) {
+fn artifacts(
+    root: &Option<String>,
+    artifacts: &Option<String>,
+    sources: &Option<String>,
+    output: &Option<String>,
+) {
     let root_folder = root.as_deref().unwrap_or(".");
     let artifacts_folder = artifacts.as_deref().unwrap_or("out");
     let sources_folder = sources.as_deref().unwrap_or("src");
@@ -106,22 +108,26 @@ fn artifacts(root: &Option<String>, artifacts: &Option<String>, sources: &Option
 
     for solidity_filepath in fs::read_dir(folder_path).unwrap() {
         match solidity_filepath {
-            Ok(solidity_filepath) => 
+            Ok(solidity_filepath) => {
                 if !solidity_filepath.metadata().unwrap().is_file() {
                     // println!("solidity_filepath {}", solidity_filepath.path().display());
-                    for contract_filepath_result in fs::read_dir(solidity_filepath.path()).unwrap() {
+                    for contract_filepath_result in fs::read_dir(solidity_filepath.path()).unwrap()
+                    {
                         let contract_filepath = contract_filepath_result.unwrap().path();
                         // println!("contract_filepath {}", contract_filepath.display());
 
-                        let data = fs::read_to_string(contract_filepath).expect("Unable to read file");
-                        let res: ArtifactJSON = serde_json::from_str(&data).expect("Unable to parse");
+                        let data =
+                            fs::read_to_string(contract_filepath).expect("Unable to read file");
+                        let res: ArtifactJSON =
+                            serde_json::from_str(&data).expect("Unable to parse");
                         if res.ast.absolute_path.starts_with(sources_folder) {
                             // println!("res: {}", res.ast.absolute_path);
                             artifacts.push(res);
                         }
                     }
-                },
-            Err(_) => ()
+                }
+            }
+            Err(_) => (),
         }
     }
 
@@ -142,23 +148,53 @@ fn generate_deployer(artifacts: &Vec<ArtifactJSON>, generated_folder: &str) {
 
     let mut handlebars = Handlebars::new();
     handlebars
-    .register_template_string("Deployer.g.sol", include_str!("templates/Deployer.g.sol.hbs"))
-    .unwrap();
+        .register_template_string(
+            "Deployer.g.sol",
+            include_str!("templates/Deployer.g.sol.hbs"),
+        )
+        .unwrap();
     handlebars
-    .register_template_string("Artifacts.g.sol", include_str!("templates/Artifacts.g.sol.hbs"))
-    .unwrap();
+        .register_template_string(
+            "Artifacts.g.sol",
+            include_str!("templates/Artifacts.g.sol.hbs"),
+        )
+        .unwrap();
     handlebars
-    .register_template_string("DeployScript.g.sol", include_str!("templates/DeployScript.g.sol.hbs"))
-    .unwrap();
-    
+        .register_template_string(
+            "DeployScript.g.sol",
+            include_str!("templates/DeployScript.g.sol.hbs"),
+        )
+        .unwrap();
+
     handlebars.set_strict_mode(true);
 
     fs::create_dir_all(generated_folder).expect("create folder");
 
     let folder_path_buf = Path::new(generated_folder);
     let folder_path = folder_path_buf.to_str().unwrap();
-    
-    fs::write(format!("{}/Deployer.g.sol",folder_path), format!("{}", handlebars.render("Deployer.g.sol", artifacts).unwrap())).expect("could not write file");
-    fs::write(format!("{}/Artifacts.g.sol",folder_path), format!("{}", handlebars.render("Artifacts.g.sol", artifacts).unwrap())).expect("could not write file");
-    fs::write(format!("{}/DeployScript.g.sol",folder_path), format!("{}", handlebars.render("DeployScript.g.sol", artifacts).unwrap())).expect("could not write file");
+
+    fs::write(
+        format!("{}/Deployer.g.sol", folder_path),
+        format!(
+            "{}",
+            handlebars.render("Deployer.g.sol", artifacts).unwrap()
+        ),
+    )
+    .expect("could not write file");
+    fs::write(
+        format!("{}/Artifacts.g.sol", folder_path),
+        format!(
+            "{}",
+            handlebars.render("Artifacts.g.sol", artifacts).unwrap()
+        ),
+    )
+    .expect("could not write file");
+    fs::write(
+        format!("{}/DeployScript.g.sol", folder_path),
+        format!(
+            "{}",
+            handlebars.render("DeployScript.g.sol", artifacts).unwrap()
+        ),
+    )
+    .expect("could not write file");
 }
