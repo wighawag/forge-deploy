@@ -3,6 +3,8 @@ compile:
     # forge build || forge build --skip .g.sol --skip test --skip script && forge-deploy gen-deployer && forge build
     forge build --extra-output-files  metadata && forge-deploy gen-deployer
 
+gen-deployer:
+    forge-deploy gen-deployer
 
 deploy $MODE="local": (compile)
     ldenv just _deploy

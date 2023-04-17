@@ -67,6 +67,31 @@ pub struct ArtifactJSON {
     ast: ASTJSON,
 }
 
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ABIInput {
+    internal_type: String,
+    name: String,
+    r#type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ABIConstructor {
+    inputs: Vec<ABIInput>,
+    state_mutability: String,
+    r#type: String
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ArtifactObject {
+   data: ArtifactJSON,
+   contract_name: String,
+   solidity_filename: String,
+   constructor: Value // TODO Option<ABIConstructor>
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -104,25 +129,37 @@ fn artifacts(
 
     println!("generating deployer from {folder_path} ...");
 
-    let mut artifacts: Vec<ArtifactJSON> = Vec::new();
+    let mut artifacts: Vec<ArtifactObject> = Vec::new();
 
-    for solidity_filepath in fs::read_dir(folder_path).unwrap() {
-        match solidity_filepath {
-            Ok(solidity_filepath) => {
-                if !solidity_filepath.metadata().unwrap().is_file() {
+    for solidity_filepath_result in fs::read_dir(folder_path).unwrap() {
+        match solidity_filepath_result {
+            Ok(solidity_dir_entry) => {
+                if !solidity_dir_entry.metadata().unwrap().is_file() {
                     // println!("solidity_filepath {}", solidity_filepath.path().display());
-                    for contract_filepath_result in fs::read_dir(solidity_filepath.path()).unwrap()
+                    for contract_filepath_result in fs::read_dir(solidity_dir_entry.path()).unwrap()
                     {
-                        let contract_filepath = contract_filepath_result.unwrap().path();
+                        let contract_dir_entry = contract_filepath_result.unwrap();
+                        let contract_filepath = contract_dir_entry.path();
                         // println!("contract_filepath {}", contract_filepath.display());
 
+                        let f = contract_filepath.to_str().unwrap();
+                        if f.ends_with(".metadata.json") {
+                            continue;
+                        }
+
                         let data =
-                            fs::read_to_string(contract_filepath).expect("Unable to read file");
+                            fs::read_to_string(f).expect("Unable to read file");
                         let res: ArtifactJSON =
                             serde_json::from_str(&data).expect("Unable to parse");
                         if res.ast.absolute_path.starts_with(sources_folder) {
                             // println!("res: {}", res.ast.absolute_path);
-                            artifacts.push(res);
+                            let constructor = res.abi[0].clone();
+                            artifacts.push(ArtifactObject {
+                                data: res,
+                                contract_name: String::from(contract_dir_entry.file_name().to_str().unwrap().strip_suffix(".json").unwrap()),
+                                solidity_filename: String::from(solidity_dir_entry.file_name().to_str().unwrap()),
+                                constructor: constructor
+                            });
                         }
                     }
                 }
@@ -141,12 +178,13 @@ fn top() {
 }
 
 use handlebars::Handlebars;
-fn generate_deployer(artifacts: &Vec<ArtifactJSON>, generated_folder: &str) {
+fn generate_deployer(artifacts: &Vec<ArtifactObject>, generated_folder: &str) {
     for artifact in artifacts {
-        println!("artifact: {}", artifact.ast.absolute_path);
+        println!("artifact: {}", artifact.data.ast.absolute_path);
     }
 
     let mut handlebars = Handlebars::new();
+    handlebars.register_helper("memory-type", Box::new(memory_type));
     handlebars
         .register_template_string(
             "Deployer.g.sol",
@@ -236,4 +274,17 @@ fn write_if_different(path: &String, content: String) {
         fs::write(path, content).expect("could not write file");
     }
     
+}
+
+use handlebars::{RenderContext, Helper, Context, HelperResult, Output, JsonRender};
+
+fn memory_type (h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    let param = h.param(0).unwrap();
+
+    let str_value = param.value().render();
+    if str_value.eq("string") {
+        out.write("memory")?;
+    }
+    
+    Ok(())
 }

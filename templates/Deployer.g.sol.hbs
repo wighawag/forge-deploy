@@ -3,11 +3,17 @@ pragma solidity ^0.8.13;
 import {Vm} from "forge-std/Vm.sol";
 import "forge-std/console.sol";
 
-// imports artifacts
-// TODO how ?
-import "src/GreetingsRegistry.sol";
-import "src/Tokens.sol";
-
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// GENERATED
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+{{#each this}}
+import "{{this.data.ast.absolute_path}}";
+{{/each}}
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+    
 import "./Artifacts.g.sol";
 
 struct DeployerDeployment {
@@ -131,29 +137,33 @@ contract Deployer is Artifacts {
 
 
     // --------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
     // GENERATED
     // --------------------------------------------------------------------------------------------
-
-    function deploy_GreetingsRegistry(
+    // --------------------------------------------------------------------------------------------
+    {{#each this}}
+    function deploy_{{this.contract_name}}(
         string memory name,
-        string memory initialPrefix
-    ) external returns (GreetingsRegistry) {
+        {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
+    ) external returns ({{this.contract_name}}) {
         return
-            deploy_GreetingsRegistry(
+            deploy_{{this.contract_name}}(
                 name,
-                initialPrefix,
+                {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}},
                 DeployOptions({overrideIfExist: false})
             );
     }
-    function deploy_GreetingsRegistry(
+    function deploy_{{this.contract_name}}(
         string memory name,
-        string memory initialPrefix,
+        {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}},
         DeployOptions memory options
-    ) public returns (GreetingsRegistry) {
+    ) public returns ({{this.contract_name}}) {
         _preCheck(name, options);
-        GreetingsRegistry deployed = new GreetingsRegistry(initialPrefix);
-        save(name, address(deployed), Artifact_GreetingsRegistry.artifactPath, Artifact_GreetingsRegistry.artifactContractName);
+        {{this.contract_name}} deployed = new {{this.contract_name}}({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
+        save(name, address(deployed), Artifact_{{this.contract_name}}.artifactPath, Artifact_{{this.contract_name}}.artifactContractName);
         return deployed;
     }
-
+    {{/each}}
+    // --------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
 }

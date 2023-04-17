@@ -7,19 +7,17 @@ contract Artifacts {
         string artifactContractName;
     }
 
-    // //
+    // --------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------
     // GENERATED
     // --------------------------------------------------------------------------------------------
-    ArtifactInfo Artifact_GreetingsRegistry = ArtifactInfo({
-        artifactPath: "GreetingsRegistry.sol",
-        artifactContractName: "GreetingsRegistry"
+    // --------------------------------------------------------------------------------------------
+    {{#each this}}
+    ArtifactInfo Artifact_{{this.contract_name}} = ArtifactInfo({
+        artifactPath: "{{this.solidity_filename}}",
+        artifactContractName: "{{this.contract_name}}"
     });
-
-    ArtifactInfo  Artifact_Tokens = ArtifactInfo({
-        artifactPath: "Tokens.sol",
-        artifactContractName: "Tokens"
-    });
-
-
+    {{/each}}
+    // --------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
 }
