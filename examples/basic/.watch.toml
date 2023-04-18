@@ -1,16 +1,10 @@
 [[watch]]
-name = "src-changes"
-path = "src"
-command = "forge build --skip script --skip test --skip .g.sol && just gen-deployer"
-
-[[watch]]
-name = "script-changes"
+name = "code-changes"
 path = "script"
 command = "forge build"
 
 [[watch]]
-name = "generated-changes"
-path = "generated"
-command = "forge build"
+name = "src-changes"
+path = "src"
+command = "just gen-deployer && forge build"
 
-# Repeat this to watch multiple paths
