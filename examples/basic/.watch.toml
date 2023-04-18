@@ -1,10 +1,12 @@
 [[watch]]
-name = "code-changes"
+name = "script-changes"
 path = "script"
+# if script changes we just build
 command = "forge build"
 
 [[watch]]
 name = "src-changes"
 path = "src"
+# we generate the deployer if needed and call build
 command = "just gen-deployer && forge build"
 
