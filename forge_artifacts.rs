@@ -1,14 +1,57 @@
+use serde::{Deserialize, Serialize};
 use serde_json;
+use serde_json::Value;
 
 use std::{fs, path::Path};
 
-use crate::types::{ArtifactObject, ArtifactJSON};
+use crate::types::{ContractObject};
 
-pub fn get_artifacts(
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct BytecodeJSON {
+    pub object: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ASTJSON {
+    pub absolute_path: String,
+    pub node_type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ArtifactJSON {
+    pub abi: Vec<Value>,
+    pub bytecode: BytecodeJSON,
+    pub metadata: Option<Value>,
+    pub ast: ASTJSON,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ABIInput {
+    pub internal_type: String,
+    pub name: String,
+    pub r#type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ABIConstructor {
+    pub inputs: Vec<ABIInput>,
+    pub state_mutability: String,
+    pub r#type: String
+}
+
+
+
+pub fn get_contracts(
     root_folder: &str,
     artifacts_folder: &str,
     sources_folder: &str
-) -> Vec<ArtifactObject> {
+) -> Vec<ContractObject> {
     
 
     let folder_path_buf = Path::new(root_folder).join(artifacts_folder);
@@ -16,7 +59,7 @@ pub fn get_artifacts(
 
     println!("generating deployer from {folder_path} ...");
 
-    let mut artifacts: Vec<ArtifactObject> = Vec::new();
+    let mut contracts: Vec<ContractObject> = Vec::new();
 
     for solidity_filepath_result in fs::read_dir(folder_path).unwrap() {
         match solidity_filepath_result {
@@ -41,12 +84,14 @@ pub fn get_artifacts(
                         if res.ast.absolute_path.starts_with(sources_folder) {
                             // ensure the file exist as forge to not clean the out folder
                             if Path::new(res.ast.absolute_path.as_str()).exists() {
+                                let solidity_filepath = res.ast.absolute_path;
                                 // println!("res: {}", res.ast.absolute_path);
                                 let constructor = res.abi[0].clone();
-                                artifacts.push(ArtifactObject {
-                                    data: res,
+                                contracts.push(ContractObject {
+                                    // data: res,
                                     contract_name: String::from(contract_dir_entry.file_name().to_str().unwrap().strip_suffix(".json").unwrap()),
                                     solidity_filename: String::from(solidity_dir_entry.file_name().to_str().unwrap()),
+                                    solidity_filepath:String::from(solidity_filepath),
                                     constructor: constructor
                                 });
                             } else {
@@ -60,5 +105,5 @@ pub fn get_artifacts(
         }
     }
 
-    return artifacts;
+    return contracts;
 }

@@ -66,10 +66,10 @@ fn gen_deployer(
     let sources_folder = sources.as_deref().unwrap_or("src");
     let generated_folder = output.as_deref().unwrap_or("generated");
 
-    let artifacts = forge_artifacts::get_artifacts(root_folder, artifacts_folder, sources_folder);
+    let contracts = forge_artifacts::get_contracts(root_folder, artifacts_folder, sources_folder);
     let generated_folder_path_buf = Path::new(root_folder).join(generated_folder);
     let generated_folder_path = generated_folder_path_buf.to_str().unwrap();
-    deployer::generate_deployer(&artifacts, generated_folder_path);
+    deployer::generate_deployer(&contracts, generated_folder_path);
 }
 
 fn sync(root: &Option<String>, broadcasts: &Option<String>) {

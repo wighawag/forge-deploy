@@ -2,11 +2,11 @@ use std::{fs, path::Path};
 
 use handlebars::Handlebars;
 
-use crate::types::{ArtifactObject};
+use crate::types::{ContractObject};
 
-pub fn generate_deployer(artifacts: &Vec<ArtifactObject>, generated_folder: &str) {
-    for artifact in artifacts {
-        println!("artifact: {}", artifact.data.ast.absolute_path);
+pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str) {
+    for contract in contracts {
+        println!("contract: {}", contract.contract_name);
     }
 
     let mut handlebars = Handlebars::new();
@@ -69,15 +69,15 @@ pub fn generate_deployer(artifacts: &Vec<ArtifactObject>, generated_folder: &str
 
     write_if_different(
         &format!("{}/Deployer.g.sol", folder_path), format!("{}",
-        handlebars.render("Deployer.g.sol", artifacts).unwrap())
+        handlebars.render("Deployer.g.sol", contracts).unwrap())
     );
     write_if_different(
         &format!("{}/Artifacts.g.sol", folder_path), format!("{}",
-        handlebars.render("Artifacts.g.sol", artifacts).unwrap())
+        handlebars.render("Artifacts.g.sol", contracts).unwrap())
     );
     write_if_different(
         &format!("{}/DeployScript.g.sol", folder_path), format!("{}",
-        handlebars.render("DeployScript.g.sol", artifacts).unwrap())
+        handlebars.render("DeployScript.g.sol", contracts).unwrap())
     );
 
 
