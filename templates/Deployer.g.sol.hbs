@@ -144,7 +144,11 @@ contract Deployer is Artifacts {
     {{#each this}}
     function deploy_{{this.contract_name}}(
         string memory name,
+        {{#if this.constructor_string}}
+        {{this.constructor_string}}
+        {{else}}
         {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
+        {{/if}}
     ) external returns ({{this.contract_name}}) {
         return
             deploy_{{this.contract_name}}(
@@ -155,7 +159,11 @@ contract Deployer is Artifacts {
     }
     function deploy_{{this.contract_name}}(
         string memory name,
+        {{#if this.constructor_string}}
+        {{this.constructor_string}},
+        {{else}}
         {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}},
+        {{/if}}
         DeployOptions memory options
     ) public returns ({{this.contract_name}}) {
         _preCheck(name, options);

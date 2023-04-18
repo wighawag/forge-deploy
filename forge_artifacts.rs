@@ -4,7 +4,7 @@ use serde_json::Value;
 
 use std::{fs, path::Path};
 
-use crate::types::{ContractObject};
+use crate::types::{ContractObject, ConstructorObject};
 
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
@@ -86,13 +86,18 @@ pub fn get_contracts(
                             if Path::new(res.ast.absolute_path.as_str()).exists() {
                                 let solidity_filepath = res.ast.absolute_path;
                                 // println!("res: {}", res.ast.absolute_path);
-                                let constructor = res.abi[0].clone();
+                                // let constructor = res.abi[0].clone();
+                                // TODO
+                                // let constructor = ConstructorObject {
+                                //     inputs: res.abi[0].clone()["inputs"].as_array().unwrap()
+                                // };
                                 contracts.push(ContractObject {
                                     // data: res,
                                     contract_name: String::from(contract_dir_entry.file_name().to_str().unwrap().strip_suffix(".json").unwrap()),
                                     solidity_filename: String::from(solidity_dir_entry.file_name().to_str().unwrap()),
                                     solidity_filepath:String::from(solidity_filepath),
-                                    constructor: constructor
+                                    constructor: None, // TODO this is now non-functional
+                                    constructor_string: None
                                 });
                             } else {
                                 // print!("do not exist: {}", res.ast.absolute_path);

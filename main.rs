@@ -3,6 +3,7 @@ use clap::{Parser, Subcommand};
 use std::{path::Path};
 
 pub mod forge_artifacts;
+pub mod src_artifacts;
 pub mod deployer;
 pub mod types;
 
@@ -48,7 +49,7 @@ fn main() {
         Some(command) => match command {
             Commands::Sync(args) => sync(&cli.root, &args.broadcasts),
             Commands::GenDeployer(args) => {
-                gen_deployer(&cli.root, &args.artifacts, &args.sources, &args.output)
+                gen_deployer(true, &cli.root, &args.artifacts, &args.sources, &args.output)
             }
         },
         None => top(),
@@ -56,6 +57,7 @@ fn main() {
 }
 
 fn gen_deployer(
+    from_source: bool,
     root: &Option<String>,
     artifacts: &Option<String>,
     sources: &Option<String>,
@@ -66,7 +68,7 @@ fn gen_deployer(
     let sources_folder = sources.as_deref().unwrap_or("src");
     let generated_folder = output.as_deref().unwrap_or("generated");
 
-    let contracts = forge_artifacts::get_contracts(root_folder, artifacts_folder, sources_folder);
+    let contracts = if from_source { src_artifacts::get_contracts(root_folder, sources_folder) } else{ forge_artifacts::get_contracts(root_folder, artifacts_folder, sources_folder)};
     let generated_folder_path_buf = Path::new(root_folder).join(generated_folder);
     let generated_folder_path = generated_folder_path_buf.to_str().unwrap();
     deployer::generate_deployer(&contracts, generated_folder_path);
