@@ -5,9 +5,9 @@ use handlebars::Handlebars;
 use crate::types::{ContractObject};
 
 pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str) {
-    for contract in contracts {
-        println!("contract: {}", contract.contract_name);
-    }
+    // for contract in contracts {
+    //     println!("contract: {}", contract.contract_name);
+    // }
 
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("memory-type", Box::new(memory_type));

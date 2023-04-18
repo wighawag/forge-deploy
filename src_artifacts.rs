@@ -25,7 +25,7 @@ pub fn get_contracts(
     let folder_path_buf = Path::new(root_folder).join(sources_folder);
     let folder_path = folder_path_buf.to_str().unwrap();
 
-    println!("generating deployer from {folder_path} ...");
+    // println!("generating deployer from {folder_path} ...");
 
     let mut contracts: Vec<ContractObject> = Vec::new();
 
@@ -86,7 +86,7 @@ pub fn get_contracts(
                     }),
                     constructor_string: Some(String::from(constructor_string)),
                 };
-                println!("{:?}", contract);
+                // println!("{:?}", contract);
                 contracts.push(contract);
             }
         }
