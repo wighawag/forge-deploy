@@ -4,7 +4,7 @@ use serde_json::Value;
 
 use std::{fs, path::Path};
 
-use crate::types::{ContractObject, ConstructorObject};
+use crate::types::{ContractObject}; //, ConstructorObject};
 
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]

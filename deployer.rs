@@ -19,8 +19,8 @@ pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str
         .unwrap();
     handlebars
         .register_template_string(
-            "Artifacts.g.sol",
-            include_str!("templates/Artifacts.g.sol.hbs"),
+            "DeployerFunctions.g.sol",
+            include_str!("templates/DeployerFunctions.g.sol.hbs"),
         )
         .unwrap();
     handlebars
@@ -72,8 +72,8 @@ pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str
         handlebars.render("Deployer.g.sol", contracts).unwrap())
     );
     write_if_different(
-        &format!("{}/Artifacts.g.sol", folder_path), format!("{}",
-        handlebars.render("Artifacts.g.sol", contracts).unwrap())
+        &format!("{}/DeployerFunctions.g.sol", folder_path), format!("{}",
+        handlebars.render("DeployerFunctions.g.sol", contracts).unwrap())
     );
     write_if_different(
         &format!("{}/DeployScript.g.sol", folder_path), format!("{}",

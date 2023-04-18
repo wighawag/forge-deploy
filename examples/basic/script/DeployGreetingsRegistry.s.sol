@@ -2,9 +2,10 @@
 pragma solidity ^0.8.13;
 
 import "generated/deployer/DeployScript.g.sol";
- 
+import "generated/deployer/DeployerFunctions.g.sol";
+
 contract DeployGreetingsRegistry is DeployScript {
-   
+    using DeployerFunctions for Deployer;
     // you can also use the run function and this way pass params to your script
     // if so you need to ensure to return with the new deployments via:
     // `return _deployer.newDeployments();`

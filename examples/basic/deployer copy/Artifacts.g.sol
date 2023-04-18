@@ -12,12 +12,32 @@ contract Artifacts {
     // GENERATED
     // --------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------
-    {{#each this}}
-    ArtifactInfo Artifact_{{this.contract_name}} = ArtifactInfo({
-        artifactPath: "{{this.solidity_filename}}",
-        artifactContractName: "{{this.contract_name}}"
+    
+    ArtifactInfo Artifact_AnotherTokens = ArtifactInfo({
+        artifactPath: "AnotherTokens.sol",
+        artifactContractName: "AnotherTokens"
     });
-    {{/each}}
+    
+    ArtifactInfo Artifact_AnotherTokens3 = ArtifactInfo({
+        artifactPath: "AnotherTokens.sol",
+        artifactContractName: "AnotherTokens3"
+    });
+    
+    ArtifactInfo Artifact_AnotherTokens4 = ArtifactInfo({
+        artifactPath: "AnotherTokens.sol",
+        artifactContractName: "AnotherTokens4"
+    });
+    
+    ArtifactInfo Artifact_GreetingsRegistry = ArtifactInfo({
+        artifactPath: "GreetingsRegistry.sol",
+        artifactContractName: "GreetingsRegistry"
+    });
+    
+    ArtifactInfo Artifact_Tokens = ArtifactInfo({
+        artifactPath: "Tokens.sol",
+        artifactContractName: "Tokens"
+    });
+    
     // --------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------
 }
