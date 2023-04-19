@@ -12,9 +12,6 @@ struct DeployerDeployment {
     string deploymentContext;
 }
 
-struct DeployOptions {
-    bool overrideIfExist;
-}
 
 contract Deployer {
     Vm constant vm =
@@ -71,19 +68,7 @@ contract Deployer {
         
     }
 
-    // external but not supposed to be called 
-    function _preCheck(string memory name, DeployOptions memory options) external {
-        if (!options.overrideIfExist) {
-            DeployerDeployment memory existing = _namedDeployments[name];
-            if (existing.addr != address(0)) {
-                // TODO option to override, // ask for input ?
-                revert("Using same deployment name in the same script");
-            }
-        }
-
-        vm.broadcast();
-    }
-
+   
     function _getExistingDeploymentAdress(string memory name) internal returns (address) {
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/", name, ".json");

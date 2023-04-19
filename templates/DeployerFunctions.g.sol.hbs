@@ -27,8 +27,34 @@ import "{{this.solidity_filepath}}";
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
    
+struct DeployOptions {
+    bool overrideIfExist;
+}
+
 
 library DeployerFunctions{
+
+     Vm constant vm =
+        Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+
+
+
+    function _useExisting(Deployer deployer, string memory name, DeployOptions memory options) private returns (address) {
+        if (!options.overrideIfExist) {
+            
+            // if (existing.addr != address(0)) {
+            //     // TODO option to override, // ask for input ?
+            //     revert("Using same deployment name in the same script");
+            // } else {
+            
+            address existing = deployer.getAddress(name);
+            if (existing != address(0)) {
+                return existing;
+            }
+        }
+        return address(0);
+    }
+
 
     // --------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------
@@ -63,10 +89,14 @@ library DeployerFunctions{
         {{/if}}
         DeployOptions memory options
     ) public returns ({{this.contract_name}}) {
-        deployer._preCheck(name, options);
-        {{this.contract_name}} deployed = new {{this.contract_name}}({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
-        deployer.save(name, address(deployed), Artifact_{{this.contract_name}}_Path, Artifact_{{this.contract_name}}_ContractName);
-        return deployed;
+        address useExisting = _useExisting(deployer, name, options);
+        if (useExisting == address(0)) {
+            vm.broadcast();
+            {{this.contract_name}} deployed = new {{this.contract_name}}({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
+            deployer.save(name, address(deployed), Artifact_{{this.contract_name}}_Path, Artifact_{{this.contract_name}}_ContractName);
+            return deployed;
+        }
+        return {{this.contract_name}}(useExisting);
     }
     {{/each}}
     // --------------------------------------------------------------------------------------------
