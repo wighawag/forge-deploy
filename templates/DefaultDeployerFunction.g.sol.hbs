@@ -5,7 +5,7 @@ import "./Deployer.g.sol";
 import "proxy/ForgeDeploy_EIP173Proxy.sol";
 
 struct DeployOptions {
-    bool overrideIfExist;
+    uint256 deterministic;
     string proxyOnTag;
     address proxyOwner;
 }
@@ -13,16 +13,6 @@ struct DeployOptions {
 library DefaultDeployerFunction{
 
     Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
-
-    function _useExisting(Deployer deployer, string memory name, DeployOptions memory options) private view returns (address) {
-        if (!options.overrideIfExist) {            
-            address existing = deployer.getAddress(name);
-            if (existing != address(0)) {
-                return existing;
-            }
-        }
-        return address(0);
-    }
 
     function _contextHasTag(string memory tag) internal returns (bool) {
         if (bytes(tag).length == 0) {
@@ -52,7 +42,7 @@ library DefaultDeployerFunction{
                 ) {
                     // TODO implementation args
                     implementation = deploy(deployer, implName, artifact, args, DeployOptions({
-                        overrideIfExist: true,
+                        deterministic: options.deterministic,
                         proxyOnTag: "",
                         proxyOwner: address(0)
                     }));
@@ -65,7 +55,7 @@ library DefaultDeployerFunction{
                 EIP173Proxy(payable(deployed)).upgradeTo(implementation);
             } else {
                 address implementation = deploy(deployer, implName, artifact, args, DeployOptions({
-                    overrideIfExist: true,
+                    deterministic: options.deterministic,
                     proxyOnTag: "",
                     proxyOwner: address(0)
                 }));
@@ -73,19 +63,33 @@ library DefaultDeployerFunction{
                 // TODO extra call data
                 bytes memory proxyArgs = abi.encode(implementation, options.proxyOwner, bytes(""));
                 deployed = deploy(deployer, name, "ForgeDeploy_EIP173Proxy.sol:EIP173Proxy", proxyArgs, DeployOptions({
-                    overrideIfExist: false,
+                    deterministic: options.deterministic,
                     proxyOnTag: "",
                     proxyOwner: address(0)
                 }));
             }
         } else {
-            address useExisting = _useExisting(deployer, name, options);
-            if (useExisting == address(0)) {
+            address existing = deployer.getAddress(name);
+            if (existing == address(0)) {
                 bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
                 vm.broadcast();
-                assembly {
-                    deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+                // TODO value
+                if (options.deterministic > 0) {
+                    uint256 salt = options.deterministic;
+                    assembly {
+                        deployed := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
+                    }
+                } else {
+                    assembly {
+                        deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+                    }
                 }
+
+                if (deployed == address(0)) {
+                    revert(string.concat("Failed to deploy ", name));
+                }
+                
+                
                 deployer.save(name, deployed, bytecode, args, artifact);
             }
         }

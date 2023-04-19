@@ -104,6 +104,9 @@ contract Deployer {
     ) public view returns (bool) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
+            if (bytes(existing.name).length == 0) {
+                return false;
+            }
             return true;
         }
         return _getExistingDeploymentAdress(name) != address(0);
@@ -114,9 +117,21 @@ contract Deployer {
     ) public view returns (address) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
+            if (bytes(existing.name).length == 0) {
+                return address(0);
+            }
             return existing.addr;
         }
         return _getExistingDeploymentAdress(name);
+    }
+
+    // use to override if needed
+    // will only be replaced on disk if tx is broadcastes
+    function ignoreDeployment(
+        string memory name
+    ) public {
+        _namedDeployments[name].name = "";
+        _namedDeployments[name].addr = address(1); // TO ensure it is picked up as being ignored
     }
 
     function get(
@@ -124,9 +139,11 @@ contract Deployer {
     ) public view returns (Deployment memory deployment) {
         DeployerDeployment memory newDeployment = _namedDeployments[name];
         if (newDeployment.addr != address(0)) {
-            deployment.addr = newDeployment.addr;
-            deployment.bytecode = newDeployment.bytecode;
-            deployment.args = newDeployment.args;
+            if (bytes(newDeployment.name).length > 0) {
+                deployment.addr = newDeployment.addr;
+                deployment.bytecode = newDeployment.bytecode;
+                deployment.args = newDeployment.args;
+            }
         } else {
             deployment = _getExistingDeployment(name);
         }
@@ -139,6 +156,7 @@ contract Deployer {
         bytes memory args,
         string memory artifact
     ) public {
+        require(bytes(name).length > 0, "EMPTY_NAME_NOT_ALLOWED");
         DeployerDeployment memory deployment = DeployerDeployment({
             name: name,
             addr: address(deployed),

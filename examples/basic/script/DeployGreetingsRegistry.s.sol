@@ -55,7 +55,7 @@ contract DeployGreetingsRegistry is DeployScript {
         _deployer.deploy_GreetingsRegistry(
             "MyRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: false, proxyOnTag: "", proxyOwner: address(0)})
+            DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
         );
 
         if (_deployer.has("MyRegistry")){
@@ -65,12 +65,15 @@ contract DeployGreetingsRegistry is DeployScript {
             console.log("Still No MyRegistry deployed yet");
         }
 
+        _deployer.ignoreDeployment("MyRegistry");
         _deployer.deploy_GreetingsRegistry(
             "MyRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: true, proxyOnTag: "", proxyOwner: address(0)})
+            DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
         );
 
+        console.log(_deployer.getAddress("MyRegistry"));
+        
         _deployer.deploy_GreetingsRegistry(
             "MyRegistry2",
             vm.toString(address(existing))
@@ -82,24 +85,37 @@ contract DeployGreetingsRegistry is DeployScript {
         );
 
 
+        _deployer.deploy_GreetingsRegistry(
+            "DeterministicRegistry",
+            vm.toString(address(existing)),
+            DeployOptions({deterministic: 23, proxyOnTag: "", proxyOwner: address(0)})
+        );
+
+        // _deployer.deploy_GreetingsRegistry(
+        //     "DeterministicRegistry2",
+        //     vm.toString(address(existing)),
+        //     DeployOptions({deterministic: 2, proxyOnTag: "", proxyOwner: address(0)})
+        // );
+
+
         // proxy tests
 
         _deployer.deploy_GreetingsRegistry(
             "ProxiedRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: false, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
 
         _deployer.deploy_GreetingsRegistry(
             "ProxiedRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: false, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
 
         _deployer.deploy_GreetingsRegistry2(
             "ProxiedRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: false, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
     }
 }
