@@ -24,7 +24,7 @@ pub fn generate_deployments(root_folder: &str, deployment_folder: &str, artifact
         let artifact: ArtifactJSON = serde_json::from_str(&data).expect("Unable to parse");
 
 
-        let file_path_buf = folder_path_buf.join(format!("{}.json", key));
+        let file_path_buf = folder_path_buf.join(format!("{}.json", value.name));
 
         let data = serde_json::to_string_pretty(&DeploymentJSON {address: value.address.to_string(), abi: artifact.abi}).expect("Failed to stringify");
         fs::write(file_path_buf, data).expect("failed to write file");

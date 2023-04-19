@@ -69,7 +69,8 @@ pub fn get_last_deployments(
                                                     let deployment_context = collection[4];
                                                     let chain_id = collection[5];
                                                     // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
-                                                    new_deployments.insert(name.to_string(), DeploymentObject {
+                                                    new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
+                                                        name: name.to_string(),
                                                         address: address.to_string(),
                                                         contract_name: contract_name.to_string(),
                                                         artifact_path: artifact_path.to_string(),

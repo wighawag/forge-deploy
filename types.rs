@@ -31,6 +31,7 @@ pub struct ContractObject {
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct DeploymentObject {
+    pub name: String,
     pub address: String,
     pub contract_name: String,
     pub artifact_path: String,
