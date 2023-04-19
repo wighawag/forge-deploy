@@ -72,10 +72,7 @@ pub fn get_last_deployments(
 
                                                     let mut artifact_splitted = artifact_full_path.split(":");
                                                     let artifact_path = artifact_splitted.next().unwrap();
-                                                    let contract_name = match artifact_splitted.next() {
-                                                        Some(s) => s,
-                                                        None => artifact_path.strip_suffix(".sol").unwrap()
-                                                    };
+                                                    let contract_name = artifact_splitted.next();
 
                                                     // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                     new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
@@ -86,7 +83,7 @@ pub fn get_last_deployments(
                                                         // TODO ?
                                                         // args: transaction.args,
                                                         // data: transaction.data,
-                                                        contract_name: contract_name.to_string(),
+                                                        contract_name: contract_name.map(|s| s.to_string()),
                                                         artifact_path: artifact_path.to_string(),
                                                         deployment_context: deployment_context.to_string(),
                                                         chain_id: chain_id.to_string()

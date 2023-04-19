@@ -38,7 +38,7 @@ pub struct DeploymentObject {
     // TODO
     // pub args: String,
     // pub data: String,
-    pub contract_name: String,
+    pub contract_name: Option<String>,
     pub artifact_path: String,
     pub deployment_context: String,
     pub chain_id: String,

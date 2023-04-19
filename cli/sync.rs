@@ -19,7 +19,10 @@ pub fn generate_deployments(root_folder: &str, deployment_folder: &str, artifact
         // unfortunately forge do not export artifacts in the broadcast file, so we have to fetch in the out folder
         // if sync is called not directly, out folder could be out of sync and we would get wrong artifact data
         // TODO save artifact in the solidity execution in temporary files and fetch artifact data from there 
-        let artifact_path_buf = artifact_folder_path_buf.join(&value.artifact_path).join(format!("{}.json", value.contract_name));
+
+        // TODO value.contract_name if None, we need to get the first aertifact found
+        // this would assumes this is fixed: https://github.com/foundry-rs/foundry/issues/4760
+        let artifact_path_buf = artifact_folder_path_buf.join(&value.artifact_path).join(format!("{}.json", value.contract_name.clone().unwrap()));
         let data = fs::read_to_string(artifact_path_buf).expect("Unable to read file");
         let artifact: ArtifactJSON = serde_json::from_str(&data).expect("Unable to parse");
 
