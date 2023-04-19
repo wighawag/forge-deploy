@@ -42,6 +42,13 @@ contract DeployGreetingsRegistry is DeployScript {
         // } else {
 
         // }
+
+        if (_deployer.has("MyRegistry")){
+            console.log("MyRegistry already deployed");
+            console.log(_deployer.get("MyRegistry"));
+        } else {
+            console.log("No MyRegistry deployed yet");
+        }
         
 
         // we can deploy a new contract and name it
