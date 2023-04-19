@@ -118,6 +118,8 @@ contract Deployer {
         });
         _namedDeployments[name] = deployment;
         _newDeployments.push(deployment);
+        // TODO save artifacts in a temporary folder and inject its path in the output
+        // then the sync step can read it to get more info about the deployment, including the exact source, metadata....
         // save(deployment);
     }
 

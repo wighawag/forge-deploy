@@ -1,5 +1,7 @@
-use crate::types::BroadcastObject;
+use std::collections::HashMap;
 
-pub fn generate_deployments(broadcasts: &Vec<BroadcastObject>, deployments_folder: &str) {
+use crate::types::{DeploymentObject};
+
+pub fn generate_deployments(new_deployments: &HashMap<String, DeploymentObject>, deployments_folder: &str) {
   
 }

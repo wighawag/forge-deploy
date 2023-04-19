@@ -6,6 +6,10 @@ compile:
 gen-deployer:
     forge-deploy gen-deployer
 
+sync:
+    forge-deploy sync
+
+
 deploy $MODE="local": (compile)
     ldenv just _deploy
 _deploy:

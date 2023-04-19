@@ -82,8 +82,8 @@ fn sync(root: &Option<String>, broadcasts: &Option<String>, deployments: &Option
     let broadcasts_folder = broadcasts.as_deref().unwrap_or("broadcast");
     let deployments_folder = deployments.as_deref().unwrap_or("deployments");
 
-    let broadcasts: Vec<types::BroadcastObject> = forge_broadcasts::get_last_broadcasts(root_folder, broadcasts_folder);
-    sync::generate_deployments(&broadcasts, deployments_folder);
+    let new_deployments = forge_broadcasts::get_last_deployments(root_folder, broadcasts_folder);
+    sync::generate_deployments(&new_deployments, deployments_folder);
 }
 
 fn top() {
