@@ -6,6 +6,8 @@ pub mod forge_artifacts;
 pub mod src_artifacts;
 pub mod deployer;
 pub mod types;
+pub mod forge_broadcasts;
+pub mod sync;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -30,6 +32,7 @@ enum Commands {
 struct SyncArgs {
     #[arg(short, long)]
     broadcasts: Option<String>,
+    deployments: Option<String>,
 }
 
 #[derive(clap::Args)]
@@ -47,7 +50,7 @@ fn main() {
 
     match &cli.command {
         Some(command) => match command {
-            Commands::Sync(args) => sync(&cli.root, &args.broadcasts),
+            Commands::Sync(args) => sync(&cli.root, &args.broadcasts, &args.deployments),
             Commands::GenDeployer(args) => {
                 gen_deployer(true, &cli.root, &args.artifacts, &args.sources, &args.output)
             }
@@ -74,11 +77,13 @@ fn gen_deployer(
     deployer::generate_deployer(&contracts, generated_folder_path);
 }
 
-fn sync(root: &Option<String>, broadcasts: &Option<String>) {
+fn sync(root: &Option<String>, broadcasts: &Option<String>, deployments: &Option<String>) {
     let root_folder = root.as_deref().unwrap_or(".");
     let broadcasts_folder = broadcasts.as_deref().unwrap_or("broadcast");
+    let deployments_folder = deployments.as_deref().unwrap_or("deployments");
 
-    println!("syncing broadcasts in {root_folder}/{broadcasts_folder} ...");
+    let broadcasts: Vec<types::BroadcastObject> = forge_broadcasts::get_last_broadcasts(root_folder, broadcasts_folder);
+    sync::generate_deployments(&broadcasts, deployments_folder);
 }
 
 fn top() {

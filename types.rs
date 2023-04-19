@@ -23,3 +23,12 @@ pub struct ContractObject {
    pub constructor: Option<ConstructorObject>, // TODO make it non-optional
    pub constructor_string: Option<String>,
 }
+
+// ------------------------------------------------------------------------------------------------
+
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct BroadcastObject {
+  
+}
