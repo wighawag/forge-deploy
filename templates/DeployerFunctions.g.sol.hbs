@@ -9,8 +9,7 @@ import "./Deployer.g.sol";
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 {{#each this}}
-string constant Artifact_{{this.contract_name}}_Path = "{{this.solidity_filename}}";
-string constant Artifact_{{this.contract_name}}_ContractName = "{{this.contract_name}}";
+string constant Artifact_{{this.contract_name}} = "{{this.solidity_filename}}:{{this.contract_name}}";
 {{/each}}
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -59,23 +58,18 @@ library DeployerFunctions{
     function deploy(
         Deployer deployer,
         string memory name,
-        string memory artifactPath,
-        string memory artifactContractName,
+        string memory artifact,
         bytes memory args,
         DeployOptions memory options
-    ) internal returns (address) {
+    ) internal returns (address deployed) {
         address useExisting = _useExisting(deployer, name, options);
         if (useExisting == address(0)) {
-        
-            bytes memory bytecode = bytes.concat(vm.getCode(string.concat(artifactPath, ":", artifactContractName)), args);
-            address deployed;
+            bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
             vm.broadcast();
             assembly {
                 deployed := create(0, add(bytecode, 0x20), mload(bytecode))
             }
-
-            deployer.save(name, deployed, bytecode, args, artifactPath, artifactContractName);
-            return deployed;
+            deployer.save(name, deployed, bytecode, args, artifact);
         }
     }
 
@@ -114,7 +108,7 @@ library DeployerFunctions{
         DeployOptions memory options
     ) public returns ({{this.contract_name}}) {
         bytes memory args = abi.encode({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
-        return {{this.contract_name}}(deploy(deployer, name, Artifact_{{this.contract_name}}_Path, Artifact_{{this.contract_name}}_ContractName, args, options));
+        return {{this.contract_name}}(deploy(deployer, name, Artifact_{{this.contract_name}}, args, options));
     }
     {{/each}}
     // --------------------------------------------------------------------------------------------

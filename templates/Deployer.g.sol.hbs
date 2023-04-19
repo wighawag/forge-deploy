@@ -9,8 +9,7 @@ struct DeployerDeployment {
     address addr;
     bytes bytecode;
     bytes args;
-    string artifactPath;
-    string artifactContractName;
+    string artifact;
     string deploymentContext;
     string chainIdAsString;
 }
@@ -102,25 +101,19 @@ contract Deployer {
         return _getExistingDeploymentAdress(name);
     }
 
-    // --------------------------------------------------------------------------------------------
-    // also expose the save function that can save deployment info to disk
-    // --------------------------------------------------------------------------------------------
-    
     function save(
         string memory name,
         address deployed,
         bytes memory bytecode,
         bytes memory args,
-        string memory artifactPath,
-        string memory artifatContractName
+        string memory artifact
     ) public {
         DeployerDeployment memory deployment = DeployerDeployment({
             name: name,
             addr: address(deployed),
             bytecode: bytecode,
             args: args,
-            artifactPath: artifactPath,
-            artifactContractName: artifatContractName,
+            artifact: artifact,
             deploymentContext: deploymentContext,
             chainIdAsString: chainIdAsString
         });
@@ -130,46 +123,4 @@ contract Deployer {
         // then the sync step can read it to get more info about the deployment, including the exact source, metadata....
         // save(deployment);
     }
-
-    // function save(
-    //     string memory name,
-    //     address deployed
-    // ) public {
-    //     DeployerDeployment memory deployment = DeployerDeployment({
-    //         name: name,
-    //         addr: address(deployed),
-    //         artifactPath: "",
-    //         artifactContractName: ""
-    //     });
-    //     _namedDeployments[name] = deployment;
-    //     _newDeployments.push(deployment);
-    //     // save(deployment);
-    // }
-
-    // function save(DeployerDeployment memory deployment) internal {
-    //     string memory artifactAsString = vm.readFile(
-    //         string(
-    //             bytes.concat(
-    //                 "out/",
-    //                 bytes(deployment.artifactPath),
-    //                 "/",
-    //                 bytes(deployment.artifactContractName),
-    //                 ".json"
-    //             )
-    //         )
-    //     );
-    //     bytes memory artifact = vm.parseJson(artifactAsString);
-    //     string memory artifactABI = abi.decode(artifact, (string));
-    //     // bytes memory artifactABI = vm.parseJson(artifactAsString, "abi");
-    //     string memory json = deployment.name;
-    //     vm.serializeAddress(json, "address", deployment.addr);
-    //     // string memory finalJson = vm.serialize(json, "abi", artifactABI);
-    //     // vm.writeFile(
-    //     //     string(bytes.concat("./deployments/", bytes(name), ".json")),
-    //     //     string(artifactABI)
-    //     // );
-    //     console.log(string(artifactABI));
-    // }
-    // --------------------------------------------------------------------------------------------
-
 }

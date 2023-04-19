@@ -66,10 +66,17 @@ pub fn get_last_deployments(
                                                     let address = collection[1];
                                                     let bytecode = collection[2];
                                                     let args_data = collection[3];
-                                                    let artifact_path = collection[4];
-                                                    let contract_name = collection[5];
-                                                    let deployment_context = collection[6];
-                                                    let chain_id = collection[7];
+                                                    let artifact_full_path = collection[4];
+                                                    let deployment_context = collection[5];
+                                                    let chain_id = collection[6];
+
+                                                    let mut artifact_splitted = artifact_full_path.split(":");
+                                                    let artifact_path = artifact_splitted.next().unwrap();
+                                                    let contract_name = match artifact_splitted.next() {
+                                                        Some(s) => s,
+                                                        None => artifact_path.strip_suffix(".sol").unwrap()
+                                                    };
+
                                                     // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                     new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
                                                         name: name.to_string(),
