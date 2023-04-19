@@ -7,6 +7,8 @@ import "forge-std/StdJson.sol";
 struct DeployerDeployment {
     string name;
     address addr;
+    bytes bytecode;
+    bytes args;
     string artifactPath;
     string artifactContractName;
     string deploymentContext;
@@ -49,16 +51,9 @@ contract Deployer {
         // we are using the same context name on different chain, this is an error
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/.chainId");
-        string memory chainIdExpected;
         try vm.readFile(path) returns (string memory chainId) {
-            chainIdExpected = chainId;
-            uint256 currentChainID;
-            assembly {
-                currentChainID := chainid()
-            }
-            string memory chainIdAsString = vm.toString(currentChainID);
-            if (keccak256(bytes(chainIdExpected)) != keccak256(bytes(chainIdAsString))) {
-                revert(string.concat("Current chainID: ", chainIdAsString , " But Context '", deploymentContext, "' Already Exists With a Different Chain ID (", chainIdExpected ,")"));
+            if (keccak256(bytes(chainId)) != keccak256(bytes(chainIdAsString))) {
+                revert(string.concat("Current chainID: ", chainIdAsString , " But Context '", deploymentContext, "' Already Exists With a Different Chain ID (", chainId ,")"));
             }
         } catch {
             // unfortunately we have to remove that as we cannot detect whether there is a directory for the deployment 
@@ -76,7 +71,7 @@ contract Deployer {
     }
 
    
-    function _getExistingDeploymentAdress(string memory name) internal returns (address) {
+    function _getExistingDeploymentAdress(string memory name) internal view returns (address) {
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/", name, ".json");
         try vm.readFile(path) returns (string memory json) {
@@ -89,7 +84,7 @@ contract Deployer {
 
     function has(
         string memory name
-    ) public returns (bool) {
+    ) public view returns (bool) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
             return true;
@@ -99,7 +94,7 @@ contract Deployer {
 
     function getAddress(
         string memory name
-    ) public returns (address) {
+    ) public view returns (address) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
             return existing.addr;
@@ -110,15 +105,20 @@ contract Deployer {
     // --------------------------------------------------------------------------------------------
     // also expose the save function that can save deployment info to disk
     // --------------------------------------------------------------------------------------------
+    
     function save(
         string memory name,
         address deployed,
+        bytes memory bytecode,
+        bytes memory args,
         string memory artifactPath,
         string memory artifatContractName
     ) public {
         DeployerDeployment memory deployment = DeployerDeployment({
             name: name,
             addr: address(deployed),
+            bytecode: bytecode,
+            args: args,
             artifactPath: artifactPath,
             artifactContractName: artifatContractName,
             deploymentContext: deploymentContext,

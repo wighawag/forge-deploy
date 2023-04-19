@@ -39,7 +39,7 @@ library DeployerFunctions{
 
 
 
-    function _useExisting(Deployer deployer, string memory name, DeployOptions memory options) private returns (address) {
+    function _useExisting(Deployer deployer, string memory name, DeployOptions memory options) private view returns (address) {
         if (!options.overrideIfExist) {
             
             // if (existing.addr != address(0)) {
@@ -53,6 +53,30 @@ library DeployerFunctions{
             }
         }
         return address(0);
+    }
+
+
+    function deploy(
+        Deployer deployer,
+        string memory name,
+        string memory artifactPath,
+        string memory artifactContractName,
+        bytes memory args,
+        DeployOptions memory options
+    ) internal returns (address) {
+        address useExisting = _useExisting(deployer, name, options);
+        if (useExisting == address(0)) {
+        
+            bytes memory bytecode = bytes.concat(vm.getCode(string.concat(artifactPath, ":", artifactContractName)), args);
+            address deployed;
+            vm.broadcast();
+            assembly {
+                deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+            }
+
+            deployer.save(name, deployed, bytecode, args, artifactPath, artifactContractName);
+            return deployed;
+        }
     }
 
 
@@ -89,14 +113,8 @@ library DeployerFunctions{
         {{/if}}
         DeployOptions memory options
     ) public returns ({{this.contract_name}}) {
-        address useExisting = _useExisting(deployer, name, options);
-        if (useExisting == address(0)) {
-            vm.broadcast();
-            {{this.contract_name}} deployed = new {{this.contract_name}}({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
-            deployer.save(name, address(deployed), Artifact_{{this.contract_name}}_Path, Artifact_{{this.contract_name}}_ContractName);
-            return deployed;
-        }
-        return {{this.contract_name}}(useExisting);
+        bytes memory args = abi.encode({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
+        return {{this.contract_name}}(deploy(deployer, name, Artifact_{{this.contract_name}}_Path, Artifact_{{this.contract_name}}_ContractName, args, options));
     }
     {{/each}}
     // --------------------------------------------------------------------------------------------

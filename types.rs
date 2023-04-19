@@ -33,6 +33,11 @@ pub struct ContractObject {
 pub struct DeploymentObject {
     pub name: String,
     pub address: String,
+    pub bytecode: String,
+    pub args_data: String,
+    // TODO
+    // pub args: String,
+    // pub data: String,
     pub contract_name: String,
     pub artifact_path: String,
     pub deployment_context: String,
@@ -84,5 +89,10 @@ pub struct ABIConstructor {
 pub struct DeploymentJSON {
     pub address: String,
     pub abi: Vec<Value>,
+    pub bytecode: String,
+    pub args_data: String,
+    // TODO
+    // pub args: String,
+    // pub data: String,
 }
 

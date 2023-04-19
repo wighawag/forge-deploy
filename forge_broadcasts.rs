@@ -64,14 +64,21 @@ pub fn get_last_deployments(
                                                     let collection = parts.collect::<Vec<&str>>();
                                                     let name = collection[0];
                                                     let address = collection[1];
-                                                    let artifact_path = collection[2];
-                                                    let contract_name = collection[3];
-                                                    let deployment_context = collection[4];
-                                                    let chain_id = collection[5];
+                                                    let bytecode = collection[2];
+                                                    let args_data = collection[3];
+                                                    let artifact_path = collection[4];
+                                                    let contract_name = collection[5];
+                                                    let deployment_context = collection[6];
+                                                    let chain_id = collection[7];
                                                     // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                     new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
                                                         name: name.to_string(),
                                                         address: address.to_string(),
+                                                        bytecode: bytecode.to_string(),
+                                                        args_data: args_data.to_string(),
+                                                        // TODO ?
+                                                        // args: transaction.args,
+                                                        // data: transaction.data,
                                                         contract_name: contract_name.to_string(),
                                                         artifact_path: artifact_path.to_string(),
                                                         deployment_context: deployment_context.to_string(),

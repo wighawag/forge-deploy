@@ -8,7 +8,7 @@ pub fn generate_deployments(root_folder: &str, deployment_folder: &str, artifact
     let out_folder_path_buf = Path::new(root_folder).join(deployment_folder);
     let artifact_folder_path_buf = Path::new(root_folder).join(artifacts_folder);
 
-    for (key, value) in new_deployments.iter() {
+    for (_key, value) in new_deployments.iter() {
         let folder_path_buf = out_folder_path_buf.join(value.deployment_context.as_str());
         fs::create_dir_all(&folder_path_buf).expect("could not create folder");
         let chainid_file_path_buf = folder_path_buf.join(".chainId");
@@ -26,7 +26,15 @@ pub fn generate_deployments(root_folder: &str, deployment_folder: &str, artifact
 
         let file_path_buf = folder_path_buf.join(format!("{}.json", value.name));
 
-        let data = serde_json::to_string_pretty(&DeploymentJSON {address: value.address.to_string(), abi: artifact.abi}).expect("Failed to stringify");
+        let data = serde_json::to_string_pretty(&DeploymentJSON {
+            address: value.address.to_string(),
+            abi: artifact.abi,
+            bytecode: value.bytecode.to_string(),
+            args_data: value.args_data.to_string(),
+            // TODO
+            // args: value.args,
+            // data: value.data
+        }).expect("Failed to stringify");
         fs::write(file_path_buf, data).expect("failed to write file");
     }
 }

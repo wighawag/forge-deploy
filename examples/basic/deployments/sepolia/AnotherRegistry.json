@@ -142,5 +142,7 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ]
+  ],
+  "bytecode": "0x",
+  "args_data": "0x"
 }
