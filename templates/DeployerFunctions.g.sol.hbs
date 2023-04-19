@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./Deployer.g.sol";
+import "./DefaultDeployerFunction.g.sol";
 
 // -------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -13,7 +14,6 @@ string constant Artifact_{{this.contract_name}} = "{{this.solidity_filename}}:{{
 {{/each}}
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-
  
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -25,54 +25,8 @@ import "{{this.solidity_filepath}}";
 {{/each}}
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-   
-struct DeployOptions {
-    bool overrideIfExist;
-}
-
 
 library DeployerFunctions{
-
-     Vm constant vm =
-        Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
-
-
-
-    function _useExisting(Deployer deployer, string memory name, DeployOptions memory options) private view returns (address) {
-        if (!options.overrideIfExist) {
-            
-            // if (existing.addr != address(0)) {
-            //     // TODO option to override, // ask for input ?
-            //     revert("Using same deployment name in the same script");
-            // } else {
-            
-            address existing = deployer.getAddress(name);
-            if (existing != address(0)) {
-                return existing;
-            }
-        }
-        return address(0);
-    }
-
-
-    function deploy(
-        Deployer deployer,
-        string memory name,
-        string memory artifact,
-        bytes memory args,
-        DeployOptions memory options
-    ) internal returns (address deployed) {
-        address useExisting = _useExisting(deployer, name, options);
-        if (useExisting == address(0)) {
-            bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
-            vm.broadcast();
-            assembly {
-                deployed := create(0, add(bytecode, 0x20), mload(bytecode))
-            }
-            deployer.save(name, deployed, bytecode, args, artifact);
-        }
-    }
-
 
     // --------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------
@@ -108,7 +62,7 @@ library DeployerFunctions{
         DeployOptions memory options
     ) public returns ({{this.contract_name}}) {
         bytes memory args = abi.encode({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
-        return {{this.contract_name}}(deploy(deployer, name, Artifact_{{this.contract_name}}, args, options));
+        return {{this.contract_name}}(DefaultDeployerFunction.deploy(deployer, name, Artifact_{{this.contract_name}}, args, options));
     }
     {{/each}}
     // --------------------------------------------------------------------------------------------

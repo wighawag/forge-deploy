@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import "./Deployer.g.sol";
+
+struct DeployOptions {
+    bool overrideIfExist;
+}
+
+library DefaultDeployerFunction{
+
+    Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+
+    function _useExisting(Deployer deployer, string memory name, DeployOptions memory options) private view returns (address) {
+        if (!options.overrideIfExist) {            
+            address existing = deployer.getAddress(name);
+            if (existing != address(0)) {
+                return existing;
+            }
+        }
+        return address(0);
+    }
+
+    function deploy(
+        Deployer deployer,
+        string memory name,
+        string memory artifact,
+        bytes memory args,
+        DeployOptions memory options
+    ) internal returns (address deployed) {
+        address useExisting = _useExisting(deployer, name, options);
+        if (useExisting == address(0)) {
+            bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
+            vm.broadcast();
+            assembly {
+                deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+            }
+            deployer.save(name, deployed, bytecode, args, artifact);
+        }
+    }
+}

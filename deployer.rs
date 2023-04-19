@@ -19,6 +19,12 @@ pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str
         .unwrap();
     handlebars
         .register_template_string(
+            "DefaultDeployerFunction.g.sol",
+            include_str!("templates/DefaultDeployerFunction.g.sol.hbs"),
+        )
+        .unwrap();
+    handlebars
+        .register_template_string(
             "DeployerFunctions.g.sol",
             include_str!("templates/DeployerFunctions.g.sol.hbs"),
         )
@@ -71,6 +77,11 @@ pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str
         &format!("{}/Deployer.g.sol", folder_path), format!("{}",
         handlebars.render("Deployer.g.sol", contracts).unwrap())
     );
+    write_if_different(
+        &format!("{}/DefaultDeployerFunction.g.sol", folder_path), format!("{}",
+        handlebars.render("DefaultDeployerFunction.g.sol", contracts).unwrap())
+    );
+    
     write_if_different(
         &format!("{}/DeployerFunctions.g.sol", folder_path), format!("{}",
         handlebars.render("DeployerFunctions.g.sol", contracts).unwrap())
