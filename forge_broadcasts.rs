@@ -67,16 +67,22 @@ pub fn get_last_deployments(
                                                     let artifact_path = collection[2];
                                                     let contract_name = collection[3];
                                                     let deployment_context = collection[4];
+                                                    let chain_id = collection[5];
                                                     // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                     new_deployments.insert(name.to_string(), DeploymentObject {
                                                         address: address.to_string(),
                                                         contract_name: contract_name.to_string(),
                                                         artifact_path: artifact_path.to_string(),
-                                                        deployment_context: deployment_context.to_string()
+                                                        deployment_context: deployment_context.to_string(),
+                                                        chain_id: chain_id.to_string()
                                                     });
                                                 }
+                                            } else {
+                                                println!("not matching returns type")    
                                             }
                                             
+                                        } else {
+                                            println!("no deployments")
                                         }
                                     }
                                     

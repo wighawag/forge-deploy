@@ -13,7 +13,7 @@ pub fn generate_deployments(root_folder: &str, deployment_folder: &str, artifact
         fs::create_dir_all(&folder_path_buf).expect("could not create folder");
         let chainid_file_path_buf = folder_path_buf.join(".chainId");
         if !chainid_file_path_buf.exists() {
-            fs::write(chainid_file_path_buf, "TODO").expect("failed to write the .chainId file");
+            fs::write(chainid_file_path_buf, &value.chain_id).expect("failed to write the .chainId file");
         }
 
         // unfortunately forge do not export artifacts in the broadcast file, so we have to fetch in the out folder

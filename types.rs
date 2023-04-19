@@ -35,6 +35,7 @@ pub struct DeploymentObject {
     pub contract_name: String,
     pub artifact_path: String,
     pub deployment_context: String,
+    pub chain_id: String,
 }
 
 

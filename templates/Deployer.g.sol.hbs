@@ -10,6 +10,7 @@ struct DeployerDeployment {
     string artifactPath;
     string artifactContractName;
     string deploymentContext;
+    string chainIdAsString;
 }
 
 
@@ -21,6 +22,7 @@ contract Deployer {
     DeployerDeployment[] _newDeployments;
 
     string internal deploymentContext;
+    string internal chainIdAsString;
     function newDeployments() external view returns (DeployerDeployment[] memory) {
         return _newDeployments;
     }
@@ -36,6 +38,11 @@ contract Deployer {
 
 
     constructor() {
+        uint256 currentChainID;
+        assembly {
+            currentChainID := chainid()
+        }
+        chainIdAsString = vm.toString(currentChainID);
         deploymentContext = _getDeploymentContext();
         // we read the deployment folder for a .chainId file
         // if the chainId here do not match the current one
@@ -114,7 +121,8 @@ contract Deployer {
             addr: address(deployed),
             artifactPath: artifactPath,
             artifactContractName: artifatContractName,
-            deploymentContext: deploymentContext
+            deploymentContext: deploymentContext,
+            chainIdAsString: chainIdAsString
         });
         _namedDeployments[name] = deployment;
         _newDeployments.push(deployment);
