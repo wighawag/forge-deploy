@@ -3,6 +3,7 @@ out/
 
 broadcast/*/31337/
 deployments/31337/
+deployments/localhost/
 
 lib/forge-std
 generated

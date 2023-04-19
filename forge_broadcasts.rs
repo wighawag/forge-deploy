@@ -43,7 +43,7 @@ pub fn get_last_deployments(
                         match chain_dir {
                             Ok(chain_dir) => 
                                 if chain_dir.metadata().unwrap().is_dir() {
-                                    println!("chain: {}", chain_dir.path().display());
+                                    // println!("chain: {}", chain_dir.path().display());
                                     let filepath_buf = chain_dir.path().join("run-latest.json");
                                     // let filepath = filepath_buf.to_str().unwrap();
                                     
@@ -67,7 +67,7 @@ pub fn get_last_deployments(
                                                     let artifact_path = collection[2];
                                                     let contract_name = collection[3];
                                                     let deployment_context = collection[4];
-                                                    println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
+                                                    // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                     new_deployments.insert(name.to_string(), DeploymentObject {
                                                         address: address.to_string(),
                                                         contract_name: contract_name.to_string(),

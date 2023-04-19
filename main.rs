@@ -32,7 +32,10 @@ enum Commands {
 struct SyncArgs {
     #[arg(short, long)]
     broadcasts: Option<String>,
+    #[arg(short, long)]
     deployments: Option<String>,
+    #[arg(short, long)]
+    artifacts: Option<String>,
 }
 
 #[derive(clap::Args)]
@@ -50,7 +53,7 @@ fn main() {
 
     match &cli.command {
         Some(command) => match command {
-            Commands::Sync(args) => sync(&cli.root, &args.broadcasts, &args.deployments),
+            Commands::Sync(args) => sync(&cli.root, &args.broadcasts, &args.deployments, &args.artifacts),
             Commands::GenDeployer(args) => {
                 gen_deployer(true, &cli.root, &args.artifacts, &args.sources, &args.output)
             }
@@ -77,13 +80,14 @@ fn gen_deployer(
     deployer::generate_deployer(&contracts, generated_folder_path);
 }
 
-fn sync(root: &Option<String>, broadcasts: &Option<String>, deployments: &Option<String>) {
+fn sync(root: &Option<String>, broadcasts: &Option<String>, deployments: &Option<String>, artifacts: &Option<String>) {
     let root_folder = root.as_deref().unwrap_or(".");
     let broadcasts_folder = broadcasts.as_deref().unwrap_or("broadcast");
     let deployments_folder = deployments.as_deref().unwrap_or("deployments");
+    let artifacts_folder = artifacts.as_deref().unwrap_or("out");
 
     let new_deployments = forge_broadcasts::get_last_deployments(root_folder, broadcasts_folder);
-    sync::generate_deployments(&new_deployments, deployments_folder);
+    sync::generate_deployments(root_folder, deployments_folder, artifacts_folder, &new_deployments);
 }
 
 fn top() {

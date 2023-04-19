@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-
+use serde_json;
+use serde_json::Value;
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
@@ -35,3 +36,51 @@ pub struct DeploymentObject {
     pub artifact_path: String,
     pub deployment_context: String,
 }
+
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct BytecodeJSON {
+    pub object: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ASTJSON {
+    pub absolute_path: String,
+    pub node_type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ArtifactJSON {
+    pub abi: Vec<Value>,
+    pub bytecode: BytecodeJSON,
+    pub metadata: Option<Value>,
+    pub ast: ASTJSON,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ABIInput {
+    pub internal_type: String,
+    pub name: String,
+    pub r#type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct ABIConstructor {
+    pub inputs: Vec<ABIInput>,
+    pub state_mutability: String,
+    pub r#type: String
+}
+
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct DeploymentJSON {
+    pub address: String,
+    pub abi: Vec<Value>,
+}
+

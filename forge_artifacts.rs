@@ -1,51 +1,8 @@
-use serde::{Deserialize, Serialize};
-use serde_json;
-use serde_json::Value;
+
 
 use std::{fs, path::Path};
 
-use crate::types::{ContractObject}; //, ConstructorObject};
-
-
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
-pub struct BytecodeJSON {
-    pub object: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
-pub struct ASTJSON {
-    pub absolute_path: String,
-    pub node_type: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
-pub struct ArtifactJSON {
-    pub abi: Vec<Value>,
-    pub bytecode: BytecodeJSON,
-    pub metadata: Option<Value>,
-    pub ast: ASTJSON,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
-pub struct ABIInput {
-    pub internal_type: String,
-    pub name: String,
-    pub r#type: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
-pub struct ABIConstructor {
-    pub inputs: Vec<ABIInput>,
-    pub state_mutability: String,
-    pub r#type: String
-}
-
-
+use crate::types::{ContractObject, ArtifactJSON}; //, ConstructorObject};
 
 pub fn get_contracts(
     root_folder: &str,
