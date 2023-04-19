@@ -55,7 +55,7 @@ contract DeployGreetingsRegistry is DeployScript {
         _deployer.deploy_GreetingsRegistry(
             "MyRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: false})
+            DeployOptions({overrideIfExist: false, proxyOnTag: "", proxyOwner: address(0)})
         );
 
         if (_deployer.has("MyRegistry")){
@@ -68,7 +68,7 @@ contract DeployGreetingsRegistry is DeployScript {
         _deployer.deploy_GreetingsRegistry(
             "MyRegistry",
             vm.toString(address(existing)),
-            DeployOptions({overrideIfExist: true})
+            DeployOptions({overrideIfExist: true, proxyOnTag: "", proxyOwner: address(0)})
         );
 
         _deployer.deploy_GreetingsRegistry(
@@ -79,6 +79,27 @@ contract DeployGreetingsRegistry is DeployScript {
         _deployer.deploy_GreetingsRegistry(
             "AnotherRegistry",
             vm.toString(address(existing))
+        );
+
+
+        // proxy tests
+
+        _deployer.deploy_GreetingsRegistry(
+            "ProxiedRegistry",
+            vm.toString(address(existing)),
+            DeployOptions({overrideIfExist: false, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+        );
+
+        _deployer.deploy_GreetingsRegistry(
+            "ProxiedRegistry",
+            vm.toString(address(existing)),
+            DeployOptions({overrideIfExist: false, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+        );
+
+        _deployer.deploy_GreetingsRegistry2(
+            "ProxiedRegistry",
+            vm.toString(address(existing)),
+            DeployOptions({overrideIfExist: false, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
     }
 }

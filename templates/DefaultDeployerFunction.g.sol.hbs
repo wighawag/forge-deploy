@@ -2,9 +2,12 @@
 pragma solidity ^0.8.13;
 
 import "./Deployer.g.sol";
+import "proxy/ForgeDeploy_EIP173Proxy.sol";
 
 struct DeployOptions {
     bool overrideIfExist;
+    string proxyOnTag;
+    address proxyOwner;
 }
 
 library DefaultDeployerFunction{
@@ -21,6 +24,13 @@ library DefaultDeployerFunction{
         return address(0);
     }
 
+    function _contextHasTag(string memory tag) internal returns (bool) {
+        if (bytes(tag).length == 0) {
+            return false;
+        }
+        return true;
+    }
+
     function deploy(
         Deployer deployer,
         string memory name,
@@ -28,14 +38,57 @@ library DefaultDeployerFunction{
         bytes memory args,
         DeployOptions memory options
     ) internal returns (address deployed) {
-        address useExisting = _useExisting(deployer, name, options);
-        if (useExisting == address(0)) {
+        if (_contextHasTag(options.proxyOnTag)) {
+            Deployment memory existing = deployer.get(name);
             bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
-            vm.broadcast();
-            assembly {
-                deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+
+            string memory implName = string.concat(name, "_Implementation");
+            if (existing.addr != address(0)) {
+                address implementation;
+                Deployment memory existingImpl = deployer.get(implName);
+                if (
+                    existingImpl.addr == address(0) || 
+                    keccak256(bytes.concat(existingImpl.bytecode, existingImpl.args)) != keccak256(bytes.concat(bytecode, args))
+                ) {
+                    // TODO implementation args
+                    implementation = deploy(deployer, implName, artifact, args, DeployOptions({
+                        overrideIfExist: true,
+                        proxyOnTag: "",
+                        proxyOwner: address(0)
+                    }));
+                } else {
+                    implementation = existingImpl.addr;
+                }
+                deployed = existing.addr;
+                vm.broadcast(options.proxyOwner);
+                // TODO extra call data (upgradeToAndCall)
+                EIP173Proxy(payable(deployed)).upgradeTo(implementation);
+            } else {
+                address implementation = deploy(deployer, implName, artifact, args, DeployOptions({
+                    overrideIfExist: true,
+                    proxyOnTag: "",
+                    proxyOwner: address(0)
+                }));
+                
+                // TODO extra call data
+                bytes memory proxyArgs = abi.encode(implementation, options.proxyOwner, bytes(""));
+                deployed = deploy(deployer, name, "ForgeDeploy_EIP173Proxy.sol:EIP173Proxy", proxyArgs, DeployOptions({
+                    overrideIfExist: false,
+                    proxyOnTag: "",
+                    proxyOwner: address(0)
+                }));
             }
-            deployer.save(name, deployed, bytecode, args, artifact);
+        } else {
+            address useExisting = _useExisting(deployer, name, options);
+            if (useExisting == address(0)) {
+                bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
+                vm.broadcast();
+                assembly {
+                    deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+                }
+                deployer.save(name, deployed, bytecode, args, artifact);
+            }
         }
+        
     }
 }

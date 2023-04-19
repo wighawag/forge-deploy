@@ -1,0 +1,11 @@
+{
+    "localhost":{
+        "tags": ["local", "tesnet"]
+    },
+    "sepolia":{
+        "tags": ["live", "testnet"]
+    },
+    "mainnet":{
+        "tags": ["live", "mainnet"]
+    }
+}

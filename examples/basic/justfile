@@ -13,7 +13,12 @@ sync:
 deploy $MODE="local": (compile)
     ldenv just _deploy
 _deploy:
-    forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -vvvv && forge-deploy sync
+    forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && forge-deploy sync
+
+deploy_void $MODE="void": (compile)
+    ldenv just _deploy_void
+_deploy_void:
+    forge script script/DeployGreetingsRegistry.s.sol --private-key $DEPLOYER_PRIVATE_KEY -vvvv
 
 
 # -------------------------------------------------------------------------------------------------

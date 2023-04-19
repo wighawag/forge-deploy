@@ -48,7 +48,7 @@ library DeployerFunctions{
                 deployer,
                 name,
                 {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}},
-                DeployOptions({overrideIfExist: false})
+                DeployOptions({overrideIfExist: false, proxyOnTag: "", proxyOwner: address(0)})
             );
     }
     function deploy_{{this.contract_name}}(
