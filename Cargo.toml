@@ -14,5 +14,5 @@ walkdir = "2"
 substring = "1.4.5"
 
 [[bin]]
-path= "main.rs"
+path= "cli/main.rs"
 name= "forge-deploy"

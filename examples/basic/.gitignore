@@ -6,6 +6,7 @@ deployments/31337/
 deployments/localhost/
 
 lib/forge-std
+lib/forge-deploy
 generated
 
 *.local

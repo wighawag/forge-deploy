@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "generated/deployer/DeployScript.g.sol";
+import "forge-deploy/DeployScript.sol";
 import "generated/deployer/DeployerFunctions.g.sol";
 
 contract DeployGreetingsRegistry is DeployScript {
