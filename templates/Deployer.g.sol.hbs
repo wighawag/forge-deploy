@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 import {Vm} from "forge-std/Vm.sol";
 import "forge-std/console.sol";
+import "forge-std/StdJson.sol";
 
 struct DeployerDeployment {
     string name;
@@ -53,6 +54,17 @@ contract Deployer {
         vm.broadcast();
     }
 
+    struct Deployment {
+        address addr;
+    }
+
+    function _getExistingDeploymentAdress(string memory name) internal returns (address) {
+        string memory root = vm.projectRoot();
+        string memory path = string.concat(root, "/deployments/31337/", name, ".json");
+        string memory json = vm.readFile(path);
+        bytes memory addr = stdJson.parseRaw(json, ".address");
+        return abi.decode(addr, (address));
+    }
 
     function has(
         string memory name
@@ -61,9 +73,7 @@ contract Deployer {
         if (existing.addr != address(0)) {
             return true;
         }
-        // TODO use Deployment json files ?
-        // or generated Deployments.g.sol
-        return false;
+        return _getExistingDeploymentAdress(name) != address(0);
     }
 
     function getAddress(
@@ -73,9 +83,7 @@ contract Deployer {
         if (existing.addr != address(0)) {
             return existing.addr;
         }
-        // TODO use Deployment json files ?
-        // or generated Deployments.g.sol
-        return address(0);
+        return _getExistingDeploymentAdress(name);
     }
 
     // --------------------------------------------------------------------------------------------
@@ -95,48 +103,48 @@ contract Deployer {
         });
         _namedDeployments[name] = deployment;
         _newDeployments.push(deployment);
-        save(deployment);
+        // save(deployment);
     }
 
-    function save(
-        string memory name,
-        address deployed
-    ) public {
-        DeployerDeployment memory deployment = DeployerDeployment({
-            name: name,
-            addr: address(deployed),
-            artifactPath: "",
-            artifactContractName: ""
-        });
-        _namedDeployments[name] = deployment;
-        _newDeployments.push(deployment);
-        save(deployment);
-    }
+    // function save(
+    //     string memory name,
+    //     address deployed
+    // ) public {
+    //     DeployerDeployment memory deployment = DeployerDeployment({
+    //         name: name,
+    //         addr: address(deployed),
+    //         artifactPath: "",
+    //         artifactContractName: ""
+    //     });
+    //     _namedDeployments[name] = deployment;
+    //     _newDeployments.push(deployment);
+    //     // save(deployment);
+    // }
 
-    function save(DeployerDeployment memory deployment) internal {
-        string memory artifactAsString = vm.readFile(
-            string(
-                bytes.concat(
-                    "out/",
-                    bytes(deployment.artifactPath),
-                    "/",
-                    bytes(deployment.artifactContractName),
-                    ".json"
-                )
-            )
-        );
-        bytes memory artifact = vm.parseJson(artifactAsString);
-        string memory artifactABI = abi.decode(artifact, (string));
-        // bytes memory artifactABI = vm.parseJson(artifactAsString, "abi");
-        string memory json = deployment.name;
-        vm.serializeAddress(json, "address", deployment.addr);
-        // string memory finalJson = vm.serialize(json, "abi", artifactABI);
-        // vm.writeFile(
-        //     string(bytes.concat("./deployments/", bytes(name), ".json")),
-        //     string(artifactABI)
-        // );
-        console.log(string(artifactABI));
-    }
+    // function save(DeployerDeployment memory deployment) internal {
+    //     string memory artifactAsString = vm.readFile(
+    //         string(
+    //             bytes.concat(
+    //                 "out/",
+    //                 bytes(deployment.artifactPath),
+    //                 "/",
+    //                 bytes(deployment.artifactContractName),
+    //                 ".json"
+    //             )
+    //         )
+    //     );
+    //     bytes memory artifact = vm.parseJson(artifactAsString);
+    //     string memory artifactABI = abi.decode(artifact, (string));
+    //     // bytes memory artifactABI = vm.parseJson(artifactAsString, "abi");
+    //     string memory json = deployment.name;
+    //     vm.serializeAddress(json, "address", deployment.addr);
+    //     // string memory finalJson = vm.serialize(json, "abi", artifactABI);
+    //     // vm.writeFile(
+    //     //     string(bytes.concat("./deployments/", bytes(name), ".json")),
+    //     //     string(artifactABI)
+    //     // );
+    //     console.log(string(artifactABI));
+    // }
     // --------------------------------------------------------------------------------------------
 
 }

@@ -2,6 +2,7 @@ cache/
 out/
 
 broadcast/*/31337/
+deployments/31337/
 
 lib/forge-std
 generated
