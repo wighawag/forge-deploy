@@ -74,6 +74,8 @@ pub fn get_last_deployments(
                                                     let artifact_path = artifact_splitted.next().unwrap();
                                                     let contract_name = artifact_splitted.next();
 
+
+                                                    // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
                                                     // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                     new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
                                                         name: name.to_string(),
