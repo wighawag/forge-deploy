@@ -4,3 +4,5 @@ forge-exec/=lib/forge-exec/src/
 solidity-kit/=lib/solidity-kit/
 proxy/=lib/proxy/
 forge-deploy/=lib/forge-deploy/contracts/
+generated/=generated/
+src/=src/
