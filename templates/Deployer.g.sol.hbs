@@ -14,6 +14,11 @@ struct DeployerDeployment {
     string chainIdAsString;
 }
 
+struct Deployment {
+    address addr;
+    bytes bytecode;
+    bytes args;
+}
 
 contract Deployer {
     Vm constant vm =
@@ -81,6 +86,19 @@ contract Deployer {
         }
     }
 
+    function _getExistingDeployment(string memory name) internal view returns (Deployment memory deployment) {
+        string memory root = vm.projectRoot();
+        string memory path = string.concat(root, "/deployments/", deploymentContext, "/", name, ".json");
+        try vm.readFile(path) returns (string memory json) {
+            bytes memory addrBytes = stdJson.parseRaw(json, ".address");
+            bytes memory bytecodeBytes = stdJson.parseRaw(json, ".bytecode");
+            bytes memory argsBytes = stdJson.parseRaw(json, ".args_data");
+            deployment.addr = abi.decode(addrBytes, (address));
+            deployment.bytecode = abi.decode(bytecodeBytes, (bytes));
+            deployment.args = abi.decode(argsBytes, (bytes));
+        } catch {}
+    }
+
     function has(
         string memory name
     ) public view returns (bool) {
@@ -99,6 +117,19 @@ contract Deployer {
             return existing.addr;
         }
         return _getExistingDeploymentAdress(name);
+    }
+
+    function get(
+        string memory name
+    ) public view returns (Deployment memory deployment) {
+        DeployerDeployment memory newDeployment = _namedDeployments[name];
+        if (newDeployment.addr != address(0)) {
+            deployment.addr = newDeployment.addr;
+            deployment.bytecode = newDeployment.bytecode;
+            deployment.args = newDeployment.args;
+        } else {
+            deployment = _getExistingDeployment(name);
+        }
     }
 
     function save(
