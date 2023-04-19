@@ -85,11 +85,13 @@ contract DeployGreetingsRegistry is DeployScript {
         );
 
 
-        _deployer.deploy_GreetingsRegistry(
-            "DeterministicRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 23, proxyOnTag: "", proxyOwner: address(0)})
-        );
+        // this fails in anvil
+        
+        // _deployer.deploy_GreetingsRegistry(
+        //     "DeterministicRegistry",
+        //     vm.toString(address(existing)),
+        //     DeployOptions({deterministic: 23, proxyOnTag: "", proxyOwner: address(0)})
+        // );
 
         // _deployer.deploy_GreetingsRegistry(
         //     "DeterministicRegistry2",

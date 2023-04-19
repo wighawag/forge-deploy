@@ -14,13 +14,6 @@ library DefaultDeployerFunction{
 
     Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
-    function _contextHasTag(string memory tag) internal returns (bool) {
-        if (bytes(tag).length == 0) {
-            return false;
-        }
-        return true;
-    }
-
     /// @notice generic deploy function that save it using the deployer contract
     /// @param deployer contract that keep track of the deployments and save them
     /// @param name the deployment's name that will stored on disk in <deployments>/<context>/<name>.json
@@ -33,7 +26,7 @@ library DefaultDeployerFunction{
         bytes memory args,
         DeployOptions memory options
     ) internal returns (address deployed) {
-        if (_contextHasTag(options.proxyOnTag)) {
+        if (deployer.isTagEnabled(options.proxyOnTag)) {
             Deployment memory existing = deployer.get(name);
             bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
 

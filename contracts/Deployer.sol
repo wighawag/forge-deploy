@@ -150,6 +150,35 @@ contract Deployer {
         }
     }
 
+    function readTagsFromContext() external returns (string[] memory) {
+        string memory root = vm.projectRoot();
+        // TODO configure file name ?
+        string memory path = string.concat(root, "/contexts.json");
+        string memory json = vm.readFile(path);
+        return stdJson.readStringArray(json, string.concat(".", deploymentContext , ".tags"));
+    }
+
+    function isTagEnabled(string memory tag) external returns (bool) {
+        if (bytes(tag).length == 0) {
+            return false;
+        }
+        bytes32 tagId = keccak256(bytes(tag));
+        try this.readTagsFromContext() returns (string[] memory tags) {
+            for (uint256 i = 0; i < tags.length; i++) {
+                if (keccak256(bytes(tags[i])) == tagId) {
+                    return true;
+                }
+            }
+        } catch {
+            // TODO default tags
+            // if (keccak256(bytes(chainIdAsString)) == keccak256(bytes("31337"))) {
+            //     return false;
+            // }
+        }
+        return false;
+    }
+
+
     /// @notice save the deployment info under the name provided
     /// this is a low level call and is used by ./DefaultDeployerFunction.sol
     /// @param name deployment's name
