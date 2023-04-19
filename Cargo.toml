@@ -2,7 +2,7 @@
 name = "forge-deploy"
 version = "0.0.1"
 edition = "2021"
-description = "A cli and associated contracts to keep track of deployments by name and reuse them in solidity."
+description = "A cli that goes along a set of soldity contract to keep track of deployments by name in forge."
 repository = "https://github.com/wighawag/forge-deploy"
 homepage = "https://github.com/wighawag/forge-deploy"
 deocumentation = "README.md"
