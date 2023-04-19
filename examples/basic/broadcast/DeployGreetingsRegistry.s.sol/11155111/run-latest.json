@@ -161,7 +161,7 @@
   "returns": {
     "newDeployments": {
       "internal_type": "struct DeployerDeployment[]",
-      "value": "[(MyRegistry, 0xfB4D29BE83E36AB46003948e9f785292ba825941, GreetingsRegistry.sol, GreetingsRegistry), (MyRegistry, 0x8b8066a60AB40D96e2098B614c8eB8eAa2ac8f11, GreetingsRegistry.sol, GreetingsRegistry), (MyRegistry2, 0x3ce20fb6f507e62Ef28Bc3C8a3673370cc37FC7b, GreetingsRegistry.sol, GreetingsRegistry), (AnotherRegistry, 0xFF4625C4030eACC876e7B27185C5Cb876Db2C284, GreetingsRegistry.sol, GreetingsRegistry)]"
+      "value": "[(MyRegistry, 0xfB4D29BE83E36AB46003948e9f785292ba825941, GreetingsRegistry.sol, GreetingsRegistry, sepolia), (MyRegistry, 0x8b8066a60AB40D96e2098B614c8eB8eAa2ac8f11, GreetingsRegistry.sol, GreetingsRegistry, sepolia), (MyRegistry2, 0x3ce20fb6f507e62Ef28Bc3C8a3673370cc37FC7b, GreetingsRegistry.sol, GreetingsRegistry, sepolia), (AnotherRegistry, 0xFF4625C4030eACC876e7B27185C5Cb876Db2C284, GreetingsRegistry.sol, GreetingsRegistry, sepolia)]"
     }
   },
   "timestamp": 1681657442,
