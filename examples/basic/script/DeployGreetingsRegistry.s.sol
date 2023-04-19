@@ -45,7 +45,7 @@ contract DeployGreetingsRegistry is DeployScript {
 
         if (_deployer.has("MyRegistry")){
             console.log("MyRegistry already deployed");
-            console.log(_deployer.get("MyRegistry"));
+            console.log(_deployer.getAddress("MyRegistry"));
         } else {
             console.log("No MyRegistry deployed yet");
         }
@@ -57,6 +57,13 @@ contract DeployGreetingsRegistry is DeployScript {
             vm.toString(address(existing)),
             DeployOptions({overrideIfExist: false})
         );
+
+        if (_deployer.has("MyRegistry")){
+            console.log("MyRegistry is now deployed");
+            console.log(_deployer.getAddress("MyRegistry"));
+        } else {
+            console.log("Still No MyRegistry deployed yet");
+        }
 
         _deployer.deploy_GreetingsRegistry(
             "MyRegistry",

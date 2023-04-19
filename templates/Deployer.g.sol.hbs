@@ -57,14 +57,22 @@ contract Deployer {
     function has(
         string memory name
     ) public returns (bool) {
+        DeployerDeployment memory existing = _namedDeployments[name];
+        if (existing.addr != address(0)) {
+            return true;
+        }
         // TODO use Deployment json files ?
         // or generated Deployments.g.sol
         return false;
     }
 
-    function get(
+    function getAddress(
         string memory name
     ) public returns (address) {
+        DeployerDeployment memory existing = _namedDeployments[name];
+        if (existing.addr != address(0)) {
+            return existing.addr;
+        }
         // TODO use Deployment json files ?
         // or generated Deployments.g.sol
         return address(0);
