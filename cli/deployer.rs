@@ -5,37 +5,14 @@ use handlebars::Handlebars;
 use crate::types::{ContractObject};
 
 pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str) {
-    // for contract in contracts {
-    //     println!("contract: {}", contract.contract_name);
-    // }
-
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("memory-type", Box::new(memory_type));
-    handlebars
-        .register_template_string(
-            "Deployer.g.sol",
-            include_str!("templates/Deployer.g.sol.hbs"),
-        )
-        .unwrap();
-    handlebars
-        .register_template_string(
-            "DefaultDeployerFunction.g.sol",
-            include_str!("templates/DefaultDeployerFunction.g.sol.hbs"),
-        )
-        .unwrap();
     handlebars
         .register_template_string(
             "DeployerFunctions.g.sol",
             include_str!("templates/DeployerFunctions.g.sol.hbs"),
         )
         .unwrap();
-    handlebars
-        .register_template_string(
-            "DeployScript.g.sol",
-            include_str!("templates/DeployScript.g.sol.hbs"),
-        )
-        .unwrap();
-
     handlebars.set_strict_mode(true);
 
     let folder_path_buf = Path::new(generated_folder).join("deployer");
@@ -43,57 +20,10 @@ pub fn generate_deployer(contracts: &Vec<ContractObject>, generated_folder: &str
 
     fs::create_dir_all(folder_path).expect("create folder");
 
-    // fs::write(
-    //     format!("{}/Deployer.g.sol", folder_path),
-    //     format!(
-    //         "{}",
-    //         handlebars.render("Deployer.g.sol", artifacts).unwrap()
-    //     ),
-    // )
-    // .expect("could not write file");
-    // write_if_different(
-    //     format!("{}/Artifacts.g.sol", folder_path),
-    //     format!("{}",handlebars.render("Artifacts.g.sol", artifacts).unwrap()
-    // );
-    // fs::write(
-    //     format!("{}/Artifacts.g.sol", folder_path),
-    //     format!(
-    //         "{}",
-    //         handlebars.render("Artifacts.g.sol", artifacts).unwrap()
-    //     ),
-    // )
-    // .expect("could not write file");
-
-    // fs::write(
-    //     format!("{}/DeployScript.g.sol", folder_path),
-    //     format!(
-    //         "{}",
-    //         handlebars.render("DeployScript.g.sol", artifacts).unwrap()
-    //     ),
-    // )
-    // .expect("could not write file");
-
-    write_if_different(
-        &format!("{}/Deployer.g.sol", folder_path), format!("{}",
-        handlebars.render("Deployer.g.sol", contracts).unwrap())
-    );
-    write_if_different(
-        &format!("{}/DefaultDeployerFunction.g.sol", folder_path), format!("{}",
-        handlebars.render("DefaultDeployerFunction.g.sol", contracts).unwrap())
-    );
-    
     write_if_different(
         &format!("{}/DeployerFunctions.g.sol", folder_path), format!("{}",
         handlebars.render("DeployerFunctions.g.sol", contracts).unwrap())
     );
-    write_if_different(
-        &format!("{}/DeployScript.g.sol", folder_path), format!("{}",
-        handlebars.render("DeployScript.g.sol", contracts).unwrap())
-    );
-
-
-    
-
 }
 
 
