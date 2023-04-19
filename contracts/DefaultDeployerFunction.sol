@@ -21,6 +21,11 @@ library DefaultDeployerFunction{
         return true;
     }
 
+    /// @notice generic deploy function that save it using the deployer contract
+    /// @param deployer contract that keep track of the deployments and save them
+    /// @param name the deployment's name that will stored on disk in <deployments>/<context>/<name>.json
+    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param args encoded aergument for the contract's constructor
     function deploy(
         Deployer deployer,
         string memory name,

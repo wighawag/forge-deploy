@@ -13,6 +13,8 @@ abstract contract DeployScript is Script {
         return _deployer.newDeployments();
     }
 
+    /// @notice function to be overriden to execute a deployment script
+    /// this take care of returning the deployment saved by the deployer contract
     function deploy() virtual internal {
 
     }
