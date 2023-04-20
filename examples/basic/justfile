@@ -1,8 +1,14 @@
+# -------------------------------------------------------------------------------------------------
+# add node_modules/.bin to PATH + add forge-deploy binary for testing
+export PATH := "./node_modules/.bin:" + "../../target/debug:" + env_var('PATH')
+# -------------------------------------------------------------------------------------------------
+
 _default:
   @just --choose
 
-setup:
-    cargo install --locked 0.0.1 --root . forge-deploy
+# example of how to setup forge-deploy as a local binary
+# setup:
+#     cargo install --version 0.0.3 --root . forge-deploy
 
 compile:
     forge-deploy gen-deployer && forge build
@@ -22,11 +28,4 @@ _deploy:
     else \
         forge script script/DeployGreetingsRegistry.s.sol --private-key $DEPLOYER_PRIVATE_KEY -vvvv --rpc-url $RPC_URL --broadcast && forge-deploy sync; \
     fi;
-
-
-# Testing forge-deploy
-export PATH := "./node_modules/.bin:" + "../../target/debug:" + env_var('PATH')
-
-load context:
-    ldenv -m {{context}} env
 
