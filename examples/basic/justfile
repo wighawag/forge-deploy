@@ -1,4 +1,4 @@
-setup
+setup:
     cargo install --locked 0.0.1 --root . forge-deploy
 
 compile:

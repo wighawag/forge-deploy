@@ -63,14 +63,24 @@ pub fn get_contracts(
                 
                 let constructor_string = match per_contract_match_constructor.captures(contract_string) {
                     Some(found) => match found.get(1) {
-                        Some(constructor) => constructor.as_str(),
-                        None => ""
+                        Some(constructor) => {
+                            let result = constructor.as_str().trim();
+                            if result.eq("") {
+                                None
+                            } else {
+                                Some(result.to_string())
+                            }
+                        },
+                        None => None
                     },
-                    None => ""
+                    None => None
                 };
 
-                let args = constructor_string.split(",").map(|s| s.trim().split(" ").last().unwrap());
-                
+                let parsable_constructor_string = constructor_string.clone().unwrap_or("".to_string());
+                let args = parsable_constructor_string.split(",").map(|s| s.trim().split(" ").last().unwrap());
+
+                // println!("constructor_string: '{}'", constructor_string.clone().unwrap_or("NO".to_string()));
+
                 let solidity_filepath = entry.path().to_str().unwrap();
                 let solidity_filepath = solidity_filepath.substring(2, solidity_filepath.len());
                 let contract = ContractObject {
@@ -80,7 +90,7 @@ pub fn get_contracts(
                     constructor: Some(ConstructorObject{
                         inputs: args.map(|arg| InputObject {name: String::from(arg), r#type: None}).collect()
                     }),
-                    constructor_string: Some(String::from(constructor_string)),
+                    constructor_string: constructor_string,
                 };
                 // println!("{:?}", contract);
                 contracts.push(contract);

@@ -50,6 +50,7 @@ contract DeployGreetingsRegistry is DeployScript {
             console.log("No MyRegistry deployed yet");
         }
         
+        _deployer.deploy_Counter("MyCounter");
 
         // we can deploy a new contract and name it
         _deployer.deploy_GreetingsRegistry(
