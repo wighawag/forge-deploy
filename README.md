@@ -49,86 +49,46 @@ Note that to provide type-safety `forge-deploy` provide a `gen-deployer` command
 ./bin/forge-deploy gen-deployer
 ```
 
+4. add to .gitignore the generated file + the binary we just installed
+
+```
+echo -e "\n\n#forge-deploy\n/generated" >> .gitignore;
+echo -e "\n#forge-deploy binary\n/.crates2.json\n/.crates.toml\n/bin" >> .gitignore;
+```
+
+5. copy this file in `script/Counter.s.sol`
+
 ```solidity
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
 import "forge-deploy/DeployScript.sol";
 import "generated/deployer/DeployerFunctions.g.sol";
 
-contract DeployGreetingsRegistry is DeployScript {
+contract CounterScript is DeployScript {
     using DeployerFunctions for Deployer;
-    
-    // you can also use the run function and this way pass params to your script
-    // if so you need to ensure to return with the new deployments via:
-    // `return _deployer.newDeployments();`
-    // example:
-    // function run() override public returns (DeployerDeployment[] memory newDeployments) {
-    //  // .... _deployer.deploy...
-    //  return _deployer.newDeployments();
-    // }
-    // this is how forge-deploy keep track of deployment names 
-    // and how the forge-deploy sync command can generate the deployments files
-    //
-        
+
     function deploy() override internal {
-    
-        // you can check for existence
-        if (_deployer.has("MyRegistry")){
-            console.log("MyRegistry already deployed");
-            console.log(_deployer.getAddress("MyRegistry"));
-        } else {
-            console.log("No MyRegistry deployed yet");
-        }
-
-        // we can deploy a new contract and name it
-        _deployer.deploy_GreetingsRegistry(
-            "MyRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
-        );
-
-        // if you need to override an existing contract
-        // you first ignore it
-        _deployer.ignoreDeployment("MyRegistry");
-        // and deploy a new one
-        // the deployment file will only be overriden after broadcast
-        _deployer.deploy_GreetingsRegistry(
-            "MyRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
-        );
-
-        // also support a basic EIP173 Proxy similar to hardhat-deploy (not fully featured)
-        _deployer.deploy_GreetingsRegistry(
-            "ProxiedRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
-        );
-
-        _deployer.deploy_GreetingsRegistry(
-            "ProxiedRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
-        );
-
-        _deployer.deploy_GreetingsRegistry2(
-            "ProxiedRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
-        );
+        _deployer.deploy_Counter("MyCounter");
     }
 }
+
 ```
 
-5. You can now execute the script via forge script
+6. You can now execute the script via forge script
 
 Note that you need to execute `./bin/forge-deploy sync` directly afterward
 
 For example:
 
 ```
-forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && forge-deploy sync
+forge script script/Counter.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && forge-deploy sync
+```
+
+with anvil and default account
+
+```
+forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && forge-deploy sync  
 ```
 
 6. If you use [just](https://just.systems/), see example in [examples/basic](examples/basic) with its own [justfile](examples/basic/justfile)
