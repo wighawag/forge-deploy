@@ -5,7 +5,7 @@ edition = "2021"
 description = "A cli that goes along a set of soldity contract to keep track of deployments by name in forge."
 repository = "https://github.com/wighawag/forge-deploy"
 homepage = "https://github.com/wighawag/forge-deploy"
-deocumentation = "README.md"
+documentation = "README.md"
 license = "MIT"
 
 [dependencies]
