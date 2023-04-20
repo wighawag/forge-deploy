@@ -10,7 +10,21 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 ## How to use
 
-1. install the cli tool locally as the tool is likely to evolve rapidly
+0. have a forge project and cd into it
+
+```
+cd my-project
+forge init # if needed
+```
+
+1. add the forge package
+
+```
+forge install wighawag/forge-deploy
+```
+
+
+2. install the cli tool locally as the tool is likely to evolve rapidly
 ```
 cargo install --locked 0.0.1 --root . forge-deplpoy
 ```
@@ -23,13 +37,17 @@ You can then execute it via
 ./bin/forge-deploy <command> ...
 ```
 
+you can also compile it directly from the `lib/forge-deploy/` folder.
 
-2. add the forge package
-
-`forge install wighawag/forge-deploy`
 
 3.
-add a script
+add a deploy script, see below example
+
+Note that to provide type-safety `forge-deploy` provide a `gen-deployer` command to generate type-safe deploy function for all contracts
+
+```
+./bin/forge-deploy gen-deployer
+```
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -102,3 +120,15 @@ contract DeployGreetingsRegistry is DeployScript {
     }
 }
 ```
+
+5. You can now execute the script via forge script
+
+Note that you need to execute `./bin/forge-deploy sync` directly afterward
+
+For example:
+
+```
+forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && forge-deploy sync
+```
+
+6. If you use [just](https://just.systems/), see example in [examples/basic](examples/basic) with its own [justfile](examples/basic/justfile)
