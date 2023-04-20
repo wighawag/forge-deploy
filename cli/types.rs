@@ -35,9 +35,9 @@ pub struct DeploymentObject {
     pub address: String,
     pub bytecode: String,
     pub args_data: String,
-    // TODO
-    // pub args: String,
-    // pub data: String,
+    pub tx_hash: String,
+    pub args: Option<Vec<String>>,
+    pub data: String,
     pub contract_name: Option<String>,
     pub artifact_path: String,
     pub deployment_context: String,
@@ -91,8 +91,8 @@ pub struct DeploymentJSON {
     pub abi: Vec<Value>,
     pub bytecode: String,
     pub args_data: String,
-    // TODO
-    // pub args: String,
-    // pub data: String,
+    pub tx_hash: String,
+    pub args: Option<Vec<String>>,
+    pub data: String,
 }
 

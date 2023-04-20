@@ -42,9 +42,9 @@ pub fn generate_deployments(root_folder: &str, deployment_folder: &str, artifact
             abi: artifact.abi,
             bytecode: value.bytecode.to_string(),
             args_data: value.args_data.to_string(),
-            // TODO
-            // args: value.args,
-            // data: value.data
+            args: value.args.clone(),
+            data: value.data.to_string(),
+            tx_hash: value.tx_hash.to_string()
         }).expect("Failed to stringify");
         fs::write(file_path_buf, data).expect("failed to write file");
     }

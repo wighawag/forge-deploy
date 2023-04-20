@@ -29,7 +29,7 @@ library DefaultDeployerFunction{
         if (deployer.isTagEnabled(options.proxyOnTag)) {
             // console.log("tag enabled");
             Deployment memory existing = deployer.get(name);
-            bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
+            bytes memory data = bytes.concat(vm.getCode(artifact), args);
 
             string memory implName = string.concat(name, "_Implementation");
             if (existing.addr != address(0)) {
@@ -39,7 +39,7 @@ library DefaultDeployerFunction{
                 Deployment memory existingImpl = deployer.get(implName);
                 if (
                     existingImpl.addr == address(0) || 
-                    keccak256(bytes.concat(existingImpl.bytecode, existingImpl.args)) != keccak256(bytes.concat(bytecode, args))
+                    keccak256(bytes.concat(existingImpl.bytecode, existingImpl.args)) != keccak256(data)
                 ) {
                     // we will override the previous implementation
                     deployer.ignoreDeployment(implName);
@@ -88,17 +88,18 @@ library DefaultDeployerFunction{
             // console.log("no tag");
             address existing = deployer.getAddress(name);
             if (existing == address(0)) {
-                bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
+                bytes memory bytecode = vm.getCode(artifact);
+                bytes memory data = bytes.concat(bytecode, args);
                 vm.broadcast();
                 // TODO value
                 if (options.deterministic > 0) {
                     uint256 salt = options.deterministic;
                     assembly {
-                        deployed := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
+                        deployed := create2(0, add(data, 0x20), mload(data), salt)
                     }
                 } else {
                     assembly {
-                        deployed := create(0, add(bytecode, 0x20), mload(bytecode))
+                        deployed := create(0, add(data, 0x20), mload(data))
                     }
                 }
 

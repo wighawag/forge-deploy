@@ -8,20 +8,33 @@ use serde_json::{Value, from_str};
 use serde_json::Value::Object;
 use regex::Regex;
 
-
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct Transaction {
+    r#type: String, // example: "0x02"
+    from: String,
+    gas: String, // example: "0xca531"
+    value: String, // example:  "0x0"
+    data: String,  // "0x..."
+    nonce: String // example: "0xd5"
+    // "accessList": []
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+pub struct TransactionResult {
     hash: String,
-    transaction_type: String,
+    transaction_type: String, // CREATE, CREATE2
     contract_name: Option<String>,
     contract_address: Option<String>,
+    arguments: Option<Vec<String>>,
+    transaction: Transaction,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct FileContent {
-    transactions: Vec<Transaction>,
+    transactions: Vec<TransactionResult>,
     returns: Value
 }
 
@@ -50,6 +63,18 @@ pub fn get_last_deployments(
                                     let data = fs::read_to_string(filepath_buf).expect("Unable to read file");
                                     let res: FileContent = from_str(&data).expect("Unable to parse");
                                     let returns = res.returns;
+
+                                    // collect transaction and associate them with contracts
+                                    let mut transaction_per_deployments: HashMap<String, TransactionResult> = HashMap::new();
+                                    for transaction_result in res.transactions {
+                                        if let Some(contract_address) = transaction_result.contract_address.clone() {
+                                            transaction_per_deployments.insert(contract_address, transaction_result.clone());
+                                        }
+                                        // if transaction_result.transaction_type.eq("CREATE") {
+                                        // }
+                                        // TODO Create2
+                                    }
+
                                     if let Object(returns) = returns {
                                         let deployments = returns.get("newDeployments");
                                         if let Some(deployments) = deployments {
@@ -73,23 +98,31 @@ pub fn get_last_deployments(
                                                     let mut artifact_splitted = artifact_full_path.split(":");
                                                     let artifact_path = artifact_splitted.next().unwrap();
                                                     let contract_name = artifact_splitted.next();
-
-
-                                                    // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
-                                                    // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
-                                                    new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
-                                                        name: name.to_string(),
-                                                        address: address.to_string(),
-                                                        bytecode: bytecode.to_string(),
-                                                        args_data: args_data.to_string(),
-                                                        // TODO ?
-                                                        // args: transaction.args,
-                                                        // data: transaction.data,
-                                                        contract_name: contract_name.map(|s| s.to_string()),
-                                                        artifact_path: artifact_path.to_string(),
-                                                        deployment_context: deployment_context.to_string(),
-                                                        chain_id: chain_id.to_string()
-                                                    });
+                                                    
+                                                    
+                                                    if let Some(transaction_result) = transaction_per_deployments.get(address) {
+                                                        let args = transaction_result.arguments.clone();
+                                                        let data = transaction_result.transaction.data.to_string();
+                                                        let tx_hash = transaction_result.hash.to_string();
+                                                        // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
+                                                        // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
+                                                        new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {
+                                                            name: name.to_string(),
+                                                            address: address.to_string(),
+                                                            bytecode: bytecode.to_string(),
+                                                            args_data: args_data.to_string(),
+                                                            tx_hash: tx_hash,
+                                                            args: args,
+                                                            data: data,
+                                                            contract_name: contract_name.map(|s| s.to_string()),
+                                                            artifact_path: artifact_path.to_string(),
+                                                            deployment_context: deployment_context.to_string(),
+                                                            chain_id: chain_id.to_string()
+                                                        });
+                                                    } else {
+                                                        eprintln!("could not find tx for in-memory deployed contract {} at {}", name, address);
+                                                    }
+                                                    
                                                 }
                                             } else {
                                                 println!("not matching returns type")    

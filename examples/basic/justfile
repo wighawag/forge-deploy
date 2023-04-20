@@ -10,7 +10,7 @@ sync:
     forge-deploy sync
 
 
-deploy $MODE="local": (compile)
+deploy $MODE="localhost": (compile)
     ldenv just _deploy
 _deploy:
     forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && forge-deploy sync
