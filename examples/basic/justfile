@@ -14,12 +14,11 @@ sync:
 deploy $MODE="localhost": (compile)
     ldenv just _deploy
 _deploy:
-    forge script script/DeployGreetingsRegistry.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && forge-deploy sync
-
-deploy_void $MODE="void": (compile)
-    ldenv just _deploy_void
-_deploy_void:
-    forge script script/DeployGreetingsRegistry.s.sol --private-key $DEPLOYER_PRIVATE_KEY -vvvv
+    if [ "${MODE}" = "void" ]; then \
+        forge script script/DeployGreetingsRegistry.s.sol --private-key $DEPLOYER_PRIVATE_KEY; \
+    else \
+        forge script script/DeployGreetingsRegistry.s.sol --private-key $DEPLOYER_PRIVATE_KEY -vvvv --rpc-url $RPC_URL --broadcast && forge-deploy sync; \
+    fi;
 
 
 # Testing forge-deploy
