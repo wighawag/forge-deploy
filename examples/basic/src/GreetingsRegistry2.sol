@@ -18,6 +18,7 @@ contract GreetingsRegistry2 is Proxied {
     }
     mapping(address => Message) internal _messages;
     string internal _prefix;
+    string internal _prefix2;
 
     constructor(string memory initialPrefix) {
         postUpgrade(initialPrefix);
@@ -25,6 +26,7 @@ contract GreetingsRegistry2 is Proxied {
 
     function postUpgrade(string memory initialPrefix) public proxied {
         _prefix = initialPrefix;
+        _prefix2 = initialPrefix;
     }
 
     function messages(

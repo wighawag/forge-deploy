@@ -25,38 +25,54 @@ library DefaultDeployerFunction{
         string memory artifact,
         bytes memory args,
         DeployOptions memory options
-    ) internal returns (address deployed) {
+    ) internal returns (address deployed) { // TODO return newDeployed ?
         if (deployer.isTagEnabled(options.proxyOnTag)) {
+            // console.log("tag enabled");
             Deployment memory existing = deployer.get(name);
             bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
 
             string memory implName = string.concat(name, "_Implementation");
             if (existing.addr != address(0)) {
+                // console.log("existing proxy:");
+                // console.log(existing.addr);
                 address implementation;
                 Deployment memory existingImpl = deployer.get(implName);
                 if (
                     existingImpl.addr == address(0) || 
                     keccak256(bytes.concat(existingImpl.bytecode, existingImpl.args)) != keccak256(bytes.concat(bytecode, args))
                 ) {
+                    // we will override the previous implementation
+                    deployer.ignoreDeployment(implName);
                     // TODO implementation args
                     implementation = deploy(deployer, implName, artifact, args, DeployOptions({
                         deterministic: options.deterministic,
                         proxyOnTag: "",
                         proxyOwner: address(0)
                     }));
+                    // console.log("new implementation for existing proxy:");
+                    // console.log(implementation);
+                    // console.log(artifact);
                 } else {
+                    // console.log("reusing impl:");
+                    // console.log(existingImpl.addr);
                     implementation = existingImpl.addr;
                 }
                 deployed = existing.addr;
                 vm.broadcast(options.proxyOwner);
                 // TODO extra call data (upgradeToAndCall)
                 EIP173Proxy(payable(deployed)).upgradeTo(implementation);
+                // console.log("-- upgraded --");
             } else {
+                // console.log("new proxy needed");
+                deployer.ignoreDeployment(implName);
                 address implementation = deploy(deployer, implName, artifact, args, DeployOptions({
                     deterministic: options.deterministic,
                     proxyOnTag: "",
                     proxyOwner: address(0)
                 }));
+                // console.log("new implementation:");
+                // console.log(implementation);
+                // console.log(artifact);
                 
                 // TODO extra call data
                 bytes memory proxyArgs = abi.encode(implementation, options.proxyOwner, bytes(""));
@@ -65,8 +81,11 @@ library DefaultDeployerFunction{
                     proxyOnTag: "",
                     proxyOwner: address(0)
                 }));
+                // console.log("new proxy:");
+                // console.log(deployed);
             }
         } else {
+            // console.log("no tag");
             address existing = deployer.getAddress(name);
             if (existing == address(0)) {
                 bytes memory bytecode = bytes.concat(vm.getCode(artifact), args);
@@ -87,8 +106,14 @@ library DefaultDeployerFunction{
                     revert(string.concat("Failed to deploy ", name));
                 }
                 
+                // console.log("new deploy:");
+                // console.log(deployed);
                 
                 deployer.save(name, deployed, bytecode, args, artifact);
+            } else {
+                deployed = existing;
+                // console.log("existing deploy:");
+                // console.log(deployed);
             }
         }
         

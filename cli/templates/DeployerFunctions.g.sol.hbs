@@ -31,7 +31,7 @@ library DeployerFunctions{
         {{else}}
         {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
         {{/if}}
-    ) external returns ({{this.contract_name}}) {
+    ) internal returns ({{this.contract_name}}) {
         return
             deploy_{{this.contract_name}}(
                 deployer,
@@ -49,7 +49,7 @@ library DeployerFunctions{
         {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}},
         {{/if}}
         DeployOptions memory options
-    ) public returns ({{this.contract_name}}) {
+    ) internal returns ({{this.contract_name}}) {
         bytes memory args = abi.encode({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
         return {{this.contract_name}}(DefaultDeployerFunction.deploy(deployer, name, Artifact_{{this.contract_name}}, args, options));
     }
