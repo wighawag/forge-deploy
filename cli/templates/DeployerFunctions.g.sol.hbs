@@ -29,7 +29,7 @@ library DeployerFunctions{
         {{#if this.constructor_string}}
         {{this.constructor_string}}
         {{else}}
-        {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
+        {{#if this.constructor}}{{#each this.constructor.inputs}},{{this.type}} {{memory-type this.type}} {{this.name}}{{/each}}{{/if}}
         {{/if}}
     ) internal returns ({{this.contract_name}}) {
         return

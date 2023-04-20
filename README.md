@@ -26,10 +26,10 @@ forge install wighawag/forge-deploy
 
 2. install the cli tool locally as the tool is likely to evolve rapidly
 ```
-cargo install --locked 0.0.1 --root . forge-deplpoy
+cargo install --locked 0.0.2 --root . forge-deplpoy
 ```
 
-This will install version 0.0.1 in the bin folder,
+This will install version 0.0.2 in the bin folder,
 
 You can then execute it via 
 
