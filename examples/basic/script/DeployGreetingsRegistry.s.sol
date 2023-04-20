@@ -114,7 +114,7 @@ contract DeployGreetingsRegistry is DeployScript {
             DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
 
-        _deployer.deploy_GreetingsRegistry2(
+        _deployer.deploy_Empty(
             "ProxiedRegistry",
             vm.toString(address(existing)),
             DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})

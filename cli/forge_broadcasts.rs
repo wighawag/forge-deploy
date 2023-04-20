@@ -29,6 +29,7 @@ pub struct TransactionResult {
     contract_address: Option<String>,
     arguments: Option<Vec<String>>,
     transaction: Transaction,
+    function: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
@@ -104,6 +105,15 @@ pub fn get_last_deployments(
                                                         let args = transaction_result.arguments.clone();
                                                         let data = transaction_result.transaction.data.to_string();
                                                         let tx_hash = transaction_result.hash.to_string();
+
+                                                        // "contractAddress": "0xBEe6FFc1E8627F51CcDF0b4399a1e1abc5165f15",
+                                                        // "function": "upgradeTo(address)",
+                                                        // if let Some(function) = &transaction_result.function {
+                                                        //     if function.eq("upgradeTo(address)") {
+                                                        //         println!("upgrade for {}", name.to_string())
+                                                        //     }
+                                                        // }
+
                                                         // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
                                                         // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
                                                         new_deployments.insert(format!("{}::{}", deployment_context, name.to_string()), DeploymentObject {

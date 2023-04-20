@@ -27,12 +27,15 @@ library DefaultDeployerFunction{
         DeployOptions memory options
     ) internal returns (address deployed) { // TODO return newDeployed ?
         if (deployer.isTagEnabled(options.proxyOnTag)) {
+            string memory implName = string.concat(name, "_Implementation");
+            string memory proxyName = string.concat(name, "_Proxy");
+
             // console.log("tag enabled");
-            Deployment memory existing = deployer.get(name);
+            Deployment memory existingProxy = deployer.get(proxyName);
             bytes memory data = bytes.concat(vm.getCode(artifact), args);
 
-            string memory implName = string.concat(name, "_Implementation");
-            if (existing.addr != address(0)) {
+            
+            if (existingProxy.addr != address(0)) {
                 // console.log("existing proxy:");
                 // console.log(existing.addr);
                 address implementation;
@@ -57,10 +60,14 @@ library DefaultDeployerFunction{
                     // console.log(existingImpl.addr);
                     implementation = existingImpl.addr;
                 }
-                deployed = existing.addr;
+                deployed = existingProxy.addr;
                 vm.broadcast(options.proxyOwner);
                 // TODO extra call data (upgradeToAndCall)
                 EIP173Proxy(payable(deployed)).upgradeTo(implementation);
+                // TODO trigger a change in abi on the main contract // => _Implementation will trigger that ?
+                
+                deployer.save(name, deployed, "", "", artifact); // new artifact
+
                 // console.log("-- upgraded --");
             } else {
                 // console.log("new proxy needed");
@@ -76,11 +83,14 @@ library DefaultDeployerFunction{
                 
                 // TODO extra call data
                 bytes memory proxyArgs = abi.encode(implementation, options.proxyOwner, bytes(""));
-                deployed = deploy(deployer, name, "ForgeDeploy_EIP173Proxy.sol:EIP173Proxy", proxyArgs, DeployOptions({
+                deployed = deploy(deployer, proxyName, "ForgeDeploy_EIP173Proxy.sol:EIP173Proxy", proxyArgs, DeployOptions({
                     deterministic: options.deterministic,
                     proxyOnTag: "",
                     proxyOwner: address(0)
                 }));
+
+                // bytecode 0x indicate proxy
+                deployer.save(name, deployed, "", "", artifact);
                 // console.log("new proxy:");
                 // console.log(deployed);
             }
