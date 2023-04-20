@@ -47,6 +47,8 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
     # forge-deploy
     /generated
+    /deployments/localhost
+    /deployments/31337
 
     # forge-deploy cli binary
     /.crates2.json
@@ -119,6 +121,8 @@ cat >> .gitignore <<EOF
 
 # forge-deploy
 /generated
+/deployments/localhost
+/deployments/31337
 
 # forge-deploy cli binary
 /.crates2.json
