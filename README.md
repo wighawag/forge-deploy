@@ -27,10 +27,10 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
     ```
-    cargo install --version 0.0.2 --root . forge-deploy;
+    cargo install --version 0.0.3 --root . forge-deploy;
     ```
 
-    This will install version 0.0.2 in the bin folder,
+    This will install version 0.0.3 in the bin folder,
 
     You can then execute it via 
 
@@ -116,7 +116,7 @@ mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
 forge install wighawag/forge-deploy;
-cargo install --version 0.0.2 --root . forge-deploy;
+cargo install --version 0.0.3 --root . forge-deploy;
 cat >> .gitignore <<EOF
 
 # forge-deploy
