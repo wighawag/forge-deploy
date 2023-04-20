@@ -43,8 +43,16 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 1. add to .gitignore the generated file + the binary we just installed
 
     ```
-    echo -e "\n\n#forge-deploy\n/generated" >> .gitignore;
-    echo -e "\n#forge-deploy binary\n/.crates2.json\n/.crates.toml\n/bin" >> .gitignore;
+    cat >> .gitignore <<EOF
+
+    # forge-deploy
+    /generated
+
+    # forge-deploy cli binary
+    /.crates2.json
+    /.crates.toml
+    /bin
+    EOF
     ```
 
 1. generate the type-safe deployment functions
@@ -107,8 +115,16 @@ cd my-forge-deploy-project;
 forge init;
 forge install wighawag/forge-deploy;
 cargo install --version 0.0.2 --root . forge-deploy;
-echo -e "\n\n#forge-deploy\n/generated" >> .gitignore;
-echo -e "\n#forge-deploy binary\n/.crates2.json\n/.crates.toml\n/bin" >> .gitignore;
+cat >> .gitignore <<EOF
+
+# forge-deploy
+/generated
+
+# forge-deploy cli binary
+/.crates2.json
+/.crates.toml
+/bin
+EOF
 ./bin/forge-deploy gen-deployer;
 cat > script/Counter.s.sol <<EOF
 // SPDX-License-Identifier: UNLICENSED
