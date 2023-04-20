@@ -10,7 +10,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 ## How to use
 
-0. have a forge project and cd into it
+1. have a forge project and cd into it
 
 ```
 cd my-project
@@ -24,7 +24,7 @@ forge install wighawag/forge-deploy
 ```
 
 
-2. install the cli tool locally as the tool is likely to evolve rapidly
+1. install the cli tool locally as the tool is likely to evolve rapidly
 ```
 cargo install --version 0.0.2 --root . forge-deploy
 ```
@@ -39,24 +39,23 @@ You can then execute it via
 
 you can also compile it directly from the `lib/forge-deploy/` folder.
 
-
-3.
-add a deploy script, see below example
-
-Note that to provide type-safety `forge-deploy` provide a `gen-deployer` command to generate type-safe deploy function for all contracts
-
-```
-./bin/forge-deploy gen-deployer
-```
-
-4. add to .gitignore the generated file + the binary we just installed
+1. add to .gitignore the generated file + the binary we just installed
 
 ```
 echo -e "\n\n#forge-deploy\n/generated" >> .gitignore;
 echo -e "\n#forge-deploy binary\n/.crates2.json\n/.crates.toml\n/bin" >> .gitignore;
 ```
 
-5. copy this file in `script/Counter.s.sol`
+1. generate the type-safe deployment functions
+
+```
+./bin/forge-deploy gen-deployer
+```
+
+
+1. add a deploy script
+
+replace the file  `script/Counter.s.sol` with this content:
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -74,7 +73,7 @@ contract CounterScript is DeployScript {
 }
 ```
 
-6. You can now execute the script via forge script
+1. You can now execute the script via forge script
 
 Note that you need to execute `./bin/forge-deploy sync` directly afterward
 
