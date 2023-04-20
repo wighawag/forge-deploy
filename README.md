@@ -10,12 +10,23 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 ## How to use
 
-1. install the cli tool
+1. install the cli tool locally as the tool is likely to evolve rapidly
 ```
-cargo install forge-deplpoy
+cargo install --locked 0.0.1 --root . forge-deplpoy
 ```
 
+This will install version 0.0.1 in the bin folder,
+
+You can then execute it via 
+
+```
+./bin/forge-deploy <command> ...
+```
+
+
 2. add the forge package
+
+`forge install wighawag/forge-deploy`
 
 3.
 add a script

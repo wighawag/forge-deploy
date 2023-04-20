@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "proxy/ForgeDeploy_Proxied.sol";
+import "forge-deploy/proxy/ForgeDeploy_Proxied.sol";
 
 contract GreetingsRegistry2 is Proxied {
     event MessageChanged(
