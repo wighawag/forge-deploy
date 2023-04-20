@@ -1,6 +1,6 @@
 [package]
 name = "forge-deploy"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 description = "A cli that goes along a set of soldity contract to keep track of deployments by name in forge."
 repository = "https://github.com/wighawag/forge-deploy"
