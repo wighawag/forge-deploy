@@ -143,3 +143,29 @@ contract CounterScript is DeployScript {
 EOF
 forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
 ```
+
+## More info
+
+Note that the generated solidity is optional.
+
+You can instead simply use the default deploy function
+
+```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+import "forge-deploy/DeployScript.sol";
+import "forge-deploy/DefaultDeployerFunction.sol";
+
+contract CounterScript is DeployScript {
+    using DefaultDeployerFunction for Deployer;
+
+    function deploy() override internal {
+        _deployer.deploy("MyCounter2", "Counter.sol:Counter", "", DeployOptions({
+            deterministic: 0,
+            proxyOnTag: "",
+            proxyOwner: address(0)
+        }));
+    }
+}
+```
