@@ -21,16 +21,16 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 1. add the forge package
 
     ```
-    forge install wighawag/forge-deploy;
+    forge install wighawag/forge-deploy@v0.0.9;
     ```
 
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
     ```
-    cargo install --version 0.0.8 --root . forge-deploy;
+    cargo install --version 0.0.9 --root . forge-deploy;
     ```
 
-    This will install version 0.0.8 in the bin folder,
+    This will install version 0.0.9 in the bin folder,
 
     You can then execute it via 
 
@@ -65,7 +65,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 1. add a deploy script
 
-    replace the file  `script/Counter.s.sol` with this content:
+    add the file  `script/Deploy.s.sol` with this content:
 
     ```solidity
     // SPDX-License-Identifier: UNLICENSED
@@ -74,11 +74,11 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
     import "forge-deploy/DeployScript.sol";
     import "generated/deployer/DeployerFunctions.g.sol";
 
-    contract CounterScript is DeployScript {
+    contract Deployments is DeployScript {
         using DeployerFunctions for Deployer;
 
-        function deploy() override internal {
-            deployer.deploy_Counter("MyCounter");
+        function deploy(bytes calldata) external returns (Counter) {
+            return deployer.deploy_Counter("MyCounter");
         }
     }
     ```
@@ -88,6 +88,8 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
     ```
     echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
     ```
+
+    You might wonder what `context.json`. This is a configuration file. Its name might change in the future, but as of now, it let you configure context (like localhost, sepolia, mainnet) and specify a list of tag that you can then use in your deploy script to trigger diferent execution path.
 
 1. You can now execute the script via forge script
 
@@ -121,8 +123,8 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy;
-cargo install --version 0.0.8 --root . forge-deploy;
+forge install wighawag/forge-deploy@v0.0.9;
+cargo install --version 0.0.9 --root . forge-deploy;
 echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
 cat >> .gitignore <<EOF
 
@@ -137,22 +139,22 @@ cat >> .gitignore <<EOF
 /bin
 EOF
 ./bin/forge-deploy gen-deployer;
-cat > script/Counter.s.sol <<EOF
+cat > script/Deploy.s.sol <<EOF
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
 import "forge-deploy/DeployScript.sol";
 import "generated/deployer/DeployerFunctions.g.sol";
 
-contract CounterScript is DeployScript {
-    using DeployerFunctions for Deployer;
+contract Deployments is DeployScript {
+	using DeployerFunctions for Deployer;
 
-    function deploy() override internal {
-        deployer.deploy_Counter("MyCounter");
-    }
+	function deploy(bytes calldata) external returns (Counter) {
+		return deployer.deploy_Counter("MyCounter");
+	}
 }
 EOF
-forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
+forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
 ```
 
 ## More info
