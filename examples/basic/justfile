@@ -8,7 +8,7 @@ _default:
 
 # example of how to setup forge-deploy as a local binary
 # setup:
-#     cargo install --version 0.0.4 --root . forge-deploy
+#     cargo install --version 0.0.6 --root . forge-deploy
 
 compile:
     forge-deploy gen-deployer && forge build
