@@ -51,7 +51,7 @@ pub fn export_minimal_deployments(deployments: &Map<String, Value>, out: Vec<&st
     // TODO js
     // let data_as_javascript = format!("export default {} as const;", data);
     for output in out {
-        if (output.ends_with(".ts")) {
+        if output.ends_with(".ts") {
             fs::write(output, &data_as_typescript).expect("failed to write file");
         // TODO js
         // } else if (output.ends_with(".js")) {
