@@ -27,10 +27,10 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
     ```
-    cargo install --version 0.0.7 --root . forge-deploy;
+    cargo install --version 0.0.8 --root . forge-deploy;
     ```
 
-    This will install version 0.0.7 in the bin folder,
+    This will install version 0.0.8 in the bin folder,
 
     You can then execute it via 
 
@@ -122,7 +122,7 @@ mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
 forge install wighawag/forge-deploy;
-cargo install --version 0.0.7 --root . forge-deploy;
+cargo install --version 0.0.8 --root . forge-deploy;
 echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
 cat >> .gitignore <<EOF
 
