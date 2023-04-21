@@ -21,16 +21,16 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 1. add the forge package
 
     ```
-    forge install wighawag/forge-deploy@v0.0.9;
+    forge install wighawag/forge-deploy@v0.0.10;
     ```
 
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
     ```
-    cargo install --version 0.0.9 --root . forge-deploy;
+    cargo install --version 0.0.10 --root . forge-deploy;
     ```
 
-    This will install version 0.0.9 in the bin folder,
+    This will install version 0.0.10 in the bin folder,
 
     You can then execute it via 
 
@@ -123,8 +123,8 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.9;
-cargo install --version 0.0.9 --root . forge-deploy;
+forge install wighawag/forge-deploy@v0.0.10;
+cargo install --version 0.0.10 --root . forge-deploy;
 echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
 cat >> .gitignore <<EOF
 
@@ -212,16 +212,17 @@ pragma solidity ^0.8.13;
 
 import "forge-deploy/DeployScript.sol";
 import "forge-deploy/DefaultDeployerFunction.sol";
+import "../src/Counter.sol";
 
-contract CounterScript is DeployScript {
-    using DefaultDeployerFunction for Deployer;
+contract Deployments is DeployScript {
+	using DefaultDeployerFunction for Deployer;
 
-    function deploy() override internal {
-        .deploy("MyCounter2", "Counter.sol:Counter", "", DeployOptions({
+	function deploy(bytes calldata) external returns (Counter) {
+		return Counter(deployer.deploy("MyCounter2", "Counter.sol:Counter", "", DeployOptions({
             deterministic: 0,
             proxyOnTag: "",
             proxyOwner: address(0)
-        }));
-    }
+        })));
+	}
 }
 ```
