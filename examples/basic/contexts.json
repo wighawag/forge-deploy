@@ -1,4 +1,7 @@
 {
+    "void":{
+        "tags": ["local", "testnet"]
+    },
     "localhost":{
         "tags": ["local", "testnet"]
     },

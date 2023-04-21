@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "forge-deploy/DeployScript.sol";
 import "generated/deployer/DeployerFunctions.g.sol";
 
-contract DeployGreetingsRegistry is DeployScript {
+contract Deployments is DeployScript {
     using DeployerFunctions for Deployer;
     // you can also use the run function and this way pass params to your script
     // if so you need to ensure to return with the new deployments via:
@@ -18,7 +18,7 @@ contract DeployGreetingsRegistry is DeployScript {
     // and how the forge-deploy sync command can generate the deployments files
     //
         
-    function deploy() override internal {
+    function deploy(bytes calldata) external returns (GreetingsRegistry registry) {
         // we can get the existing registry thanks to generated code in generated/deployments/Deployments.g.sol
 
         // IMyTokens existing = Deployments.MyTokens;
@@ -53,7 +53,7 @@ contract DeployGreetingsRegistry is DeployScript {
         deployer.deploy_Counter("MyCounter");
 
         // we can deploy a new contract and name it
-        deployer.deploy_GreetingsRegistry(
+        registry = deployer.deploy_GreetingsRegistry(
             "MyRegistry",
             vm.toString(address(existing)),
             DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
