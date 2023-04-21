@@ -6,11 +6,11 @@ import {Vm} from "forge-std/Vm.sol";
 import "./Deployer.sol";
 
 abstract contract DeployScript is Script {
-    Deployer internal _deployer = new Deployer();
+    Deployer public deployer = new Deployer();
 
     function run() public virtual returns (DeployerDeployment[] memory newDeployments) {
         deploy();
-        return _deployer.newDeployments();
+        return deployer.newDeployments();
     }
 
     /// @notice function to be overriden to execute a deployment script
