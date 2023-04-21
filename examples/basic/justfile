@@ -16,6 +16,8 @@ compile:
 gen-deployer:
     forge-deploy gen-deployer
 
+export context out:
+    forge-deploy export {{context}} {{out}}
 sync:
     forge-deploy sync
 

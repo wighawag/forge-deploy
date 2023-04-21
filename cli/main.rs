@@ -8,6 +8,7 @@ pub mod deployer;
 pub mod types;
 pub mod forge_broadcasts;
 pub mod sync;
+pub mod forge_deploy_deployments;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -26,6 +27,8 @@ enum Commands {
     Sync(SyncArgs),
     /// Generate Deployer Helper with Artifacts found
     GenDeployer(GenDeployerArgs),
+    /// Export deployments for a particular context
+    Export(ExportArgs),
 }
 
 #[derive(clap::Args)]
@@ -48,6 +51,14 @@ struct GenDeployerArgs {
     output: Option<String>,
 }
 
+#[derive(clap::Args)]
+struct ExportArgs {
+    deployment_context: String,
+    output: String,
+    #[arg(short, long)]
+    deployments: Option<String>,
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -56,7 +67,8 @@ fn main() {
             Commands::Sync(args) => sync(&cli.root, &args.broadcasts, &args.deployments, &args.artifacts),
             Commands::GenDeployer(args) => {
                 gen_deployer(true, &cli.root, &args.artifacts, &args.sources, &args.output)
-            }
+            },
+            Commands::Export(args) => export(&cli.root, &args.deployment_context, &args.output, &args.deployments),
         },
         None => top(),
     }
@@ -89,6 +101,16 @@ fn sync(root: &Option<String>, broadcasts: &Option<String>, deployments: &Option
     let new_deployments = forge_broadcasts::get_last_deployments(root_folder, broadcasts_folder);
     sync::generate_deployments(root_folder, deployments_folder, artifacts_folder, &new_deployments);
 }
+
+fn export(root: &Option<String>, deployment_context: &str, out: &str, deployments: &Option<String>) {
+    let root_folder = root.as_deref().unwrap_or(".");
+    let deployments_folder = deployments.as_deref().unwrap_or("deployments");
+
+    let deployments = forge_deploy_deployments::get_deployments(root_folder, deployments_folder, deployment_context);
+    
+    forge_deploy_deployments::export_minimal_deployments(&deployments, out.split(",").collect());
+}
+
 
 fn top() {
     println!("'forge-deploy'")

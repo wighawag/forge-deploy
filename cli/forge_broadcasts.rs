@@ -9,7 +9,7 @@ use serde_json::Value::Object;
 use regex::Regex;
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+#[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
     r#type: String, // example: "0x02"
     from: String,
@@ -21,7 +21,7 @@ pub struct Transaction {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+#[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct TransactionResult {
     hash: String,
     transaction_type: String, // CREATE, CREATE2
@@ -33,7 +33,7 @@ pub struct TransactionResult {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+#[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct FileContent {
     transactions: Vec<TransactionResult>,
     returns: Value
