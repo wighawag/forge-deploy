@@ -1,6 +1,6 @@
 {
     "localhost":{
-        "tags": ["local", "tesnet"]
+        "tags": ["local", "testnet"]
     },
     "sepolia":{
         "tags": ["live", "testnet"]

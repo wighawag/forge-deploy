@@ -6,14 +6,21 @@ use serde_json::{Value, Map};
 use crate::types::DeploymentJSON;
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct MinimalDeploymentJSON {
     pub address: String,
     pub abi: Vec<Value>,
     // pub bytecode: Option<String>,
 }
 
-pub fn get_deployments(root_folder: &str, deployments_folder: &str, deployment_context: &str) -> Map<String, Value> {
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
+pub struct ContextDeployments {
+    pub name: String,
+    pub chain_id: String,
+    pub contracts: Map<String, Value>
+}
+
+pub fn get_deployments(root_folder: &str, deployments_folder: &str, deployment_context: &str) -> ContextDeployments {
     let mut deployments = Map::new();
     
     let folder_path_buf = Path::new(root_folder).join(deployments_folder).join(deployment_context);
@@ -21,6 +28,7 @@ pub fn get_deployments(root_folder: &str, deployments_folder: &str, deployment_c
 
     println!("{}", folder_path);
 
+    let mut chain_id: String = String::new();
     if let Ok(dir) = fs::read_dir(folder_path) {
         for json_filepath_result in dir {
             match json_filepath_result {
@@ -35,23 +43,35 @@ pub fn get_deployments(root_folder: &str, deployments_folder: &str, deployment_c
                         object.insert("address".to_string(), Value::String(res.address));
                         object.insert("abi".to_string(), Value::Array(res.abi));
                         deployments.insert(deployment_name.to_string(), Value::Object(object));
+                    } else if filename.eq(".chainId") {
+                        chain_id = fs::read_to_string(json_file_entry.path()).expect("Unable to read file");
                     }
                 },
                 Err(_) => (),
             }
         }    
     }
-    
-    return deployments;
+
+    let context_deployments = ContextDeployments { name: deployment_context.to_string(), chain_id: chain_id, contracts: deployments };
+    return context_deployments;
 }
     
-pub fn export_minimal_deployments(deployments: &Map<String, Value>, out: Vec<&str>) {
+pub fn export_minimal_deployments(deployments: &ContextDeployments, out: Vec<&str>) {
+    // let mut object = Map::new();
+    // object.insert("name".to_string(), Value::String(depoyment_context.to_string()));
+    // object.insert("chainId".to_string(), Value::String(deployment_chainid.to_string()));
+    // object.insert("contracts".to_string(), Value::Object(deployments.clone()));
+    
     let data = serde_json::to_string_pretty(deployments).expect("Failed to stringify");
     let data_as_typescript = format!("export default {} as const;", data);
     // TODO js
     // let data_as_javascript = format!("export default {} as const;", data);
     for output in out {
-        if output.ends_with(".ts") {
+        if let Some(parent) = Path::new(output).parent() {
+            fs::create_dir_all(parent).expect("create folder");
+        }
+
+        if output.ends_with(".ts") {   
             fs::write(output, &data_as_typescript).expect("failed to write file");
         // TODO js
         // } else if (output.ends_with(".js")) {

@@ -83,6 +83,12 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
     }
     ```
 
+1. you also need to allow forge to read and write on certain paths by editing foundry.toml:
+
+    ```
+    echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
+    ```
+
 1. You can now execute the script via forge script
 
     Note that you need to execute `./bin/forge-deploy sync` directly afterward
@@ -117,6 +123,7 @@ cd my-forge-deploy-project;
 forge init;
 forge install wighawag/forge-deploy;
 cargo install --version 0.0.4 --root . forge-deploy;
+echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
 cat >> .gitignore <<EOF
 
 # forge-deploy

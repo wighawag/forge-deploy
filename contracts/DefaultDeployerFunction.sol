@@ -37,7 +37,7 @@ library DefaultDeployerFunction{
             
             if (existingProxy.addr != address(0)) {
                 // console.log("existing proxy:");
-                // console.log(existing.addr);
+                // console.log(existingProxy.addr);
                 address implementation;
                 Deployment memory existingImpl = deployer.get(implName);
                 if (
