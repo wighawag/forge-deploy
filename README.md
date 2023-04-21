@@ -157,6 +157,49 @@ EOF
 forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
 ```
 
+### Reusable in tests
+
+One great feature of forge's script that remains in forge-deploy is the ability to use script in tests.
+
+This allow you to have your deployment procedure reusable in tests!
+
+for example, here is a basic test for Counter. Copy the following content in the existing test/Counter.t.sol and run the test to see it in action:
+
+```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+import "forge-std/Test.sol";
+import "../src/Counter.sol";
+import "../script/Deploy.s.sol";
+contract CounterTest is Test {
+	Counter public counter;
+	function setUp() public {
+		counter = new Deployments().deploy("");
+        counter.setNumber(0);
+	}
+	function testIncrement() public {
+        counter.increment();
+        assertEq(counter.number(), 1);
+    }
+    function testSetNumber(uint256 x) public {
+        counter.setNumber(x);
+        assertEq(counter.number(), x);
+    }
+}
+```
+
+As usual to run the tests you can use `forge test`
+
+Here we set the DEPLOYMENT_CONTEXT to "void" to prevent the test from reading in the generated deployments folder "31337"
+
+This is related to a feature we did not talk much yet, that of deployment context that allow you to segregate contracts on the same network in different bucket.
+
+More doc will come
+
+```
+DEPLOYMENT_CONTEXT=void forge test
+```
+
 ## More info
 
 Note that the generated solidity is optional.
