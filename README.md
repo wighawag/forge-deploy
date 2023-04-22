@@ -21,16 +21,16 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 1. add the forge package
 
     ```bash
-    forge install wighawag/forge-deploy@v0.0.10;
+    forge install wighawag/forge-deploy@v0.0.11;
     ```
 
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
     ```bash
-    cargo install --version 0.0.10 --root . forge-deploy;
+    cargo install --version 0.0.11 --root . forge-deploy;
     ```
 
-    This will install version 0.0.10 in the bin folder,
+    This will install version 0.0.11 in the bin folder,
 
     You can then execute it via 
 
@@ -127,8 +127,8 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.10;
-cargo install --version 0.0.10 --root . forge-deploy;
+forge install wighawag/forge-deploy@v0.0.11;
+cargo install --version 0.0.11 --root . forge-deploy;
 echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
 cat >> .gitignore <<EOF
 
