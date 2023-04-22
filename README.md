@@ -104,8 +104,12 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
     with anvil and default account
 
     ```
-    forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
+    DEPLOYMENT_CONTEXT=localhost forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
     ```
+
+    Note that here we specify the DEPLOYMENT_CONTEXT env variable. This is necessary for localhost which use chain id 31337 as by default forge-deploy will not save the deployment on that chainId (same for 1337). This is so it does not interfere with in-memory tests which also use chainId=31337
+
+    The DEPLOYMENT_CONTEXT env var also allows you to segregate different deployment context on the same network. If not specified, the context is the chainId
 
 1. If you use [just](https://just.systems/), see example in [examples/basic](examples/basic) with its own [justfile](examples/basic/justfile)
 
@@ -154,7 +158,7 @@ contract Deployments is DeployScript {
 	}
 }
 EOF
-forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
+DEPLOYMENT_CONTEXT=localhost forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
 ```
 
 ### Reusable in tests
@@ -188,16 +192,10 @@ contract CounterTest is Test {
 }
 ```
 
-As usual to run the tests you can use `forge test`
-
-Here we set the DEPLOYMENT_CONTEXT to "void" to prevent the test from reading in the generated deployments folder "31337"
-
-This is related to a feature we did not talk much yet, that of deployment context that allow you to segregate contracts on the same network in different bucket.
-
-More doc will come
+As usual to run the tests you can do the following:
 
 ```
-DEPLOYMENT_CONTEXT=void forge test
+forge test
 ```
 
 ## More info

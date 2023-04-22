@@ -96,6 +96,18 @@ pub fn get_last_deployments(
                                                     let deployment_context = collection[5];
                                                     let chain_id = collection[6];
 
+                                                    // if deployment_context.eq("31337") || deployment_context.eq("1337") {
+                                                    //     // for now we skip on dev network if no specific deployment context were specified
+                                                    //     // this allow `forge test` to not read this by mistake ?
+                                                    //     continue;
+                                                    // }
+
+                                                    if deployment_context.eq("void") {
+                                                        // we do not keep track of the void context
+                                                        continue;
+                                                    }
+    
+
                                                     let mut artifact_splitted = artifact_full_path.split(":");
                                                     let artifact_path = artifact_splitted.next().unwrap();
                                                     let contract_name = artifact_splitted.next();

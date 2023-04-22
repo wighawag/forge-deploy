@@ -4,3 +4,6 @@ out = 'out'
 libs = ['lib']
 ffi = true
 fs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]
+
+# used for dev
+allow_paths = ["../../"]

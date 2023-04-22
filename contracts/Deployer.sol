@@ -67,7 +67,7 @@ contract Deployer {
                 revert(string.concat("Current chainID: ", chainIdAsString , " But Context '", deploymentContext, "' Already Exists With a Different Chain ID (", chainId ,")"));
             }
         } catch {
-            // unfortunately we have to remove that as we cannot detect whether there is a directory for the deployment 
+            // unfortunately we have to remove that as we cannot detect whether there is a directory for the deployment
             // or if the directory is there but the .chainId file is not
             // uint256 currentChainID;
             // assembly {
@@ -78,7 +78,7 @@ contract Deployer {
             //     console.log(string.concat("the deployments folder for '", deploymentContext ,"' should have a .chainId file to prevent misusing it by mistake in another chain"));
             // }
         }
-        
+
     }
 
     // --------------------------------------------------------------------------------------------
@@ -220,11 +220,20 @@ contract Deployer {
         assembly {
             currentChainID := chainid()
         }
-        context = vm.envOr("DEPLOYMENT_CONTEXT", vm.toString(currentChainID));
+        context = vm.envOr("DEPLOYMENT_CONTEXT", string(""));
+        if (bytes(context).length == 0) {
+            // on local dev network we fallback on the special void context
+            // this allow `forge test` without any env setup to work as normal, without trying to read deployments
+            if (currentChainID == 1337 || currentChainID == 31337) {
+                context = "void";
+            } else {
+                context = vm.toString(currentChainID);
+            }
+        }
     }
 
 
-    
+
     function _getExistingDeploymentAdress(string memory name) internal view returns (address) {
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/", name, ".json");
