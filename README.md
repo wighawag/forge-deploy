@@ -220,7 +220,7 @@ contract Deployments is DeployScript {
 	function deploy(bytes calldata) external returns (Counter) {
 		return Counter(
 			deployer.deploy(
-				"MyCounter2",
+				"MyCounter",
 				"Counter.sol:Counter", // forge's artifact id
 				"", // no arguments: empty bytes
 				DeployOptions({
