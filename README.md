@@ -199,10 +199,10 @@ contract CounterTest is Test {
 		counter.increment();
 		assertEq(counter.number(), 1);
 	}
-		function testSetNumber(uint256 x) public {
-			counter.setNumber(x);
-			assertEq(counter.number(), x);
-		}
+	function testSetNumber(uint256 x) public {
+		counter.setNumber(x);
+		assertEq(counter.number(), x);
+	}
 }
 ```
 
@@ -236,10 +236,10 @@ contract Deployments is DeployScript {
 				"Counter.sol:Counter", // forge's artifact id
 				"", // no arguments: empty bytes
 				DeployOptions({
-							deterministic: 0, // 0 => no deterministic
-							proxyOnTag: "", // empty string => no proxy
-							proxyOwner: address(0)
-					})
+					deterministic: 0, // 0 => no deterministic
+					proxyOnTag: "", // empty string => no proxy
+					proxyOwner: address(0)
+				})
 			)
 		);
 	}
