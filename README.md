@@ -4,9 +4,19 @@ A cli and associated contracts to keep track of deployments by name and reuse th
 
 It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag/hardhat-deploy) as far as possible (work in progress).
 
+forge-deploy aims at provoding the minimal set of function to provide an elegant deployment system for foundry.
+
 ## Features
-- generate type-safe deployment function for forge contracts. no need to pass in string of text and hope the abi encoded args are in the correct order.
+- generate type-safe deployment function for forge contracts. no need to pass in string of text and hope the abi encoded args are in the correct order or of the correct type.
 - save deployments in json file (based on hardhat-deploy schema)
+- modular system based on templates and solidity library
+
+
+## Modularity 
+
+The system is modular. The deploy functions provided by default offer a basic set of feature but the system can be extended by custom function easily. See [contracts/DefaultDeployerFunction.sol](./contracts/DefaultDeployerFunction.sol) and how this is a simple library that you can provide yourself. The only thing forge-deploy really provide is the specific set of functions in [contrats/Deployer.sol](./contracts/Deployer.sol) to `save` and `get` deployments
+
+
 
 ## How to use
 
