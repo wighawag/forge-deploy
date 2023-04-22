@@ -218,11 +218,17 @@ contract Deployments is DeployScript {
 	using DefaultDeployerFunction for Deployer;
 
 	function deploy(bytes calldata) external returns (Counter) {
-		return Counter(deployer.deploy("MyCounter2", "Counter.sol:Counter", "", DeployOptions({
-            deterministic: 0,
-            proxyOnTag: "",
-            proxyOwner: address(0)
-        })));
+		return Counter(
+			deployer.deploy(
+				"MyCounter2",
+				"Counter.sol:Counter",
+				DeployOptions({
+            				deterministic: 0,
+            				proxyOnTag: "",
+            				proxyOwner: address(0)
+        			})
+			)
+		);
 	}
 }
 ```
