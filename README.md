@@ -12,7 +12,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 1. have a forge project and cd into it
 
-    ```
+    ```bash
     mkdir my-project;
     cd my-project;
     forge init;
@@ -20,13 +20,13 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 1. add the forge package
 
-    ```
+    ```bash
     forge install wighawag/forge-deploy@v0.0.10;
     ```
 
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
-    ```
+    ```bash
     cargo install --version 0.0.10 --root . forge-deploy;
     ```
 
@@ -34,7 +34,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
     You can then execute it via 
 
-    ```
+    ```bash
     ./bin/forge-deploy <command> 
     ```
 
@@ -42,7 +42,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 1. add to .gitignore the generated file + the binary we just installed
 
-    ```
+    ```bash
     cat >> .gitignore <<EOF
 
     # forge-deploy
@@ -59,7 +59,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 1. generate the type-safe deployment functions
 
-    ```
+    ```bash
     ./bin/forge-deploy gen-deployer;
     ```
 
@@ -85,7 +85,7 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 1. you also need to allow forge to read and write on certain paths by editing foundry.toml:
 
-    ```
+    ```bash
     echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
     ```
 
@@ -97,13 +97,13 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
     For example:
 
-    ```
+    ```bash
     forge script script/Counter.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && ./bin/forge-deploy sync;
     ```
 
     with anvil and default account
 
-    ```
+    ```bash
     forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
     ```
 
@@ -113,13 +113,13 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 ## Quick Start
 
 Get anvil started somewhere:
-```
+```bash
 anvil;
 ```
 
 then copy and execute this and see the result
 
-```
+```bash
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
