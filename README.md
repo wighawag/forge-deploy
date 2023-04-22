@@ -221,10 +221,11 @@ contract Deployments is DeployScript {
 		return Counter(
 			deployer.deploy(
 				"MyCounter2",
-				"Counter.sol:Counter",
+				"Counter.sol:Counter", // forge's artifact id
+				"", // no arguments: empty bytes
 				DeployOptions({
-            				deterministic: 0,
-            				proxyOnTag: "",
+            				deterministic: 0, // 0 => no deterministic
+            				proxyOnTag: "", // empty string => no proxy
             				proxyOwner: address(0)
         			})
 			)
