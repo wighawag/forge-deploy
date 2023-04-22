@@ -136,7 +136,14 @@ cd my-forge-deploy-project;
 forge init;
 forge install wighawag/forge-deploy@v0.0.11;
 cargo install --version 0.0.11 --root . forge-deploy;
-echo '\nfs_permissions = [{ access = "read", path = "./deployments"}, { access = "read", path = "./out"}, { access = "read", path = "./contexts.json"}]' >> foundry.toml;
+cat >> foundry.toml <<EOF
+
+fs_permissions = [
+	{ access = "read", path = "./deployments"},
+	{ access = "read", path = "./out"},
+	{ access = "read", path = "./contexts.json"}
+]
+EOF
 cat >> .gitignore <<EOF
 
 # forge-deploy
