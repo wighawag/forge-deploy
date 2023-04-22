@@ -106,7 +106,7 @@ The system is modular. The deploy functions provided by default offer a basic se
 	EOF
 	```
 
-	You might wonder what `context.json`. This is a configuration file. Its name might change in the future, but as of now, it let you configure context (like localhost, sepolia, mainnet) and specify a list of tag that you can then use in your deploy script to trigger diferent execution path.
+	You might wonder what `contexts.json`. This is a configuration file. Its name might change in the future, but as of now, it let you configure context (like localhost, sepolia, mainnet) and specify a list of tag that you can then use in your deploy script to trigger diferent execution path.
 
 1. You can now execute the script via forge script
 
