@@ -32,18 +32,18 @@ The system is modular. The deploy functions provided by default offer a basic se
    forge install wighawag/forge-deploy@v0.0.13;
    ```
 
-1. install the cli tool locally as the tool is likely to evolve rapidly
+1. build the cli directly from lib/forge-deploy and copy it in the project folder
 
    ```bash
-   cargo install --version 0.0.13 --root . forge-deploy;
+   cd lib/forge-deploy;
+   cargo build --release;
+   cp target/release/forge-deploy ../../forge-deploy;
    ```
-
-   This will install version 0.0.13 in the bin folder,
 
    You can then execute it via
 
    ```bash
-   ./bin/forge-deploy <command>
+   ./forge-deploy <command>
    ```
 
    you can also compile it directly from the `lib/forge-deploy/` folder.
@@ -59,16 +59,14 @@ The system is modular. The deploy functions provided by default offer a basic se
    /deployments/31337
 
    # forge-deploy cli binary
-   /.crates2.json
-   /.crates.toml
-   /bin
+   /forge-deploy
    EOF
    ```
 
 1. generate the type-safe deployment functions
 
    ```bash
-   ./bin/forge-deploy gen-deployer;
+   ./forge-deploy gen-deployer;
    ```
 
 1. add a deploy script
@@ -108,18 +106,18 @@ The system is modular. The deploy functions provided by default offer a basic se
 
 1. You can now execute the script via forge script
 
-   Note that you need to execute `./bin/forge-deploy sync` directly afterward
+   Note that you need to execute `./forge-deploy sync` directly afterward
 
    For example:
 
    ```bash
-   forge script script/Counter.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && ./bin/forge-deploy sync;
+   forge script script/Counter.s.sol --rpc-url $RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY -v && ./forge-deploy sync;
    ```
 
    with anvil and default account
 
    ```bash
-   DEPLOYMENT_CONTEXT=localhost forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
+   DEPLOYMENT_CONTEXT=localhost forge script script/Counter.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./forge-deploy sync;
    ```
 
    Note that here we specify the DEPLOYMENT_CONTEXT env variable. This is necessary for localhost which use chain id 31337 as by default forge-deploy will not save the deployment on that chainId (same for 1337). This is so it does not interfere with in-memory tests which also use chainId=31337
@@ -143,7 +141,10 @@ mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
 forge install wighawag/forge-deploy@v0.0.13;
-cargo install --version 0.0.13 --root . forge-deploy;
+cd lib/forge-deploy;
+cargo build --release;
+cp target/release/forge-deploy ../../forge-deploy;
+cd ../..;
 cat >> foundry.toml <<EOF
 
 fs_permissions = [
@@ -159,12 +160,8 @@ cat >> .gitignore <<EOF
 /deployments/localhost
 /deployments/31337
 
-# forge-deploy cli binary
-/.crates2.json
-/.crates.toml
-/bin
 EOF
-./bin/forge-deploy gen-deployer;
+./forge-deploy gen-deployer;
 cat > script/Deploy.s.sol <<EOF
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
@@ -180,7 +177,7 @@ contract Deployments is DeployScript {
 	}
 }
 EOF
-DEPLOYMENT_CONTEXT=localhost forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./bin/forge-deploy sync;
+DEPLOYMENT_CONTEXT=localhost forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -v && ./forge-deploy sync;
 ```
 
 ### Reusable in tests
