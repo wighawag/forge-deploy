@@ -29,7 +29,7 @@ The system is modular. The deploy functions provided by default offer a basic se
 1. add the forge-deploy package
 
    ```bash
-   forge install wighawag/forge-deploy@v0.0.14;
+   forge install wighawag/forge-deploy@v0.0.15;
    ```
 
 1. build the cli directly from lib/forge-deploy
@@ -88,9 +88,9 @@ The system is modular. The deploy functions provided by default offer a basic se
    	}
    }
    ```
-   
+
    The deploy function will be called and as the script extends DeployScript (which itself extends Script from forge-std) you ll have access to the deployer variable.
-   
+
    This variable mostly expose save and get functions. Deploy functionality is actually implemented in library like the one provided here: "DeployerFunctions.g.sol", which is actually generated code from the command above: `./forge-deploy gen-deployer;`
 
 1. you also need to allow forge to read and write on certain paths by editing foundry.toml:
@@ -144,7 +144,7 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.14;
+forge install wighawag/forge-deploy@v0.0.15;
 cd lib/forge-deploy;
 cargo build --release;
 cp target/release/forge-deploy ../../forge-deploy;
