@@ -29,16 +29,16 @@ The system is modular. The deploy functions provided by default offer a basic se
 1. add the forge package
 
    ```bash
-   forge install wighawag/forge-deploy@v0.0.11;
+   forge install wighawag/forge-deploy@v0.0.12;
    ```
 
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
    ```bash
-   cargo install --version 0.0.11 --root . forge-deploy;
+   cargo install --version 0.0.12 --root . forge-deploy;
    ```
 
-   This will install version 0.0.11 in the bin folder,
+   This will install version 0.0.12 in the bin folder,
 
    You can then execute it via
 
@@ -142,8 +142,8 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.11;
-cargo install --version 0.0.11 --root . forge-deploy;
+forge install wighawag/forge-deploy@v0.0.12;
+cargo install --version 0.0.12 --root . forge-deploy;
 cat >> foundry.toml <<EOF
 
 fs_permissions = [
