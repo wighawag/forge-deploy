@@ -29,16 +29,16 @@ The system is modular. The deploy functions provided by default offer a basic se
 1. add the forge package
 
    ```bash
-   forge install wighawag/forge-deploy@v0.0.12;
+   forge install wighawag/forge-deploy@v0.0.13;
    ```
 
 1. install the cli tool locally as the tool is likely to evolve rapidly
 
    ```bash
-   cargo install --version 0.0.12 --root . forge-deploy;
+   cargo install --version 0.0.13 --root . forge-deploy;
    ```
 
-   This will install version 0.0.12 in the bin folder,
+   This will install version 0.0.13 in the bin folder,
 
    You can then execute it via
 
@@ -85,7 +85,7 @@ The system is modular. The deploy functions provided by default offer a basic se
    contract Deployments is DeployScript {
    	using DeployerFunctions for Deployer;
 
-   	function deploy(bytes calldata) external returns (Counter) {
+   	function deploy() external returns (Counter) {
    		return deployer.deploy_Counter("MyCounter");
    	}
    }
@@ -142,8 +142,8 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.12;
-cargo install --version 0.0.12 --root . forge-deploy;
+forge install wighawag/forge-deploy@v0.0.13;
+cargo install --version 0.0.13 --root . forge-deploy;
 cat >> foundry.toml <<EOF
 
 fs_permissions = [
@@ -175,7 +175,7 @@ import "generated/deployer/DeployerFunctions.g.sol";
 contract Deployments is DeployScript {
 	using DeployerFunctions for Deployer;
 
-	function deploy(bytes calldata) external returns (Counter) {
+	function deploy() external returns (Counter) {
 		return deployer.deploy_Counter("MyCounter");
 	}
 }
@@ -237,7 +237,7 @@ import "../src/Counter.sol";
 contract Deployments is DeployScript {
 	using DefaultDeployerFunction for Deployer;
 
-	function deploy(bytes calldata) external returns (Counter) {
+	function deploy() external returns (Counter) {
 		return Counter(
 			deployer.deploy(
 				"MyCounter",
