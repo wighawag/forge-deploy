@@ -4,7 +4,7 @@ A cli and associated contracts to keep track of deployments by name and reuse th
 
 It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag/hardhat-deploy) as far as possible (work in progress).
 
-forge-deploy aims at provoding the minimal set of function to provide an elegant deployment system for foundry.
+forge-deploy aims at providing the minimal set of function to provide an elegant deployment system for foundry.
 
 ## Features
 
@@ -88,6 +88,10 @@ The system is modular. The deploy functions provided by default offer a basic se
    	}
    }
    ```
+   
+   The deploy function will be called and as the script extends DeployScript (which itself extends Script from forge-std) you ll have access to the deployer variable.
+   
+   This variable mostly expose save and get functions. Deploy functionality is actually implemented in library like the one provided here: "DeployerFunctions.g.sol", which is actually generated code from the command above: `./forge-deploy gen-deployer;`
 
 1. you also need to allow forge to read and write on certain paths by editing foundry.toml:
 
