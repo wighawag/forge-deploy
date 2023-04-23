@@ -1,0 +1,57 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import "forge-deploy/Deployer.sol";
+import "forge-deploy/DefaultDeployerFunction.sol";
+
+// --------------------------------------------------------------------------------------------
+// GENERATED
+// --------------------------------------------------------------------------------------------
+{{#each this}}
+import "{{this.solidity_filepath}}";
+{{/each}}
+
+{{#each this}}
+string constant Artifact_{{this.contract_name}} = "{{this.solidity_filename}}:{{this.contract_name}}";
+{{/each}}
+// --------------------------------------------------------------------------------------------
+
+library DeployerFunctions{
+
+    // --------------------------------------------------------------------------------------------
+    // GENERATED
+    // --------------------------------------------------------------------------------------------
+    {{#each this}}
+    function deploy_{{this.contract_name}}(
+        Deployer deployer,
+        string memory name
+        {{#if this.constructor_string}}
+        ,{{this.constructor_string}}
+        {{!-- {{else}} --}}
+        {{!-- {{#if this.constructor}}{{#each this.constructor.inputs}},{{this.type}} {{memory-type this.type}} {{this.name}}{{/each}}{{/if}} --}}
+        {{/if}}
+    ) internal returns ({{this.contract_name}}) {
+        return
+            deploy_{{this.contract_name}}(
+                deployer,
+                name
+                {{#if this.constructor}}{{#each this.constructor.inputs}}{{#if this.name}},{{this.name}}{{/if}}{{/each}}{{/if}}
+                ,DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
+            );
+    }
+    function deploy_{{this.contract_name}}(
+        Deployer deployer,
+        string memory name,
+        {{#if this.constructor_string}}
+        {{this.constructor_string}},
+        {{!-- {{else}} --}}
+        {{!-- {{#if this.constructor}}{{#each this.constructor.inputs}}{{this.type}} {{memory-type this.type}} {{this.name}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}, --}}
+        {{/if}}
+        DeployOptions memory options
+    ) internal returns ({{this.contract_name}}) {
+        bytes memory args = abi.encode({{#if this.constructor}}{{#each this.constructor.inputs}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}});
+        return {{this.contract_name}}(DefaultDeployerFunction.deploy(deployer, name, Artifact_{{this.contract_name}}, args, options));
+    }
+    {{/each}}
+    // --------------------------------------------------------------------------------------------
+}

@@ -34,7 +34,7 @@ compile: gen-deployer
 	forge build
 
 gen-deployer:
-	forge-deploy gen-deployer
+	forge-deploy gen-deployer --templates my-templates
 
 export context out:
 	forge-deploy export {{context}} {{out}}
@@ -62,7 +62,10 @@ deploy $DEPLOYMENT_CONTEXT="localhost" +ARGS="": (compile)
 	fi;
 
 watch:
-	watchexec -w script -w src just compile
+	watchexec -w script -w src -w my-templates just compile
+
+watch-deploy context="localhost" +ARGS="":
+	watchexec -w script -w src -w my-templates just deploy {{context}} {{ARGS}}
 
 # watch:
 #     #!/bin/bash -eux
