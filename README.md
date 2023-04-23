@@ -26,13 +26,13 @@ The system is modular. The deploy functions provided by default offer a basic se
    forge init;
    ```
 
-1. add the forge package
+1. add the forge-deploy package
 
    ```bash
    forge install wighawag/forge-deploy@v0.0.13;
    ```
 
-1. build the cli directly from lib/forge-deploy and copy it in the project folder
+1. build the cli directly from lib/forge-deploy
 
    ```bash
    cd lib/forge-deploy;
@@ -40,13 +40,13 @@ The system is modular. The deploy functions provided by default offer a basic se
    cp target/release/forge-deploy ../../forge-deploy;
    ```
 
-   You can then execute it via
+   In the last step above, we also copy it in the project folder for easy access;
+
+   This way you can then execute it via the following:
 
    ```bash
    ./forge-deploy <command>
    ```
-
-   you can also compile it directly from the `lib/forge-deploy/` folder.
 
 1. add to .gitignore the generated file + the binary we just installed
 
