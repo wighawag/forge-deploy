@@ -7,5 +7,6 @@ contract Empty is Proxied {
     constructor(string memory initialPrefix) {
         postUpgrade(initialPrefix);
     }
+
     function postUpgrade(string memory initialPrefix) public proxied {}
 }

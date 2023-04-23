@@ -14,11 +14,11 @@ contract Deployments is DeployScript {
     //  // .... deployer.deploy...
     //  return deployer.newDeployments();
     // }
-    // this is how forge-deploy keep track of deployment names 
+    // this is how forge-deploy keep track of deployment names
     // and how the forge-deploy sync command can generate the deployments files
     //
-        
-    function deploy(bytes calldata) external returns (GreetingsRegistry registry) {
+
+    function deploy() external returns (GreetingsRegistry registry) {
         // we can get the existing registry thanks to generated code in generated/deployments/Deployments.g.sol
 
         // IMyTokens existing = Deployments.MyTokens;
@@ -32,7 +32,6 @@ contract Deployments is DeployScript {
         //     );
         // }
 
-
         // // dynamic deploy of upgradeable contract
         // if (!deployer.hasDeployed("MyRegistry_Implementation")) {
         //     deployer.save(
@@ -43,13 +42,13 @@ contract Deployments is DeployScript {
 
         // }
 
-        if (deployer.has("MyRegistry")){
+        if (deployer.has("MyRegistry")) {
             console.log("MyRegistry already deployed");
             console.log(deployer.getAddress("MyRegistry"));
         } else {
             console.log("No MyRegistry deployed yet");
         }
-        
+
         deployer.deploy_Counter("MyCounter");
 
         // we can deploy a new contract and name it
@@ -59,7 +58,7 @@ contract Deployments is DeployScript {
             DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
         );
 
-        if (deployer.has("MyRegistry")){
+        if (deployer.has("MyRegistry")) {
             console.log("MyRegistry is now deployed");
             console.log(deployer.getAddress("MyRegistry"));
         } else {
@@ -74,20 +73,13 @@ contract Deployments is DeployScript {
         );
 
         console.log(deployer.getAddress("MyRegistry"));
-        
-        deployer.deploy_GreetingsRegistry(
-            "MyRegistry2",
-            vm.toString(address(existing))
-        );
 
-        deployer.deploy_GreetingsRegistry(
-            "AnotherRegistry",
-            vm.toString(address(existing))
-        );
+        deployer.deploy_GreetingsRegistry("MyRegistry2", vm.toString(address(existing)));
 
+        deployer.deploy_GreetingsRegistry("AnotherRegistry", vm.toString(address(existing)));
 
         // this fails in anvil
-        
+
         // deployer.deploy_GreetingsRegistry(
         //     "DeterministicRegistry",
         //     vm.toString(address(existing)),
@@ -99,7 +91,6 @@ contract Deployments is DeployScript {
         //     vm.toString(address(existing)),
         //     DeployOptions({deterministic: 2, proxyOnTag: "", proxyOwner: address(0)})
         // );
-
 
         // proxy tests
 

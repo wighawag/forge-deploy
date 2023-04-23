@@ -7,10 +7,8 @@ contract SubTokens {
     string public constant symbol = "SubTokens";
 }
 
-
 contract SubTokens2 {
     constructor(address to, uint256 amount) {}
 
     string public constant symbol = "SubTokens2";
 }
-

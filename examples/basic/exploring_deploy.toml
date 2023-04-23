@@ -1,0 +1,11 @@
+[contexts.void]
+tags = ["local", "testnet", "ephemeral"]
+
+[contexts.localhost]
+tags = ["local", "testnet"]
+    
+[contexts.sepolia]
+tags = ["live", "testnet"]
+
+[contexts.mainnet]
+tags =  ["live", "mainnet"]

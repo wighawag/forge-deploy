@@ -34,12 +34,8 @@ abstract contract Proxy {
             let retSz := returndatasize()
             returndatacopy(0, 0, retSz)
             switch success
-            case 0 {
-                revert(0, retSz)
-            }
-            default {
-                return(0, retSz)
-            }
+            case 0 { revert(0, retSz) }
+            default { return(0, retSz) }
         }
     }
 
@@ -58,7 +54,7 @@ abstract contract Proxy {
         emit ProxyImplementationUpdated(previousImplementation, newImplementation);
 
         if (data.length > 0) {
-            (bool success, ) = newImplementation.delegatecall(data);
+            (bool success,) = newImplementation.delegatecall(data);
             if (!success) {
                 assembly {
                     // This assembly ensure the revert contains the exact string data

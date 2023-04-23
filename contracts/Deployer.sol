@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
+
 import {Vm} from "forge-std/Vm.sol";
 import "forge-std/console.sol";
 import "forge-std/StdJson.sol";
@@ -22,24 +23,51 @@ struct Deployment {
     bytes args;
 }
 
-/// @notice contract that keep track of the deployment and save them as return value in the forge's broadcast
-contract Deployer {
+bytes32 constant CONTEXT_VOID = keccak256(bytes("void"));
+bytes32 constant CONTEXT_LOCALHOST = keccak256(bytes("localhost"));
+bytes32 constant STAR = keccak256(bytes("*"));
 
+/// @notice contract to read tags from a config file
+/// Actually needed as Deployer constructor can't make external to itself
+/// And we use external call to get around the issue of solidity not be able to try..catch abi decoding
+contract TagsReader {
     // --------------------------------------------------------------------------------------------
     // Constants
     // --------------------------------------------------------------------------------------------
-    Vm constant vm =
-        Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+    Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+
+    // --------------------------------------------------------------------------------------------
+    // Public Interface
+    // --------------------------------------------------------------------------------------------
+    function readTagsFromContext(string calldata context) external returns (string[] memory tags) {
+        string memory root = vm.projectRoot();
+
+        // TODO configure file name ?
+        string memory path = string.concat(root, "/contexts.json");
+        string memory json = vm.readFile(path);
+        return stdJson.readStringArray(json, string.concat(".", context, ".tags"));
+    }
+}
+
+/// @notice contract that keep track of the deployment and save them as return value in the forge's broadcast
+contract Deployer {
+    // --------------------------------------------------------------------------------------------
+    // Constants
+    // --------------------------------------------------------------------------------------------
+    Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
     // --------------------------------------------------------------------------------------------
     // Storage
     // --------------------------------------------------------------------------------------------
 
+    // Deployments
     mapping(string => DeployerDeployment) internal _namedDeployments;
     DeployerDeployment[] internal _newDeployments;
 
+    // Context
     string internal deploymentContext;
     string internal chainIdAsString;
+    mapping(string => bool) internal tags;
 
     // --------------------------------------------------------------------------------------------
     // Constrctor
@@ -50,35 +78,36 @@ contract Deployer {
     /// but if the DEPLOYMENT_CONTEXT env variable is set, the context take that value
     /// The context allow you to organise deployments in a set as well as make specific configurations
     constructor() {
+        // TODO? allow to pass context in constructor
         uint256 currentChainID;
         assembly {
             currentChainID := chainid()
         }
         chainIdAsString = vm.toString(currentChainID);
         deploymentContext = _getDeploymentContext();
+        _setTagsFromContext(deploymentContext);
+
         // we read the deployment folder for a .chainId file
         // if the chainId here do not match the current one
         // we are using the same context name on different chain, this is an error
         string memory root = vm.projectRoot();
-        // TODO configure deployments folder
+        // TODO? configure deployments folder via deploy.toml / deploy.json
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/.chainId");
         try vm.readFile(path) returns (string memory chainId) {
             if (keccak256(bytes(chainId)) != keccak256(bytes(chainIdAsString))) {
-                revert(string.concat("Current chainID: ", chainIdAsString , " But Context '", deploymentContext, "' Already Exists With a Different Chain ID (", chainId ,")"));
+                revert(
+                    string.concat(
+                        "Current chainID: ",
+                        chainIdAsString,
+                        " But Context '",
+                        deploymentContext,
+                        "' Already Exists With a Different Chain ID (",
+                        chainId,
+                        ")"
+                    )
+                );
             }
-        } catch {
-            // unfortunately we have to remove that as we cannot detect whether there is a directory for the deployment
-            // or if the directory is there but the .chainId file is not
-            // uint256 currentChainID;
-            // assembly {
-            //     currentChainID := chainid()
-            // }
-            // string memory chainIdAsString = vm.toString(currentChainID);
-            // if (keccak256(bytes(deploymentContext)) != keccak256(bytes(chainIdAsString))) {
-            //     console.log(string.concat("the deployments folder for '", deploymentContext ,"' should have a .chainId file to prevent misusing it by mistake in another chain"));
-            // }
-        }
-
+        } catch {}
     }
 
     // --------------------------------------------------------------------------------------------
@@ -90,12 +119,17 @@ contract Deployer {
         return _newDeployments;
     }
 
+    // TODO save artifacts in a temporary folder and inject its path in the output
+    // /// @notice function that record all deployment on a specific path and return that path
+    // function recordNewDeploymentsAndReturnFilepath() external returns (string memory path) {
+    //     // then the sync step can read it to get more info about the deployment, including the exact source, metadata....
+    //     return "";
+    // }
+
     /// @notice function that tell you whether a deployment already exists with that name
     /// @param name deployment's name to query
     /// @return exists whether the deployment exists or not
-    function has(
-        string memory name
-    ) public view returns (bool exists) {
+    function has(string memory name) public view returns (bool exists) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
             if (bytes(existing.name).length == 0) {
@@ -109,9 +143,7 @@ contract Deployer {
     /// @notice function that return the address of a deployment
     /// @param name deployment's name to query
     /// @return addr the deployment's address or the zero address
-    function getAddress(
-        string memory name
-    ) public view returns (address addr) {
+    function getAddress(string memory name) public view returns (address addr) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
             if (bytes(existing.name).length == 0) {
@@ -125,9 +157,7 @@ contract Deployer {
     /// @notice allow to override an existing deployment by ignoring the current one.
     /// the deployment will only be overriden on disk once the broadast is performed and `forge-deploy` sync is invoked.
     /// @param name deployment's name to override
-    function ignoreDeployment(
-        string memory name
-    ) public {
+    function ignoreDeployment(string memory name) public {
         _namedDeployments[name].name = "";
         _namedDeployments[name].addr = address(1); // TO ensure it is picked up as being ignored
     }
@@ -135,9 +165,7 @@ contract Deployer {
     /// @notice function that return the deployment (address, bytecode and args bytes used)
     /// @param name deployment's name to query
     /// @return deployment the deployment (with address zero if not existent)
-    function get(
-        string memory name
-    ) public view returns (Deployment memory deployment) {
+    function get(string memory name) public view returns (Deployment memory deployment) {
         DeployerDeployment memory newDeployment = _namedDeployments[name];
         if (newDeployment.addr != address(0)) {
             if (bytes(newDeployment.name).length > 0) {
@@ -150,34 +178,21 @@ contract Deployer {
         }
     }
 
-    function readTagsFromContext() external returns (string[] memory) {
-        string memory root = vm.projectRoot();
-        // TODO configure file name ?
-        string memory path = string.concat(root, "/contexts.json");
-        string memory json = vm.readFile(path);
-        return stdJson.readStringArray(json, string.concat(".", deploymentContext , ".tags"));
-    }
-
-    function isTagEnabled(string memory tag) external returns (bool) {
+    /// @notice return true of the current context has the tag specified
+    /// @param tag tag string to query
+    ///  if the empty string is passed in, it will return false
+    ///  if the string "*" is passed in, it will return true
+    /// @return true if the tag is associated with the current context
+    function isTagEnabled(string memory tag) external view returns (bool) {
         if (bytes(tag).length == 0) {
             return false;
         }
         bytes32 tagId = keccak256(bytes(tag));
-        try this.readTagsFromContext() returns (string[] memory tags) {
-            for (uint256 i = 0; i < tags.length; i++) {
-                if (keccak256(bytes(tags[i])) == tagId) {
-                    return true;
-                }
-            }
-        } catch {
-            // TODO default tags
-            // if (keccak256(bytes(chainIdAsString)) == keccak256(bytes("31337"))) {
-            //     return false;
-            // }
+        if (tagId == STAR) {
+            return true;
         }
-        return false;
+        return tags[tag];
     }
-
 
     /// @notice save the deployment info under the name provided
     /// this is a low level call and is used by ./DefaultDeployerFunction.sol
@@ -205,14 +220,34 @@ contract Deployer {
         });
         _namedDeployments[name] = deployment;
         _newDeployments.push(deployment);
-        // TODO save artifacts in a temporary folder and inject its path in the output
-        // then the sync step can read it to get more info about the deployment, including the exact source, metadata....
-        // save(deployment);
     }
 
     // --------------------------------------------------------------------------------------------
     // Internal
     // --------------------------------------------------------------------------------------------
+
+    function _setTagsFromContext(string memory context) private {
+        TagsReader tagReader = new TagsReader();
+
+        // the context is its own tag
+        tags[context] = true;
+
+        try tagReader.readTagsFromContext(context) returns (string[] memory tagsRead) {
+            for (uint256 i = 0; i < tagsRead.length; i++) {
+                tags[tagsRead[i]] = true;
+            }
+        } catch {
+            bytes32 contextID = keccak256(bytes(deploymentContext));
+            if (contextID == CONTEXT_LOCALHOST) {
+                tags["local"] = true;
+                tags["testnet"] = true;
+            } else if (contextID == CONTEXT_VOID) {
+                tags["local"] = true;
+                tags["testnet"] = true;
+                tags["ephemeral"] = true;
+            }
+        }
+    }
 
     function _getDeploymentContext() private returns (string memory context) {
         // no deploymentContext provided we fallback on chainID
@@ -232,8 +267,7 @@ contract Deployer {
         }
     }
 
-
-
+    // TODO if we could read folders, we could load all deployments in the constructor instead
     function _getExistingDeploymentAdress(string memory name) internal view returns (address) {
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/", name, ".json");

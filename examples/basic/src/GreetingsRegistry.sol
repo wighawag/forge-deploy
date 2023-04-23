@@ -20,12 +20,7 @@ contract GreetingsRegistry is Proxied {
     /// @param dayTimeInSeconds the time of the day in seconds where 00:00 => 0 and 23:59 => 82859
     /// @dev the timestamp is included to speedup indexing
     /// see: https://ethereum-magicians.org/t/proposal-for-adding-blocktimestamp-to-logs-object-returned-by-eth-getlogs-and-related-requests/11183
-    event MessageChanged(
-        address indexed user,
-        uint256 timestamp,
-        string message,
-        uint24 dayTimeInSeconds
-    );
+    event MessageChanged(address indexed user, uint256 timestamp, string message, uint24 dayTimeInSeconds);
 
     // ----------------------------------------------------------------------------------------------
     // TYPES
@@ -70,18 +65,14 @@ contract GreetingsRegistry is Proxied {
     /// @notice return the last message from the given `user`.
     /// @param user address of the user.
     /// @return userMsg the message send by the user.
-    function messages(
-        address user
-    ) external view returns (Message memory userMsg) {
+    function messages(address user) external view returns (Message memory userMsg) {
         userMsg = _messages[user];
     }
 
     /// @notice return the last greeting message from the given `user`.
     /// @param user address of the user.
     /// @return greeting the message's content send by the user.
-    function lastGreetingOf(
-        address user
-    ) external view returns (string memory greeting) {
+    function lastGreetingOf(address user) external view returns (string memory greeting) {
         greeting = _messages[user].content;
     }
 
@@ -94,23 +85,10 @@ contract GreetingsRegistry is Proxied {
     /// @notice set a new message for `msg.sender`.
     /// @param message the value to set as content.
     /// @param dayTimeInSeconds the time of the day in seconds the message was written.
-    function setMessage(
-        string calldata message,
-        uint24 dayTimeInSeconds
-    ) external {
-        string memory actualMessage = string(
-            bytes.concat(bytes(_prefix), bytes(message))
-        );
-        _messages[msg.sender] = Message({
-            content: actualMessage,
-            timestamp: block.timestamp,
-            dayTimeInSeconds: dayTimeInSeconds
-        });
-        emit MessageChanged(
-            msg.sender,
-            block.timestamp,
-            actualMessage,
-            dayTimeInSeconds
-        );
+    function setMessage(string calldata message, uint24 dayTimeInSeconds) external {
+        string memory actualMessage = string(bytes.concat(bytes(_prefix), bytes(message)));
+        _messages[msg.sender] =
+            Message({content: actualMessage, timestamp: block.timestamp, dayTimeInSeconds: dayTimeInSeconds});
+        emit MessageChanged(msg.sender, block.timestamp, actualMessage, dayTimeInSeconds);
     }
 }

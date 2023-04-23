@@ -10,8 +10,7 @@ struct DeployOptions {
     address proxyOwner;
 }
 
-library DefaultDeployerFunction{
-
+library DefaultDeployerFunction {
     Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
     /// @notice generic deploy function that save it using the deployer contract
@@ -25,7 +24,8 @@ library DefaultDeployerFunction{
         string memory artifact,
         bytes memory args,
         DeployOptions memory options
-    ) internal returns (address deployed) { // TODO return newDeployed ?
+    ) internal returns (address deployed) {
+        // TODO return newDeployed ?
         if (deployer.isTagEnabled(options.proxyOnTag)) {
             string memory implName = string.concat(name, "_Implementation");
             string memory proxyName = string.concat(name, "_Proxy");
@@ -34,24 +34,25 @@ library DefaultDeployerFunction{
             Deployment memory existingProxy = deployer.get(proxyName);
             bytes memory data = bytes.concat(vm.getCode(artifact), args);
 
-            
             if (existingProxy.addr != address(0)) {
                 // console.log("existing proxy:");
                 // console.log(existingProxy.addr);
                 address implementation;
                 Deployment memory existingImpl = deployer.get(implName);
                 if (
-                    existingImpl.addr == address(0) || 
-                    keccak256(bytes.concat(existingImpl.bytecode, existingImpl.args)) != keccak256(data)
+                    existingImpl.addr == address(0)
+                        || keccak256(bytes.concat(existingImpl.bytecode, existingImpl.args)) != keccak256(data)
                 ) {
                     // we will override the previous implementation
                     deployer.ignoreDeployment(implName);
                     // TODO implementation args
-                    implementation = deploy(deployer, implName, artifact, args, DeployOptions({
-                        deterministic: options.deterministic,
-                        proxyOnTag: "",
-                        proxyOwner: address(0)
-                    }));
+                    implementation = deploy(
+                        deployer,
+                        implName,
+                        artifact,
+                        args,
+                        DeployOptions({deterministic: options.deterministic, proxyOnTag: "", proxyOwner: address(0)})
+                    );
                     // console.log("new implementation for existing proxy:");
                     // console.log(implementation);
                     // console.log(artifact);
@@ -65,29 +66,33 @@ library DefaultDeployerFunction{
                 // TODO extra call data (upgradeToAndCall)
                 EIP173Proxy(payable(deployed)).upgradeTo(implementation);
                 // TODO trigger a change in abi on the main contract // => _Implementation will trigger that ?
-                
+
                 deployer.save(name, deployed, "", "", artifact); // new artifact
 
                 // console.log("-- upgraded --");
             } else {
                 // console.log("new proxy needed");
                 deployer.ignoreDeployment(implName);
-                address implementation = deploy(deployer, implName, artifact, args, DeployOptions({
-                    deterministic: options.deterministic,
-                    proxyOnTag: "",
-                    proxyOwner: address(0)
-                }));
+                address implementation = deploy(
+                    deployer,
+                    implName,
+                    artifact,
+                    args,
+                    DeployOptions({deterministic: options.deterministic, proxyOnTag: "", proxyOwner: address(0)})
+                );
                 // console.log("new implementation:");
                 // console.log(implementation);
                 // console.log(artifact);
-                
+
                 // TODO extra call data
                 bytes memory proxyArgs = abi.encode(implementation, options.proxyOwner, bytes(""));
-                deployed = deploy(deployer, proxyName, "ForgeDeploy_EIP173Proxy.sol:EIP173Proxy", proxyArgs, DeployOptions({
-                    deterministic: options.deterministic,
-                    proxyOnTag: "",
-                    proxyOwner: address(0)
-                }));
+                deployed = deploy(
+                    deployer,
+                    proxyName,
+                    "ForgeDeploy_EIP173Proxy.sol:EIP173Proxy",
+                    proxyArgs,
+                    DeployOptions({deterministic: options.deterministic, proxyOnTag: "", proxyOwner: address(0)})
+                );
 
                 // bytecode 0x indicate proxy
                 deployer.save(name, deployed, "", "", artifact);
@@ -116,10 +121,10 @@ library DefaultDeployerFunction{
                 if (deployed == address(0)) {
                     revert(string.concat("Failed to deploy ", name));
                 }
-                
+
                 // console.log("new deploy:");
                 // console.log(deployed);
-                
+
                 deployer.save(name, deployed, bytecode, args, artifact);
             } else {
                 deployed = existing;
@@ -127,6 +132,5 @@ library DefaultDeployerFunction{
                 // console.log(deployed);
             }
         }
-        
     }
 }

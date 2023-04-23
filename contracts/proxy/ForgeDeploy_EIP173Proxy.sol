@@ -9,7 +9,6 @@ interface ERC165 {
 
 ///@notice Proxy implementing EIP173 for ownership management
 contract EIP173Proxy is Proxy {
-
     // --------------------------------------------------------------------------------------------
     // Events
     // --------------------------------------------------------------------------------------------
@@ -19,11 +18,7 @@ contract EIP173Proxy is Proxy {
     // Constructor
     // --------------------------------------------------------------------------------------------
 
-    constructor(
-        address implementationAddress,
-        address ownerAddress,
-        bytes memory data
-    ) payable {
+    constructor(address implementationAddress, address ownerAddress, bytes memory data) payable {
         _setImplementation(implementationAddress, data);
         _setOwner(ownerAddress);
     }

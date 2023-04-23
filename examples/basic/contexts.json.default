@@ -1,0 +1,8 @@
+{
+	"void": {
+		"tags": ["local", "testnet", "ephemeral"]
+	},
+	"localhost": {
+		"tags": ["local", "testnet"]
+	}
+}
