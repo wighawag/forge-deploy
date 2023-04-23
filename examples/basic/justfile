@@ -8,7 +8,7 @@ export PATH := "../../target/debug:" + env_var('PATH')
 # -------------------------------------------------------------------------------------------------
 # VERSIONS
 # -------------------------------------------------------------------------------------------------
-forge-deploy := "0.0.13"
+forge-deploy := "0.0.14"
 forge-std := "1.5.3"
 # -------------------------------------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ _default:
 # # example of how to setup forge-deploy as a local binary
 # default_install := ""
 # install git=default_install:
-# 	cargo install --version {{forge-deploy}} --root . forge-deploy;
 # 	if [ "{{git}}" = "git" ]; then \
 # 		forge install foundry-rs/forge-std@v{{forge-std}};\
 # 		forge install wighawag/forge-deploy@v{{forge-deploy}};\
@@ -26,6 +25,7 @@ _default:
 # 		forge install --no-git foundry-rs/forge-std@v{{forge-std}};\
 # 		forge install --no-git wighawag/forge-deploy@v{{forge-deploy}};\
 # 	fi;
+# 	mkdir bin; cd lib/forge-deploy; cargo build --release; cp target/release/forge-deploy ../../bin/;
 # 	./bin/forge-deploy gen-deployer;
 
 # reinstall git="": uninstall (install git)

@@ -29,7 +29,7 @@ The system is modular. The deploy functions provided by default offer a basic se
 1. add the forge-deploy package
 
    ```bash
-   forge install wighawag/forge-deploy@v0.0.13;
+   forge install wighawag/forge-deploy@v0.0.14;
    ```
 
 1. build the cli directly from lib/forge-deploy
@@ -140,7 +140,7 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.13;
+forge install wighawag/forge-deploy@v0.0.14;
 cd lib/forge-deploy;
 cargo build --release;
 cp target/release/forge-deploy ../../forge-deploy;
