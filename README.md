@@ -8,7 +8,7 @@ forge-deploy aims at providing the minimal set of function to provide an elegant
 
 ## Template to get started:
 
-https://github.com/wighawag/template-foundry#readme
+https://github.com/wighawag/template-foundry
 
 
 
