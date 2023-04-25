@@ -6,6 +6,12 @@ It tries to keep compatibility with [hardhat-deploy](https://github.com/wighawag
 
 forge-deploy aims at providing the minimal set of function to provide an elegant deployment system for foundry.
 
+## Template to get started:
+
+https://github.com/wighawag/template-foundry#readme
+
+
+
 ## Features
 
 - generate type-safe deployment function for forge contracts. no need to pass in string of text and hope the abi encoded args are in the correct order or of the correct type.
