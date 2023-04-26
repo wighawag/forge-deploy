@@ -178,7 +178,7 @@ pub fn get_last_deployments(
                                                 println!("not matching returns type")
                                             }
                                         } else {
-                                            println!("no deployments")
+                                            // println!("no deployments")
                                         }
                                     }
                                 }
