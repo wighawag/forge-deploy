@@ -81,7 +81,7 @@ pub fn get_contracts(
 
                 // println!("constructor_string: '{}'", constructor_string.clone().unwrap_or("NO".to_string()));
 
-                let solidity_filepath = entry.path().to_str().unwrap();
+                let solidity_filepath = entry.path().to_slash().unwrap().to_string();
                 let solidity_filepath = solidity_filepath.substring(2, solidity_filepath.len());
                 let contract = ContractObject {
                     solidity_filepath: String::from(solidity_filepath),
