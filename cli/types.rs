@@ -5,25 +5,24 @@ use serde_json::Value;
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct InputObject {
     pub name: String,
-    pub r#type: Option<String> // TODO make it non-optional
+    pub r#type: Option<String>, // TODO make it non-optional
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct ConstructorObject {
-    pub inputs: Vec<InputObject>
+    pub inputs: Vec<InputObject>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct ContractObject {
-   pub solidity_filepath: String,
-   pub contract_name: String,
-   pub solidity_filename: String,
-   pub constructor: Option<ConstructorObject>, // TODO make it non-optional
-   pub constructor_string: Option<String>,
+    pub solidity_filepath: String,
+    pub contract_name: String,
+    pub solidity_filename: String,
+    pub constructor: Option<ConstructorObject>, // TODO make it non-optional
+    pub constructor_string: Option<String>,
 }
 
 // ------------------------------------------------------------------------------------------------
-
 
 pub struct DeploymentObject {
     pub name: String,
@@ -38,7 +37,6 @@ pub struct DeploymentObject {
     pub deployment_context: String,
     pub chain_id: String,
 }
-
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct BytecodeJSON {
@@ -73,9 +71,8 @@ pub struct ABIInput {
 pub struct ABIConstructor {
     pub inputs: Vec<ABIInput>,
     pub state_mutability: String,
-    pub r#type: String
+    pub r#type: String,
 }
-
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct DeploymentJSON {
@@ -87,4 +84,3 @@ pub struct DeploymentJSON {
     pub args: Option<Vec<String>>,
     pub data: String,
 }
-

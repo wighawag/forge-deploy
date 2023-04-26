@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, Map};
+use serde_json::{Map, Value};
 
 use crate::types::DeploymentJSON;
 
@@ -17,13 +17,19 @@ pub struct MinimalDeploymentJSON {
 pub struct ContextDeployments {
     pub name: String,
     pub chain_id: String,
-    pub contracts: Map<String, Value>
+    pub contracts: Map<String, Value>,
 }
 
-pub fn get_deployments(root_folder: &str, deployments_folder: &str, deployment_context: &str) -> ContextDeployments {
+pub fn get_deployments(
+    root_folder: &str,
+    deployments_folder: &str,
+    deployment_context: &str,
+) -> ContextDeployments {
     let mut deployments = Map::new();
-    
-    let folder_path_buf = Path::new(root_folder).join(deployments_folder).join(deployment_context);
+
+    let folder_path_buf = Path::new(root_folder)
+        .join(deployments_folder)
+        .join(deployment_context);
     let folder_path = folder_path_buf.to_str().unwrap();
 
     println!("{}", folder_path);
@@ -37,31 +43,38 @@ pub fn get_deployments(root_folder: &str, deployments_folder: &str, deployment_c
                     let filename = json_filename.to_str().unwrap();
                     if filename.ends_with(".json") {
                         let deployment_name = filename.strip_suffix(".json").unwrap();
-                        let data = fs::read_to_string(json_file_entry.path()).expect("Unable to read file");
-                        let res: DeploymentJSON = serde_json::from_str(&data).expect("Unable to parse");
+                        let data = fs::read_to_string(json_file_entry.path())
+                            .expect("Unable to read file");
+                        let res: DeploymentJSON =
+                            serde_json::from_str(&data).expect("Unable to parse");
                         let mut object = Map::new();
                         object.insert("address".to_string(), Value::String(res.address));
                         object.insert("abi".to_string(), Value::Array(res.abi));
                         deployments.insert(deployment_name.to_string(), Value::Object(object));
                     } else if filename.eq(".chainId") {
-                        chain_id = fs::read_to_string(json_file_entry.path()).expect("Unable to read file");
+                        chain_id = fs::read_to_string(json_file_entry.path())
+                            .expect("Unable to read file");
                     }
-                },
+                }
                 Err(_) => (),
             }
-        }    
+        }
     }
 
-    let context_deployments = ContextDeployments { name: deployment_context.to_string(), chain_id: chain_id, contracts: deployments };
+    let context_deployments = ContextDeployments {
+        name: deployment_context.to_string(),
+        chain_id: chain_id,
+        contracts: deployments,
+    };
     return context_deployments;
 }
-    
+
 pub fn export_minimal_deployments(deployments: &ContextDeployments, out: Vec<&str>) {
     // let mut object = Map::new();
     // object.insert("name".to_string(), Value::String(depoyment_context.to_string()));
     // object.insert("chainId".to_string(), Value::String(deployment_chainid.to_string()));
     // object.insert("contracts".to_string(), Value::Object(deployments.clone()));
-    
+
     let data = serde_json::to_string_pretty(deployments).expect("Failed to stringify");
     let data_as_typescript = format!("export default {} as const;", data);
     // TODO js
@@ -71,7 +84,7 @@ pub fn export_minimal_deployments(deployments: &ContextDeployments, out: Vec<&st
             fs::create_dir_all(parent).expect("create folder");
         }
 
-        if output.ends_with(".ts") {   
+        if output.ends_with(".ts") {
             fs::write(output, &data_as_typescript).expect("failed to write file");
         // TODO js
         // } else if (output.ends_with(".js")) {
@@ -79,6 +92,5 @@ pub fn export_minimal_deployments(deployments: &ContextDeployments, out: Vec<&st
         } else {
             fs::write(output, &data).expect("failed to write file");
         }
-        
     }
 }

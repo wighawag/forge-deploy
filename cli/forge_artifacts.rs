@@ -1,16 +1,12 @@
-
-
 use std::{fs, path::Path};
 
-use crate::types::{ContractObject, ArtifactJSON}; //, ConstructorObject};
+use crate::types::{ArtifactJSON, ContractObject}; //, ConstructorObject};
 
 pub fn get_contracts(
     root_folder: &str,
     artifacts_folder: &str,
-    sources_folder: &str
+    sources_folder: &str,
 ) -> Vec<ContractObject> {
-    
-
     let folder_path_buf = Path::new(root_folder).join(artifacts_folder);
     let folder_path = folder_path_buf.to_str().unwrap();
 
@@ -34,8 +30,7 @@ pub fn get_contracts(
                             continue;
                         }
 
-                        let data =
-                            fs::read_to_string(f).expect("Unable to read file");
+                        let data = fs::read_to_string(f).expect("Unable to read file");
                         let res: ArtifactJSON =
                             serde_json::from_str(&data).expect("Unable to parse");
                         if res.ast.absolute_path.starts_with(sources_folder) {
@@ -50,11 +45,20 @@ pub fn get_contracts(
                                 // };
                                 contracts.push(ContractObject {
                                     // data: res,
-                                    contract_name: String::from(contract_dir_entry.file_name().to_str().unwrap().strip_suffix(".json").unwrap()),
-                                    solidity_filename: String::from(solidity_dir_entry.file_name().to_str().unwrap()),
-                                    solidity_filepath:String::from(solidity_filepath),
+                                    contract_name: String::from(
+                                        contract_dir_entry
+                                            .file_name()
+                                            .to_str()
+                                            .unwrap()
+                                            .strip_suffix(".json")
+                                            .unwrap(),
+                                    ),
+                                    solidity_filename: String::from(
+                                        solidity_dir_entry.file_name().to_str().unwrap(),
+                                    ),
+                                    solidity_filepath: String::from(solidity_filepath),
                                     constructor: None, // TODO this is now non-functional
-                                    constructor_string: None
+                                    constructor_string: None,
                                 });
                             } else {
                                 // print!("do not exist: {}", res.ast.absolute_path);
