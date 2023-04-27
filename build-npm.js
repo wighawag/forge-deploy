@@ -17,7 +17,7 @@ pkg.files.push("contracts");
 delete pkg.main;
 pkg.bin = {
     "forge-deploy": "start.js", // This seems needed as npm will install the bin script first and fails to fetch bin/forge-deploy then
-    "forge-deploy-binary": "bin/forge-deploy"
+    // "forge-deploy-binary": "bin/forge-deploy" // this does not work as it need to be present for npm to symlink it in node_modules/.bin
 }
 delete pkg.scripts.uninstall;
 pkg.scripts.preinstall = pkg.scripts.postinstall;
