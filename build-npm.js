@@ -12,7 +12,7 @@ const pkg = JSON.parse(fs.readFileSync("package.json", 'utf-8'));
 pkg.files.push("contracts");
 delete pkg.main;
 pkg.bin = {
-    "forge-deploy-js": "start.js",
+    // "forge-deploy-js": "start.js", // this was used to tets the updated start.js, no need anymore, keep for now if issues arise
     "forge-deploy": "bin/forge-deploy"
 }
 fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
@@ -26,4 +26,6 @@ fs.writeFileSync("start.js", start_process.replace(`"forge-deploy"`, `\`\${__dir
 if (args[0] === 'publish') {
     execFileSync("cargo", ["release", "--execute"], {stdio});
     execFileSync("npm", ["publish"], {stdio});
+} else {
+    execFileSync("cargo", ["build"], {stdio});
 }
