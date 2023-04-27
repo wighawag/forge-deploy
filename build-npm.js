@@ -41,7 +41,7 @@ fs.writeFileSync("binary.js", binary_js.replace("__VERSION__", version));
 
 if (args[0] === 'publish') {
     execFileSync("cargo", ["release", "--execute"], {stdio});
-    execFileSync("npm", ["publish"], {stdio});
+    execFileSync("npm", ["publish", "--tag", "next"], {stdio});
 } else {
     execFileSync("cargo", ["build"], {stdio});
 }
