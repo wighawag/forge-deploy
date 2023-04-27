@@ -1,5 +1,6 @@
 const { Binary } = require("./binary-install");
 const os = require("os");
+const {join} = require("path");
 
 const error = msg => {
   console.error(msg);
@@ -58,7 +59,7 @@ const getBinary = () => {
   const platformMetadata = getPlatformMetadata();
   // the url for this binary is constructed from values in `package.json`
   const url = `${repository.url}/releases/download/v${version}/${name}_v${version}_${platformMetadata.RUST_TARGET}.tar.gz`;
-  return new Binary(platformMetadata.BINARY_NAME, url, {installDirectory: path.join(__dirname, "bin")});
+  return new Binary(platformMetadata.BINARY_NAME, url, {installDirectory: join(__dirname, "bin")});
 };
 
 const run = () => {
