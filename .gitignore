@@ -2,3 +2,9 @@ target
 lib/forge-std
 out/
 cache
+
+# rust-to-npm
+package.json
+start.js
+uninstall.js
+pre-install.js
