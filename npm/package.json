@@ -3,21 +3,28 @@
   "version": "__VERSION__",
   "description": "A cli that goes along a set of soldity contract to keep track of deployments by name in forge.",
   "scripts": {
-    "preinstall": "node ./pre-install.js"
+    "preinstall": "node ./install.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wighawag/forge-deploy.git"
+    "url": "https://github.com/wighawag/forge-deploy"
   },
   "homepage": "https://github.com/wighawag/forge-deploy",
   "files": [
-    "pre-install.js",
-    "start.js",
+    "install.js",
+    "run.js",
+    "binary.js",
     "README.md",
     "LICENSE",
-    "contracts"
+    "contracts",
+    "cli",
+    "Cargo.lock",
+    "Cargo.toml"
   ],
+  "dependencies": {
+    "binary-install": "^1.0.6"
+  },
   "bin": {
-    "forge-deploy": "start.js"
+    "forge-deploy": "run.js"
   }
 }

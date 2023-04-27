@@ -1,28 +1,105 @@
+name: Release On version tags
+
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ncipollo/release-action@v1
+
   release:
-    permissions: write-all
+    needs: create_release
     name: release ${{ matrix.target }}
+    permissions: write-all
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
           - target: x86_64-pc-windows-gnu
-            archive: tar.gz
           - target: x86_64-unknown-linux-musl
-            archive: tar.gz
           - target: x86_64-apple-darwin
-            archive: tar.gz
     steps:
       - uses: actions/checkout@master
       - name: Compile and release
-        uses: rust-build/rust-build.action@v1.4.3
+        uses: rust-build/rust-build.action@v1.3.2
         env:
+          UPLOAD_MODE: none
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           RUSTTARGET: ${{ matrix.target }}
           ARCHIVE_TYPES: ${{ matrix.archive }}
+          TOOLCHAIN_VERSION: 1.64.0
+      - name: tar
+        run: |
+          export PARENT_FOLDER=output
+          export FILE_NAME=forge-deploy${{ matrix.target == 'x86_64-pc-windows-gnu' && '.exe' || '' }}
+          export FOLDER_NAME=forge-deploy_${{ github.ref_name }}_${{ matrix.target }}
+          echo $FOLDER_NAME/$FILE_NAME
+          mkdir -p archive_folder/$FOLDER_NAME
+          cp $PARENT_FOLDER/$FILE_NAME archive_folder/$FOLDER_NAME/
+          tar --directory=archive_folder -cf archive.tar.gz $FOLDER_NAME
+      - name: upload
+        run: |
+          id=$(gh api -H "Accept: application/vnd.github+json" /repos/wighawag/forge-deploy/releases/tags/${{ github.ref_name }} --jq .id)
+          curl --fail-with-body -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/wighawag/forge-deploy/releases/$id/assets?name=forge-deploy_${{ github.ref_name }}_${{ matrix.target }}.tar.gz"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  windows-msvc-release:
+    needs: create_release
+    name: release windows msvc
+    permissions: write-all
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Build
+        run: |
+          cargo build --release
+      - name: tar
+        run: |
+          mkdir archive_folder
+          mkdir archive_folder/forge-deploy_${{ github.ref_name }}_x86_64-pc-windows-msvc
+          cp target/release/forge-deploy.exe archive_folder/forge-deploy_${{ github.ref_name }}_x86_64-pc-windows-msvc/
+          tar --directory=archive_folder -cf archive.tar.gz forge-deploy_${{ github.ref_name }}_x86_64-pc-windows-msvc
+      - name: upload
+        run: |
+          $id = gh api -H "Accept: application/vnd.github+json" /repos/wighawag/forge-deploy/releases/tags/${{ github.ref_name }} --jq .id
+          curl --fail-with-body -sS  -X POST --data-binary "@archive.tar.gz" -H 'Content-Type: application/octet-stream' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' "https://uploads.github.com/repos/wighawag/forge-deploy/releases/$id/assets?name=forge-deploy_${{ github.ref_name }}_x86_64-pc-windows-msvc.tar.gz"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  macos-arm-release:
+    needs: create_release
+    name: release mac os arm release
+    permissions: write-all
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@master
+      - name: check toolchain
+        run: rustup default
+      - name: Build
+        run: |
+          rustup toolchain install stable-aarch64-apple-darwin
+          rustup target add aarch64-apple-darwin
+          cargo build --release --target aarch64-apple-darwin
+      - name: tar
+        run: |
+          export PARENT_FOLDER=target/aarch64-apple-darwin/release
+          export FILE_NAME=forge-deploy
+          export FOLDER_NAME=forge-deploy_${{ github.ref_name }}_aarch64-apple-darwin
+          echo $FOLDER_NAME/$FILE_NAME
+          mkdir -p archive_folder/$FOLDER_NAME
+          cp $PARENT_FOLDER/$FILE_NAME archive_folder/$FOLDER_NAME/
+          tar --directory=archive_folder -cf archive.tar.gz $FOLDER_NAME
+      - name: upload
+        run: |
+          id=$(gh api -H "Accept: application/vnd.github+json" /repos/wighawag/forge-deploy/releases/tags/${{ github.ref_name }} --jq .id)
+          curl --fail-with-body -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/wighawag/forge-deploy/releases/$id/assets?name=forge-deploy_${{ github.ref_name }}_aarch64-apple-darwin.tar.gz"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

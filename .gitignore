@@ -5,5 +5,8 @@ cache
 
 # npm package
 /package.json
-/start.js
-/pre-install.js
+/run.js
+/install.js
+/binary.js
+node_modules
+pnpm-lock.yaml

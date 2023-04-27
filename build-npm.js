@@ -18,18 +18,26 @@ fs.writeFileSync("package.json", package_json.replace("__VERSION__", version))
 // ------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------
-// pre-install.js
+// install.js
 // ------------------------------------------------------------------------------------------------
-const pre_install_js = fs.readFileSync("npm/pre-install.js", "utf-8");
-fs.writeFileSync("pre-install.js", pre_install_js.replace("__VERSION__", version))
+const install_js = fs.readFileSync("npm/install.js", "utf-8");
+fs.writeFileSync("install.js", install_js.replace("__VERSION__", version))
 // ------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------
-// start.js
+// run.js
 // ------------------------------------------------------------------------------------------------
-const start_js = fs.readFileSync("npm/start.js", "utf-8");
-fs.writeFileSync("start.js", start_js);
+const run_js = fs.readFileSync("npm/run.js", "utf-8");
+fs.writeFileSync("run.js", run_js.replace("__VERSION__", version));
 // ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+// binary.js
+// ------------------------------------------------------------------------------------------------
+const binary_js = fs.readFileSync("npm/binary.js", "utf-8");
+fs.writeFileSync("binary.js", binary_js.replace("__VERSION__", version));
+// ------------------------------------------------------------------------------------------------
+
 
 if (args[0] === 'publish') {
     execFileSync("cargo", ["release", "--execute"], {stdio});
