@@ -58,7 +58,7 @@ const getBinary = () => {
   const platformMetadata = getPlatformMetadata();
   // the url for this binary is constructed from values in `package.json`
   const url = `${repository.url}/releases/download/v${version}/${name}_v${version}_${platformMetadata.RUST_TARGET}.tar.gz`;
-  return new Binary(platformMetadata.BINARY_NAME, url);
+  return new Binary(platformMetadata.BINARY_NAME, url, {installDirectory: path.join(__dirname, "bin")});
 };
 
 const run = () => {
