@@ -1,0 +1,23 @@
+{
+  "name": "forge-deploy",
+  "version": "__VERSION__",
+  "description": "A cli that goes along a set of soldity contract to keep track of deployments by name in forge.",
+  "scripts": {
+    "preinstall": "node ./pre-install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wighawag/forge-deploy.git"
+  },
+  "homepage": "https://github.com/wighawag/forge-deploy",
+  "files": [
+    "pre-install.js",
+    "start.js",
+    "README.md",
+    "LICENSE",
+    "contracts"
+  ],
+  "bin": {
+    "forge-deploy": "start.js"
+  }
+}

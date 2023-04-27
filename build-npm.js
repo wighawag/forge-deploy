@@ -5,38 +5,30 @@ const {execFileSync} = require('child_process')
 const fs = require("fs");
 const stdio = ["inherit", "inherit", "inherit"];
 execFileSync("cargo", ["install", "cargo-release"], {stdio});
-execFileSync("cargo", ["install", "rust-to-npm"], {stdio});
-execFileSync("npm", ["i", "-g", "rust-to-npm"], {stdio});
-execFileSync("rust-to-npm", ["build"], {stdio});
+
+const version_regex = /version[\s]*=[\s]*"(.*?)"/gm;
+const cargo_toml = fs.readFileSync("Cargo.toml", "utf-8");
+const version = [...version_regex.exec(cargo_toml)][1];
 
 // ------------------------------------------------------------------------------------------------
-// FIX package.json // TODO use own template
+// package.json
 // ------------------------------------------------------------------------------------------------
-const pkg = JSON.parse(fs.readFileSync("package.json", 'utf-8'));
-pkg.files.push("contracts");
-delete pkg.main;
-pkg.bin = {
-    "forge-deploy": "start.js", // This seems needed as npm will install the bin script first and fails to fetch bin/forge-deploy then
-    // "forge-deploy-binary": "bin/forge-deploy" // this does not work as it need to be present for npm to symlink it in node_modules/.bin
-}
-delete pkg.scripts.uninstall;
-pkg.scripts.preinstall = pkg.scripts.postinstall;
-delete pkg.scripts.postinstall;
-fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
+const package_json = fs.readFileSync("npm/package.json", "utf-8");
+fs.writeFileSync("package.json", package_json.replace("__VERSION__", version))
 // ------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------
-// FIX pre-install.js to install locally
+// pre-install.js
 // ------------------------------------------------------------------------------------------------
-const install_process = fs.readFileSync("pre-install.js", "utf-8");
-fs.writeFileSync("pre-install.js", install_process.replace("cargo install forge-deploy", "cargo install --root . forge-deploy"))
+const pre_install_js = fs.readFileSync("npm/pre-install.js", "utf-8");
+fs.writeFileSync("pre-install.js", pre_install_js.replace("__VERSION__", version))
 // ------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------
-// FIX start.js to use the local binary
+// start.js
 // ------------------------------------------------------------------------------------------------
-const start_process = fs.readFileSync("start.js", "utf-8");
-fs.writeFileSync("start.js", start_process.replace(`"forge-deploy"`, `\`\${__dirname}/bin/forge-deploy \${process.argv.slice(2).join(' ')}\``));
+const start_js = fs.readFileSync("npm/start.js", "utf-8");
+fs.writeFileSync("start.js", start_js);
 // ------------------------------------------------------------------------------------------------
 
 if (args[0] === 'publish') {
