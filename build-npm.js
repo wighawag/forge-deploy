@@ -9,7 +9,7 @@ execFileSync("cargo", ["install", "cargo-release"], {stdio});
 const version_regex = /version[\s]*=[\s]*"(.*?)"/gm;
 const cargo_toml = fs.readFileSync("Cargo.toml", "utf-8");
 const version = [...version_regex.exec(cargo_toml)][1];
-const pkg_version = version + '-rc.1';
+const pkg_version = (args[0] === 'publish:npm') ? version : version + '-rc.1';
 
 // ------------------------------------------------------------------------------------------------
 // package.json
@@ -39,8 +39,9 @@ const binary_js = fs.readFileSync("npm/binary.js", "utf-8");
 fs.writeFileSync("binary.js", binary_js.replace("__VERSION__", version));
 // ------------------------------------------------------------------------------------------------
 
-
-if (args[0] === 'publish') {
+if (args[0] === 'publish:npm') {
+    execFileSync("npm", ["publish"], {stdio});
+} else if (args[0] === 'publish') {
     execFileSync("cargo", ["release", "--execute"], {stdio});
     execFileSync("npm", ["publish", "--tag", "next"], {stdio});
 } else {
