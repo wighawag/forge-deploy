@@ -22,7 +22,7 @@
     "Cargo.lock",
     "Cargo.toml"
   ],
-  "devDependencies": {
+  "dependencies": {
     "axios": "^0.26.1",
     "rimraf": "^3.0.2",
     "tar": "^6.1.11"
