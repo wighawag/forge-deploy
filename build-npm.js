@@ -9,12 +9,13 @@ execFileSync("cargo", ["install", "cargo-release"], {stdio});
 const version_regex = /version[\s]*=[\s]*"(.*?)"/gm;
 const cargo_toml = fs.readFileSync("Cargo.toml", "utf-8");
 const version = [...version_regex.exec(cargo_toml)][1];
+const pkg_version = version + '-rc.1';
 
 // ------------------------------------------------------------------------------------------------
 // package.json
 // ------------------------------------------------------------------------------------------------
 const package_json = fs.readFileSync("npm/package.json", "utf-8");
-fs.writeFileSync("package.json", package_json.replace("__VERSION__", version))
+fs.writeFileSync("package.json", package_json.replace("__VERSION__", pkg_version))
 // ------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------

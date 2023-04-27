@@ -6,8 +6,8 @@ const error = msg => {
   process.exit(1);
 };
 
-const { version: TOOD_version, name, repository } = require("./package.json");
-const version = '0.0.17';
+const { version: actualVersion, name, repository } = require("./package.json");
+const version = "__VERSION__";
 
 const supportedPlatforms = [
   {
