@@ -39,6 +39,14 @@ const binary_js = fs.readFileSync("npm/binary.js", "utf-8");
 fs.writeFileSync("binary.js", binary_js.replace("__VERSION__", version));
 // ------------------------------------------------------------------------------------------------
 
+// ------------------------------------------------------------------------------------------------
+// binary.js: just copy
+// ------------------------------------------------------------------------------------------------
+const binary_install = fs.readFileSync("npm/binary-install.js", "utf-8");
+fs.writeFileSync("binary-install.js", binary_install);
+// ------------------------------------------------------------------------------------------------
+
+
 if (args[0] === 'publish:npm') {
     execFileSync("npm", ["publish"], {stdio});
 } else if (args[0] === 'publish') {

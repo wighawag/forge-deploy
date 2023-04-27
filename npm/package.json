@@ -11,6 +11,7 @@
   },
   "homepage": "https://github.com/wighawag/forge-deploy",
   "files": [
+    "binary-install.js",
     "install.js",
     "run.js",
     "binary.js",
@@ -21,8 +22,10 @@
     "Cargo.lock",
     "Cargo.toml"
   ],
-  "dependencies": {
-    "binary-install": "^1.0.6"
+  "devDependencies": {
+    "axios": "^0.26.1",
+    "rimraf": "^3.0.2",
+    "tar": "^6.1.11"
   },
   "bin": {
     "forge-deploy": "run.js"
