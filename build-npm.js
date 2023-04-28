@@ -51,7 +51,7 @@ if (args[0] === 'publish:npm') {
     execFileSync("npm", ["publish"], {stdio});
 } else if (args[0] === 'publish') {
     execFileSync("cargo", ["release", "--execute"], {stdio});
-    execFileSync("npm", ["publish", "--tag", "next"], {stdio});
+    execFileSync("npm", ["publish", "--tag", "rc"], {stdio});
 } else {
     execFileSync("cargo", ["build"], {stdio});
 }

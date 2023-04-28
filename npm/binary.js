@@ -31,7 +31,7 @@ const supportedPlatforms = [
   },
   {
     TYPE: "Darwin",
-    ARCHITECTURE: "aarch64",
+    ARCHITECTURE: "arm64",
     RUST_TARGET: "aarch64-apple-darwin",
     BINARY_NAME: "forge-deploy"
   }
