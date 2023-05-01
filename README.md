@@ -10,8 +10,6 @@ forge-deploy aims at providing the minimal set of function to provide an elegant
 
 https://github.com/wighawag/template-foundry
 
-
-
 ## Features
 
 - generate type-safe deployment function for forge contracts. no need to pass in string of text and hope the abi encoded args are in the correct order or of the correct type.
@@ -35,7 +33,7 @@ The system is modular. The deploy functions provided by default offer a basic se
 1. add the forge-deploy package
 
    ```bash
-   forge install wighawag/forge-deploy@v0.0.15;
+   forge install wighawag/forge-deploy@v0.0.34;
    ```
 
 1. build the cli directly from lib/forge-deploy
@@ -150,7 +148,7 @@ then copy and execute this and see the result
 mkdir my-forge-deploy-project;
 cd my-forge-deploy-project;
 forge init;
-forge install wighawag/forge-deploy@v0.0.15;
+forge install wighawag/forge-deploy@v0.0.34;
 cd lib/forge-deploy;
 cargo build --release;
 cp target/release/forge-deploy ../../forge-deploy;
