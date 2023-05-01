@@ -3,14 +3,16 @@ use serde_json;
 use serde_json::Value;
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
-pub struct InputObject {
+pub struct ConstructorArgObject {
     pub name: String,
-    pub r#type: Option<String>, // TODO make it non-optional
+    pub memory_type: bool,
+    pub r#type: String,
+    pub custom_type: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct ConstructorObject {
-    pub inputs: Vec<InputObject>,
+    pub args: Vec<ConstructorArgObject>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
@@ -18,9 +20,21 @@ pub struct ContractObject {
     pub solidity_filepath: String,
     pub contract_name: String,
     pub solidity_filename: String,
-    pub constructor: Option<ConstructorObject>, // TODO make it non-optional
-    pub constructor_string: Option<String>,
+    pub constructor: ConstructorObject,
 }
+
+// #[derive(Debug, Deserialize, Serialize, Clone, Default)]
+// pub struct ImportObject {
+//     pub solidity_filepath: String,
+//     pub contract_names: Vec<String>,
+//     pub constructor_types: Vec<String>,
+// }
+
+// #[derive(Debug, Deserialize, Serialize, Clone, Default)]
+// pub struct ContractsInfo {
+//     pub imports: Vec<ImportObject>,
+//     pub contracts: Vec<ContractObject>,
+// }
 
 // ------------------------------------------------------------------------------------------------
 

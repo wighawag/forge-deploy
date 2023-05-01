@@ -2,7 +2,9 @@
 pragma solidity ^0.8.13;
 
 import "forge-deploy/DeployScript.sol";
-import "generated/deployer/DeployerFunctions.g.sol";
+import {DeployerFunctions, DeployOptions} from "generated/deployer/DeployerFunctions.g.sol";
+import {GreetingsRegistry} from "src/GreetingsRegistry.sol";
+import {SubSubTokens, MyStruct} from "src/subtest/subsubtest/SubSubTokens.sol";
 
 contract Deployments is DeployScript {
     using DeployerFunctions for Deployer;
@@ -77,6 +79,13 @@ contract Deployments is DeployScript {
         deployer.deploy_GreetingsRegistry("MyRegistry2", vm.toString(address(existing)));
 
         deployer.deploy_GreetingsRegistry("AnotherRegistry", vm.toString(address(existing)));
+
+
+
+        SubSubTokens tokenContract = deployer.deploy_SubSubTokens("MySubSubTokens", address(0), 1);
+        deployer.deploy_SubSubTokens2("MySubSubTokens2", tokenContract, MyStruct({
+            test: 1,str: ""
+        }));
 
         // this fails in anvil
 
