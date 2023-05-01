@@ -121,7 +121,6 @@ jobs:
     name: publish to npm
     needs: [release, windows-msvc-release, macos-arm-release]
     runs-on: ubuntu-latest
-    if: secrets.NPM_AUTH_TOKEN
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
