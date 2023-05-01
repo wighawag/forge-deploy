@@ -16,10 +16,8 @@ struct ContractName {
 pub fn get_contracts(root_folder: &str, sources_folder: &str) -> Vec<ContractObject> {
     let match_comments = Regex::new(r#"(?ms)(".*?"|'.*?')|(/\*.*?\*/|//[^\r\n]*$)"#).unwrap(); //gm
     let match_strings = Regex::new(r#"(?m)(".*?"|'.*?')"#).unwrap(); //g
-    let match_contract_names =
-        Regex::new(r#"(?m)[\s\r\n]+contract[\s\r\n]+(\w*)[\s\r\n]"#).unwrap(); // gm
-    let per_contract_match_constructor =
-        Regex::new(r#"(?s)constructor[\s\r\n]*\((.*?)\)"#).unwrap(); // gs
+    let match_contract_names = Regex::new(r#"(?m)(abstract)?[\s]+contract[\s]+(\w*)[\s]"#).unwrap(); // gm
+    let per_contract_match_constructor = Regex::new(r#"(?s)constructor[\s]*\((.*?)\)"#).unwrap(); // gs
 
     let folder_path_buf = Path::new(root_folder).join(sources_folder);
     let folder_path = folder_path_buf.to_str().unwrap();
@@ -39,18 +37,25 @@ pub fn get_contracts(root_folder: &str, sources_folder: &str) -> Vec<ContractObj
             let mut i = 0;
             for contract_names in match_contract_names.captures_iter(&data) {
                 if let Some(the_match) = contract_names.get(0) {
-                    if let Some(first_group) = contract_names.get(1) {
-                        let contract_name = first_group.as_str();
-                        let start = the_match.start();
-                        if i > 0 {
-                            contract_name_objects[i - 1].end = start;
+                    if let Some(first_group) = contract_names.get(2) {
+                        let is_abstract = match contract_names.get(1) {
+                            Some(str) => str.as_str().eq("abstract"),
+                            None => false,
+                        };
+
+                        if !is_abstract {
+                            let contract_name = first_group.as_str();
+                            let start = the_match.start();
+                            if i > 0 {
+                                contract_name_objects[i - 1].end = start;
+                            }
+                            contract_name_objects.push(ContractName {
+                                name: String::from(contract_name),
+                                start: start,
+                                end: data.len(),
+                            });
+                            i = i + 1;
                         }
-                        contract_name_objects.push(ContractName {
-                            name: String::from(contract_name),
-                            start: start,
-                            end: data.len(),
-                        });
-                        i = i + 1;
                     }
                 }
             }
