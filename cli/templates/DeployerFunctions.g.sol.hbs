@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "forge-deploy/Deployer.sol";
-import "forge-deploy/DefaultDeployerFunction.sol";
+import {Deployer} from "forge-deploy/Deployer.sol";
+import {DefaultDeployerFunction, DeployOptions} from "forge-deploy/DefaultDeployerFunction.sol";
 
 // --------------------------------------------------------------------------------------------
 // GENERATED
 // --------------------------------------------------------------------------------------------
 {{#each this}}
-import { {{this.contract_name}} } from "{{this.solidity_filepath}}";
+import "{{this.solidity_filepath}}";
 {{/each}}
 
 {{#each this}}
