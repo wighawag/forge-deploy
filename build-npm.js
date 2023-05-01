@@ -4,12 +4,12 @@ const args = process.argv.slice(2);
 const {execFileSync} = require('child_process')
 const fs = require("fs");
 const stdio = ["inherit", "inherit", "inherit"];
-execFileSync("cargo", ["install", "cargo-release"], {stdio});
+
 
 const version_regex = /version[\s]*=[\s]*"(.*?)"/gm;
 const cargo_toml = fs.readFileSync("Cargo.toml", "utf-8");
 const version = [...version_regex.exec(cargo_toml)][1];
-const pkg_version = (args[0] === 'publish:npm') ? version : version + '-rc.1';
+const pkg_version = (args[0] === 'publish:npm' || args[0] === 'npm:final') ? version : version + '-rc.1';
 
 // ------------------------------------------------------------------------------------------------
 // package.json
@@ -47,9 +47,12 @@ fs.writeFileSync("binary-install.js", binary_install);
 // ------------------------------------------------------------------------------------------------
 
 
-if (args[0] === 'publish:npm') {
+if (args[0] === 'npm:final') {
+    
+} else if (args[0] === 'publish:npm') {
     execFileSync("npm", ["publish"], {stdio});
 } else if (args[0] === 'publish') {
+    execFileSync("cargo", ["install", "cargo-release"], {stdio});
     execFileSync("cargo", ["release", "--execute"], {stdio});
     execFileSync("npm", ["publish", "--tag", "rc"], {stdio});
 } else {

@@ -126,6 +126,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - run: |
+        node build-npm.js npm:final
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
