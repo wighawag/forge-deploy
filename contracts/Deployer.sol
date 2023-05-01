@@ -8,7 +8,7 @@ import "forge-std/StdJson.sol";
 /// @notice store the new deployment to be saved
 struct DeployerDeployment {
     string name;
-    address addr;
+    address payable addr;
     bytes bytecode;
     bytes args;
     string artifact;
@@ -18,7 +18,7 @@ struct DeployerDeployment {
 
 /// @notice represent a deployment
 struct Deployment {
-    address addr;
+    address payable addr;
     bytes bytecode;
     bytes args;
 }
@@ -143,11 +143,11 @@ contract Deployer {
     /// @notice function that return the address of a deployment
     /// @param name deployment's name to query
     /// @return addr the deployment's address or the zero address
-    function getAddress(string memory name) public view returns (address addr) {
+    function getAddress(string memory name) public view returns (address payable addr) {
         DeployerDeployment memory existing = _namedDeployments[name];
         if (existing.addr != address(0)) {
             if (bytes(existing.name).length == 0) {
-                return address(0);
+                return payable(address(0));
             }
             return existing.addr;
         }
@@ -159,7 +159,7 @@ contract Deployer {
     /// @param name deployment's name to override
     function ignoreDeployment(string memory name) public {
         _namedDeployments[name].name = "";
-        _namedDeployments[name].addr = address(1); // TO ensure it is picked up as being ignored
+        _namedDeployments[name].addr = payable(address(1)); // TO ensure it is picked up as being ignored
     }
 
     /// @notice function that return the deployment (address, bytecode and args bytes used)
@@ -211,7 +211,7 @@ contract Deployer {
         require(bytes(name).length > 0, "EMPTY_NAME_NOT_ALLOWED");
         DeployerDeployment memory deployment = DeployerDeployment({
             name: name,
-            addr: address(deployed),
+            addr: payable(address(deployed)),
             bytecode: bytecode,
             args: args,
             artifact: artifact,
@@ -268,14 +268,14 @@ contract Deployer {
     }
 
     // TODO if we could read folders, we could load all deployments in the constructor instead
-    function _getExistingDeploymentAdress(string memory name) internal view returns (address) {
+    function _getExistingDeploymentAdress(string memory name) internal view returns (address payable) {
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/deployments/", deploymentContext, "/", name, ".json");
         try vm.readFile(path) returns (string memory json) {
             bytes memory addr = stdJson.parseRaw(json, ".address");
             return abi.decode(addr, (address));
         } catch {
-            return address(0);
+            return payable(address(0));
         }
     }
 

@@ -24,7 +24,7 @@ library DefaultDeployerFunction {
         string memory artifact,
         bytes memory args,
         DeployOptions memory options
-    ) internal returns (address deployed) {
+    ) internal returns (address payable deployed) {
         // TODO return newDeployed ?
         if (deployer.isTagEnabled(options.proxyOnTag)) {
             string memory implName = string.concat(name, "_Implementation");
@@ -101,7 +101,7 @@ library DefaultDeployerFunction {
             }
         } else {
             // console.log("no tag");
-            address existing = deployer.getAddress(name);
+            address payable existing = deployer.getAddress(name);
             if (existing == address(0)) {
                 bytes memory bytecode = vm.getCode(artifact);
                 bytes memory data = bytes.concat(bytecode, args);

@@ -119,10 +119,10 @@ pub fn get_contracts(root_folder: &str, sources_folder: &str) -> Vec<ContractObj
                 let parsable_constructor_string =
                     constructor_string.clone().unwrap_or("".to_string());
 
-                println!(
-                    "{} {}",
-                    contract_name_object.name, parsable_constructor_string
-                );
+                // println!(
+                //     "{} {}",
+                //     contract_name_object.name, parsable_constructor_string
+                // );
 
                 let args: Vec<ConstructorArgObject> = if parsable_constructor_string.eq("") {
                     Vec::new()
@@ -167,7 +167,7 @@ pub fn get_contracts(root_folder: &str, sources_folder: &str) -> Vec<ContractObj
                         .collect()
                 };
 
-                println!("{} {:?}", contract_name_object.name, args);
+                // println!("{} {:?}", contract_name_object.name, args);
 
                 let solidity_filepath = entry.path().to_slash().unwrap().to_string();
                 let solidity_filepath = solidity_filepath.substring(2, solidity_filepath.len());
