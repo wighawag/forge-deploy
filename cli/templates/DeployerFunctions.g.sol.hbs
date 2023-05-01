@@ -8,7 +8,7 @@ import "forge-deploy/DefaultDeployerFunction.sol";
 // GENERATED
 // --------------------------------------------------------------------------------------------
 {{#each this}}
-import "{{this.solidity_filepath}}";
+import { {{this.contract_name}} } from "{{this.solidity_filepath}}";
 {{/each}}
 
 {{#each this}}
