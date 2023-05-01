@@ -14,9 +14,10 @@ struct ContractName {
 }
 
 pub fn get_contracts(root_folder: &str, sources_folder: &str) -> Vec<ContractObject> {
-    let match_comments = Regex::new(r#"(?m)(".*?"|'.*?')|(/\*.*?\*/|//[^\r\n]*$)"#).unwrap(); //gm
-    let match_strings = Regex::new(r#"(".*?"|'.*?')"#).unwrap(); //g
-    let match_contract_names = Regex::new(r#"(?m)contract[\s\r\n]*(\w*)[\s\r\n]"#).unwrap(); // gm
+    let match_comments = Regex::new(r#"(?ms)(".*?"|'.*?')|(/\*.*?\*/|//[^\r\n]*$)"#).unwrap(); //gm
+    let match_strings = Regex::new(r#"(?m)(".*?"|'.*?')"#).unwrap(); //g
+    let match_contract_names =
+        Regex::new(r#"(?m)[\s\r\n]+contract[\s\r\n]+(\w*)[\s\r\n]"#).unwrap(); // gm
     let per_contract_match_constructor =
         Regex::new(r#"(?s)constructor[\s\r\n]*\((.*?)\)"#).unwrap(); // gs
 
