@@ -32,9 +32,8 @@ library DeployerFunctions{
         return
             deploy_{{this.contract_name}}(
                 deployer,
-                name,
-                {{#each this.constructor.args}}{{this.name}},{{/each}}
-                DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
+                name
+                {{#each this.constructor.args}},{{this.name}}{{/each}}
             );
     }
     function deploy_{{this.contract_name}}(

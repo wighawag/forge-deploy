@@ -3,11 +3,13 @@ pragma solidity ^0.8.13;
 
 import "forge-deploy/DeployScript.sol";
 import {DeployerFunctions, DeployOptions} from "generated/deployer/DeployerFunctions.g.sol";
+import {ProxiedDeployerFunctions, ProxiedDeployOptions} from "generated/deployer/ProxiedDeployerFunctions.g.sol";
 import {GreetingsRegistry} from "src/GreetingsRegistry.sol";
 import {SubSubTokens, MyStruct} from "src/subtest/subsubtest/SubSubTokens.sol";
 
 contract Deployments is DeployScript {
     using DeployerFunctions for Deployer;
+    using ProxiedDeployerFunctions for Deployer;
     // you can also use the run function and this way pass params to your script
     // if so you need to ensure to return with the new deployments via:
     // `return deployer.newDeployments();`
@@ -56,8 +58,7 @@ contract Deployments is DeployScript {
         // we can deploy a new contract and name it
         registry = deployer.deploy_GreetingsRegistry(
             "MyRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
+            vm.toString(address(existing))
         );
 
         if (deployer.has("MyRegistry")) {
@@ -70,8 +71,7 @@ contract Deployments is DeployScript {
         deployer.ignoreDeployment("MyRegistry");
         deployer.deploy_GreetingsRegistry(
             "MyRegistry",
-            vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "", proxyOwner: address(0)})
+            vm.toString(address(existing))
         );
 
         console.log(deployer.getAddress("MyRegistry"));
@@ -106,19 +106,19 @@ contract Deployments is DeployScript {
         deployer.deploy_GreetingsRegistry(
             "ProxiedRegistry",
             vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+            ProxiedDeployOptions({proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
 
         deployer.deploy_GreetingsRegistry(
             "ProxiedRegistry",
             vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+            ProxiedDeployOptions({proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
 
         deployer.deploy_Empty(
             "ProxiedRegistry",
             vm.toString(address(existing)),
-            DeployOptions({deterministic: 0, proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
+            ProxiedDeployOptions({proxyOnTag: "local", proxyOwner: vm.envAddress("DEPLOYER")})
         );
     }
 }

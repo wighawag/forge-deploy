@@ -34,7 +34,7 @@ compile: gen-deployer
 	forge build
 
 gen-deployer:
-	forge-deploy gen-deployer --templates my-templates
+	forge-deploy gen-deployer --templates my-templates,lib/forge-deploy-proxy/templates
 
 export context out:
 	forge-deploy export {{context}} {{out}}
