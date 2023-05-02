@@ -154,6 +154,8 @@ There are 2 way to get started, one [without npm](#without-npm) and one [with np
    ./forge-deploy <command>
    ```
 
+   You could also download the binaries (if you dont want to use cargo): https://github.com/wighawag/forge-deploy/releases
+
 1. add to .gitignore the generated file + the binary we just installed
 
    ```bash
@@ -176,7 +178,7 @@ There are 2 way to get started, one [without npm](#without-npm) and one [with np
 
    fs_permissions = [
    	{ access = "read", path = "./deployments"},
-   	{ access = "read", path = "./out"},
+   	{ access = "read", path = "./out"}
    ]
    EOF
    ```
@@ -254,8 +256,7 @@ cat >> foundry.toml <<EOF
 
 fs_permissions = [
 	{ access = "read", path = "./deployments"},
-	{ access = "read", path = "./out"},
-	{ access = "read", path = "./contexts.json"}
+	{ access = "read", path = "./out"}
 ]
 EOF
 cat >> .gitignore <<EOF
@@ -344,12 +345,7 @@ contract Deployments is DeployScript {
 			deployer.deploy(
 				"MyCounter",
 				"Counter.sol:Counter", // forge's artifact id
-				"", // no arguments: empty bytes
-				DeployOptions({
-					deterministic: 0, // 0 => no deterministic
-					proxyOnTag: "", // empty string => no proxy
-					proxyOwner: address(0)
-				})
+				"" // no arguments: empty bytes
 			)
 		);
 	}
