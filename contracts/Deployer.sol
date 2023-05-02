@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
 import {Vm} from "forge-std/Vm.sol";
 import "forge-std/console.sol";
@@ -198,15 +198,15 @@ contract Deployer {
     /// this is a low level call and is used by ./DefaultDeployerFunction.sol
     /// @param name deployment's name
     /// @param deployed address of the deployed contract
-    /// @param bytecode the contract's bytecode used to deploy the contract
-    /// @param args arguments' bytes provided to the constructor
     /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param args arguments' bytes provided to the constructor
+    /// @param bytecode the contract's bytecode used to deploy the contract
     function save(
         string memory name,
         address deployed,
-        bytes memory bytecode,
+        string memory artifact,
         bytes memory args,
-        string memory artifact
+        bytes memory bytecode
     ) public {
         require(bytes(name).length > 0, "EMPTY_NAME_NOT_ALLOWED");
         DeployerDeployment memory deployment = DeployerDeployment({
@@ -220,6 +220,34 @@ contract Deployer {
         });
         _namedDeployments[name] = deployment;
         _newDeployments.push(deployment);
+    }
+
+    /// @notice save the deployment info under the name provided
+    /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param name deployment's name
+    /// @param deployed address of the deployed contract
+    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param args arguments' bytes provided to the constructor
+    function save(
+        string memory name,
+        address deployed,
+        string memory artifact,
+        bytes memory args
+    ) public {
+        return save(name, deployed, artifact, args, vm.getCode(artifact));
+    }
+
+    /// @notice save the deployment info under the name provided
+    /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param name deployment's name
+    /// @param deployed address of the deployed contract
+    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    function save(
+        string memory name,
+        address deployed,
+        string memory artifact
+    ) public {
+        return save(name, deployed, artifact, "", vm.getCode(artifact));
     }
 
     // --------------------------------------------------------------------------------------------

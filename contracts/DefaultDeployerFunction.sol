@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
 import "./Deployer.sol";
 
@@ -10,10 +10,11 @@ struct DeployOptions {
 library DefaultDeployerFunction {
 
     
-    /// @notice generic deploy function that save it using the deployer contract
+    /// @notice generic deploy function (to be used with Deployer)
+    ///  `using DefaultDeployerFunction with Deployer;`
     /// @param deployer contract that keep track of the deployments and save them
-    /// @param name the deployment's name that will stored on disk in <deployments>/<context>/<name>.json
-    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param name the deployment's name that will stored on disk in `<deployments>/<context>/<name>.json`
+    /// @param artifact forge's artifact path `<solidity file>.sol:<contract name>`
     /// @param args encoded arguments for the contract's constructor
     function deploy(
         Deployer deployer,
@@ -21,16 +22,17 @@ library DefaultDeployerFunction {
         string memory artifact,
         bytes memory args
     ) internal returns (address payable deployed) {
-        return deploy(deployer, name, artifact, args, PrivateDeployOptions({
+        return _deploy(deployer, name, artifact, args, PrivateDeployOptions({
             deterministic: false,
             salt: 0
         }));
     }
     
-    /// @notice generic create2 deploy function that save it using the deployer contract
+    /// @notice generic create2 deploy function (to be used with Deployer)
+    ///  `using DefaultDeployerFunction with Deployer;`
     /// @param deployer contract that keep track of the deployments and save them
-    /// @param name the deployment's name that will stored on disk in <deployments>/<context>/<name>.json
-    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param name the deployment's name that will stored on disk in `<deployments>/<context>/<name>.json`
+    /// @param artifact forge's artifact path `<solidity file>.sol:<contract name>`
     /// @param args encoded arguments for the contract's constructor
     /// @param options options to specify for salt for deterministic deployment
     function deploy(
@@ -40,7 +42,7 @@ library DefaultDeployerFunction {
         bytes memory args,
         DeployOptions memory options
     ) internal returns (address payable deployed) {
-        return deploy(deployer, name, artifact, args, PrivateDeployOptions({
+        return _deploy(deployer, name, artifact, args, PrivateDeployOptions({
             deterministic: true,
             salt: options.salt
         }));
@@ -52,7 +54,7 @@ library DefaultDeployerFunction {
     // --------------------------------------------------------------------------------------------
     Vm constant private vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
-    function deploy(
+    function _deploy(
         Deployer deployer,
         string memory name,
         string memory artifact,
@@ -78,7 +80,7 @@ library DefaultDeployerFunction {
             if (deployed == address(0)) {
                 revert(string.concat("Failed to deploy ", name));
             }
-            deployer.save(name, deployed, bytecode, args, artifact);
+            deployer.save(name, deployed, artifact, args, bytecode);
         } else {
             deployed = existing;
         }
