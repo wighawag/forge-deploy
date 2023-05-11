@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 import {Script} from "forge-std/Script.sol";
 import {DeployerFunctions, Deployer, DeployerDeployment} from "./Deployer.sol";
 
-
+/// @notice A DeployScript extends a normal forge script with added functionality
+/// In particular, it adds a deployer state variable that let you deploy contract and track them
 abstract contract DeployScript is Script {
     using DeployerFunctions for Deployer;
 

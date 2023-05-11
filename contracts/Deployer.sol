@@ -52,6 +52,7 @@ library DeployerFunctions {
     // }
 
     /// @notice function that tell you whether a deployment already exists with that name
+    /// @param deployer the deployer state
     /// @param name deployment's name to query
     /// @return exists whether the deployment exists or not
     function has(Deployer storage deployer, string memory name) internal view returns (bool exists) {
@@ -66,6 +67,7 @@ library DeployerFunctions {
     }
 
     /// @notice function that return the address of a deployment
+    /// @param deployer the deployer state
     /// @param name deployment's name to query
     /// @return addr the deployment's address or the zero address
     function getAddress(Deployer storage deployer, string memory name) internal view returns (address payable addr) {
@@ -81,6 +83,7 @@ library DeployerFunctions {
 
     /// @notice allow to override an existing deployment by ignoring the current one.
     /// the deployment will only be overriden on disk once the broadast is performed and `forge-deploy` sync is invoked.
+    /// @param deployer the deployer state
     /// @param name deployment's name to override
     function ignoreDeployment(Deployer storage deployer, string memory name) internal {
         deployer.namedDeployments[name].name = "";
@@ -88,6 +91,7 @@ library DeployerFunctions {
     }
 
     /// @notice function that return the deployment (address, bytecode and args bytes used)
+    /// @param deployer the deployer state
     /// @param name deployment's name to query
     /// @return deployment the deployment (with address zero if not existent)
     function get(Deployer storage deployer, string memory name) internal view returns (Deployment memory deployment) {
@@ -104,6 +108,7 @@ library DeployerFunctions {
     }
 
     /// @notice return true of the current context has the tag specified
+    /// @param deployer the deployer state
     /// @param tag tag string to query
     ///  if the empty string is passed in, it will return false
     ///  if the string "*" is passed in, it will return true
@@ -121,6 +126,7 @@ library DeployerFunctions {
 
     /// @notice save the deployment info under the name provided
     /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param deployer the deployer state
     /// @param name deployment's name
     /// @param deployed address of the deployed contract
     /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
@@ -150,6 +156,7 @@ library DeployerFunctions {
 
     /// @notice save the deployment info under the name provided
     /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param deployer the deployer state
     /// @param name deployment's name
     /// @param deployed address of the deployed contract
     /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
@@ -166,6 +173,7 @@ library DeployerFunctions {
 
     /// @notice save the deployment info under the name provided
     /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param deployer the deployer state
     /// @param name deployment's name
     /// @param deployed address of the deployed contract
     /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
@@ -178,6 +186,9 @@ library DeployerFunctions {
         return save(deployer, name, deployed, artifact, "", vm.getCode(artifact));
     }
 
+    /// @notice this initialise the deployer
+    /// @param deployer the deployer state
+    /// note that this deploy the TagsReader and so this call should not be broadcasted
     function init(Deployer storage deployer) internal {
         // TODO? allow to pass context in constructor
         uint256 currentChainID;
@@ -241,7 +252,7 @@ library DeployerFunctions {
     }
 
     // --------------------------------------------------------------------------------------------
-    // PRIVATE (Used by constuctor)
+    // PRIVATE (Used by init)
     // --------------------------------------------------------------------------------------------
     function _setTagsFromContext(Deployer storage deployer, string memory context) private {
         TagsReader tagReader = new TagsReader();
