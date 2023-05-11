@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Deployer.sol";
+import {Deployer, DeployerFunctions} from "./Deployer.sol";
+import {Vm} from "forge-std/Vm.sol";
 
 struct DeployOptions {
     uint256 salt;
 }
 
 library DefaultDeployerFunction {
-
+    using DeployerFunctions for Deployer;
     
     /// @notice generic deploy function (to be used with Deployer)
     ///  `using DefaultDeployerFunction with Deployer;`
@@ -17,7 +18,7 @@ library DefaultDeployerFunction {
     /// @param artifact forge's artifact path `<solidity file>.sol:<contract name>`
     /// @param args encoded arguments for the contract's constructor
     function deploy(
-        Deployer deployer,
+        Deployer storage deployer,
         string memory name,
         string memory artifact,
         bytes memory args
@@ -36,7 +37,7 @@ library DefaultDeployerFunction {
     /// @param args encoded arguments for the contract's constructor
     /// @param options options to specify for salt for deterministic deployment
     function deploy(
-        Deployer deployer,
+        Deployer storage deployer,
         string memory name,
         string memory artifact,
         bytes memory args,
@@ -55,7 +56,7 @@ library DefaultDeployerFunction {
     Vm constant private vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
     function _deploy(
-        Deployer deployer,
+        Deployer storage deployer,
         string memory name,
         string memory artifact,
         bytes memory args,
@@ -65,7 +66,25 @@ library DefaultDeployerFunction {
         if (existing == address(0)) {
             bytes memory bytecode = vm.getCode(artifact);
             bytes memory data = bytes.concat(bytecode, args);
-            vm.broadcast();
+            // can deployer handle this ?
+            // TODO deployer.prepareTransaction();
+            // it will do the following
+            // if no broadcast, we probably want to prank to mimic real condition
+                // if address
+                    // vm.prank(address)
+                // else 
+                    // nothing
+            // if broadcast, we need to use the real address, we thus need the private key or use the one provided
+                // if private key
+                    // vm.broadcast(privateKey);
+                // else if mnemonic
+                    // vm.broadcast(mnemonic);
+                // else
+                    // vm.broadcast();
+            // 
+            // we can set broadcast via method 
+            // like deployer.setFrom()
+            // or deployer.disableBroadcast()
             if (options.deterministic) {
                 uint256 salt = options.salt;
                 assembly {
