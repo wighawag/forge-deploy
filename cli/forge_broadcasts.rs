@@ -12,11 +12,11 @@ use serde_json::{from_str, Value};
 pub struct Transaction {
     r#type: String, // example: "0x02"
     from: String,
-    gas: String,   // example: "0xca531"
-    value: String, // example:  "0x0"
-    data: String,  // "0x..."
-    nonce: String, // example: "0xd5"
-                   // "accessList": []
+    gas: String,           // example: "0xca531"
+    value: Option<String>, // example:  "0x0"
+    data: String,          // "0x..."
+    nonce: String,         // example: "0xd5"
+                           // "accessList": []
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
