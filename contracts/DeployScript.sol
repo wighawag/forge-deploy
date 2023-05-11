@@ -19,6 +19,10 @@ abstract contract DeployScript is Script {
         deployer.init();
     }
 
+    function setAutoBroadcast(bool autoBroadcast) external {
+        deployer.autoBroadcast = autoBroadcast;
+    }
+
     function run() public virtual returns (DeployerDeployment[] memory newDeployments) {
         _deploy();
 
