@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
-import {DeploymentState, DeployerDeployment} from "./Deployer.sol";
+import {Deployer, DeployerDeployment} from "./Deployer.sol";
 import {TagsReader} from "./TagsReader.sol";
 
 bytes32 constant CONTEXT_VOID = keccak256(bytes("void"));
@@ -10,13 +10,11 @@ bytes32 constant CONTEXT_LOCALHOST = keccak256(bytes("localhost"));
 bytes32 constant STAR = keccak256(bytes("*"));
 
 abstract contract DeployScript is Script {
-
     // --------------------------------------------------------------------------------------------
     // Storage
     // --------------------------------------------------------------------------------------------
 
-    DeploymentState deployer;
-
+    Deployer deployer;
 
     // --------------------------------------------------------------------------------------------
     // Constrctor
@@ -58,8 +56,7 @@ abstract contract DeployScript is Script {
             }
         } catch {}
     }
-    
-   
+
     // --------------------------------------------------------------------------------------------
     // Public Interface
     // --------------------------------------------------------------------------------------------
@@ -72,11 +69,9 @@ abstract contract DeployScript is Script {
         return deployer.newDeployments;
     }
 
-
     // --------------------------------------------------------------------------------------------
     // Internal
     // --------------------------------------------------------------------------------------------
-
 
     function _deploy() internal {
         // TODO? pass msg.data as bytes
@@ -100,7 +95,6 @@ abstract contract DeployScript is Script {
             }
         }
     }
-
 
     // --------------------------------------------------------------------------------------------
     // PRIVATE (Used by constuctor)
@@ -145,6 +139,4 @@ abstract contract DeployScript is Script {
             }
         }
     }
-    
 }
-
