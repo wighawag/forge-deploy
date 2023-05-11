@@ -43,7 +43,7 @@ There are 2 way to get started, one [without npm](#without-npm) and one [with np
 
    This will install the forge-deploy binary automatically
 
-1. add to .gitignore the generated file + the binary we just installed
+1. add to .gitignore the generated files
 
    ```bash
    cat >> .gitignore <<EOF
