@@ -52,7 +52,6 @@ if (args[0] === 'npm:final') {
 } else if (args[0] === 'publish:npm') {
     execFileSync("npm", ["publish"], {stdio});
 } else if (args[0] === 'publish') {
-    execFileSync("forge", ["doc"], {stdio});
     execFileSync("cargo", ["install", "cargo-release"], {stdio});
     execFileSync("cargo", ["release", "--execute"], {stdio});
     execFileSync("npm", ["publish", "--tag", "rc"], {stdio});
