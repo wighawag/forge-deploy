@@ -191,6 +191,8 @@ library DeployerFunctions {
     /// @param deployer the deployer state
     /// note that this deploy the TagsReader and so this call should not be broadcasted
     function init(Deployer storage deployer) internal {
+        deployer.autoBroadcast = true;
+
         // TODO? allow to pass context in constructor
         uint256 currentChainID;
         assembly {

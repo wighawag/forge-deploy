@@ -48,6 +48,8 @@ pub fn get_last_deployments(
 
     let mut new_deployments: HashMap<String, DeploymentObject> = HashMap::new();
 
+    // TODO skip if broadcast folder do not exist
+
     for script_dir in fs::read_dir(folder_path_buf).unwrap() {
         match script_dir {
             Ok(script_dir) => {
