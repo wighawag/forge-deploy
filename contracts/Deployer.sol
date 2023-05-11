@@ -34,6 +34,11 @@ struct Deployer {
     string deploymentContext;
     string chainIdAsString;
     mapping(string => bool) tags;
+    bool autoBroadcast;
+}
+
+struct DeployerInitOptions {
+    bool autoBroadcast;
 }
 
 library DeployerFunctions {
@@ -190,6 +195,15 @@ library DeployerFunctions {
     /// @param deployer the deployer state
     /// note that this deploy the TagsReader and so this call should not be broadcasted
     function init(Deployer storage deployer) internal {
+        init(deployer, DeployerInitOptions({autoBroadcast: true}));
+    }
+
+    /// @notice this initialise the deployer
+    /// @param deployer the deployer state
+    /// @param options options to customize the deployer
+    /// note that this deploy the TagsReader and so this call should not be broadcasted
+    function init(Deployer storage deployer, DeployerInitOptions memory options) internal {
+        deployer.autoBroadcast = options.autoBroadcast;
         // TODO? allow to pass context in constructor
         uint256 currentChainID;
         assembly {
