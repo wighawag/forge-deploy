@@ -2,14 +2,12 @@
 pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
-import {Deployer, DeployerDeployment} from "./Deployer.sol";
-import {DeployerInitialiser} from "./DeployerInitialiser.sol";
+import {DeployerFunctions, Deployer, DeployerDeployment} from "./Deployer.sol";
 
 
 abstract contract DeployScript is Script {
-    using DeployerInitialiser for Deployer;
+    using DeployerFunctions for Deployer;
 
-  
     Deployer deployer;
 
     /// @notice instantiate a deploy script with the current context
