@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Deployer} from "forge-deploy/Deployer.sol";
+import {Deployer, DeployerFunctions} from "forge-deploy/Deployer.sol";
 import {DefaultDeployerFunction, DeployOptions} from "forge-deploy/DefaultDeployerFunction.sol";
 
 // --------------------------------------------------------------------------------------------
@@ -18,14 +18,15 @@ string constant Artifact_{{this.contract_name}} = "{{this.solidity_filename}}:{{
 // --------------------------------------------------------------------------------------------
  
 
-library DeployerFunctions{
+library TypedDeployerFunctions{
+    using DeployerFunctions for Deployer;
 
     // --------------------------------------------------------------------------------------------
     // GENERATED
     // --------------------------------------------------------------------------------------------
     {{#each this}}
     function deploy_{{this.contract_name}}(
-        Deployer deployer,
+        Deployer storage deployer,
         string memory name 
         {{#each this.constructor.args}},{{#if this.custom_type}}_{{../contract_name}}.{{/if}}{{this.type}} {{#if this.memory_type }}memory{{/if}} {{this.name}}{{/each}}
     ) internal returns ({{this.contract_name}}) {
@@ -33,7 +34,7 @@ library DeployerFunctions{
         return {{this.contract_name}}(DefaultDeployerFunction.deploy(deployer, name, Artifact_{{this.contract_name}}, args));
     }
     function deploy_{{this.contract_name}}(
-        Deployer deployer,
+        Deployer storage deployer,
         string memory name,
         {{#each this.constructor.args}}{{#if this.custom_type}}_{{../contract_name}}.{{/if}}{{this.type}} {{#if this.memory_type }}memory{{/if}} {{this.name}},{{/each}}
         DeployOptions memory options
