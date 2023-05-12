@@ -1,6 +1,6 @@
 {
   "name": "forge-deploy",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.1",
   "description": "A cli that goes along a set of soldity contract to keep track of deployments by name in forge.",
   "scripts": {
     "preinstall": "node ./install.js"
