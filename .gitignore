@@ -4,7 +4,6 @@ out/
 cache
 
 # npm package
-/package.json
 /run.js
 /install.js
 /binary.js

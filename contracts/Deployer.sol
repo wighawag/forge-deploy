@@ -434,6 +434,7 @@ function getDeployer() returns (Deployer) {
     Vm vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
     bytes memory code = vm.getDeployedCode("Deployer.sol:GlobalDeployer");
     vm.etch(addr, code);
+    vm.allowCheatcodes(addr);
     GlobalDeployer deployer = GlobalDeployer(addr);
     deployer.init();
     return deployer;
