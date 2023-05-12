@@ -6,7 +6,15 @@ import {Vm} from "forge-std/Vm.sol";
 import "./Deployer.sol";
 
 abstract contract DeployScript is Script {
-    Deployer public deployer = new Deployer();
+    // TODO internal and make use of global deployer
+    Deployer internal deployer = getDeployer();
+
+    // global deplouyer
+    // function setAutoBroadcast(bool broadcast) external {
+    //     deployer.setAutoBroadcast(broadcast);
+    // }
+
+    // function activatePrank()
 
     function run() public virtual returns (DeployerDeployment[] memory newDeployments) {
         _deploy();

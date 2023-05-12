@@ -23,6 +23,11 @@ struct Deployment {
     bytes args;
 }
 
+struct Prank {
+    bool active;
+    address addr;
+}
+
 bytes32 constant CONTEXT_VOID = keccak256(bytes("void"));
 bytes32 constant CONTEXT_LOCALHOST = keccak256(bytes("localhost"));
 bytes32 constant STAR = keccak256(bytes("*"));
@@ -49,8 +54,91 @@ contract TagsReader {
     }
 }
 
+interface Deployer {
+    /// @notice function that return whether deployments will be broadcasted
+    function autoBroadcasting() external returns (bool);
+
+    /// @notice function to activate/deactivate auto-broadcast, enabled by default
+    ///  When activated, the deployment will be broadcasted automatically
+    ///  Note that if prank is enabled, broadcast will be disabled
+    /// @param broadcast whether to acitvate auto-broadcast
+    function setAutoBroadcast(bool broadcast) external;
+
+    /// @notice function to activate prank for a given address
+    /// @param addr address to prank
+    function activatePrank(address addr) external;
+
+    /// @notice function to deactivate prank if any is active
+    function deactivatePrank() external;
+
+    /// @notice function that return the prank status
+    /// @return active whether prank is active
+    /// @return addr the address that will be used to perform the deployment
+    function prankStatus() external view returns (bool active, address addr);
+
+    /// @notice function that return all new deployments as an array
+    function newDeployments() external view returns (DeployerDeployment[] memory);
+
+    /// @notice function that tell you whether a deployment already exists with that name
+    /// @param name deployment's name to query
+    /// @return exists whether the deployment exists or not
+    function has(string memory name) external view returns (bool exists);
+
+    /// @notice function that return the address of a deployment
+    /// @param name deployment's name to query
+    /// @return addr the deployment's address or the zero address
+    function getAddress(string memory name) external view returns (address payable addr);
+
+    /// @notice allow to override an existing deployment by ignoring the current one.
+    /// the deployment will only be overriden on disk once the broadast is performed and `forge-deploy` sync is invoked.
+    /// @param name deployment's name to override
+    function ignoreDeployment(string memory name) external;
+
+    /// @notice function that return the deployment (address, bytecode and args bytes used)
+    /// @param name deployment's name to query
+    /// @return deployment the deployment (with address zero if not existent)
+    function get(string memory name) external view returns (Deployment memory deployment);
+
+    /// @notice return true of the current context has the tag specified
+    /// @param tag tag string to query
+    ///  if the empty string is passed in, it will return false
+    ///  if the string "*" is passed in, it will return true
+    /// @return true if the tag is associated with the current context
+    function isTagEnabled(string memory tag) external view returns (bool);
+
+    /// @notice save the deployment info under the name provided
+    /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param name deployment's name
+    /// @param deployed address of the deployed contract
+    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param args arguments' bytes provided to the constructor
+    /// @param bytecode the contract's bytecode used to deploy the contract
+    function save(
+        string memory name,
+        address deployed,
+        string memory artifact,
+        bytes memory args,
+        bytes memory bytecode
+    ) external;
+
+    /// @notice save the deployment info under the name provided
+    /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param name deployment's name
+    /// @param deployed address of the deployed contract
+    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    /// @param args arguments' bytes provided to the constructor
+    function save(string memory name, address deployed, string memory artifact, bytes memory args) external;
+
+    /// @notice save the deployment info under the name provided
+    /// this is a low level call and is used by ./DefaultDeployerFunction.sol
+    /// @param name deployment's name
+    /// @param deployed address of the deployed contract
+    /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
+    function save(string memory name, address deployed, string memory artifact) external;
+}
+
 /// @notice contract that keep track of the deployment and save them as return value in the forge's broadcast
-contract Deployer {
+contract GlobalDeployer is Deployer {
     // --------------------------------------------------------------------------------------------
     // Constants
     // --------------------------------------------------------------------------------------------
@@ -69,15 +157,18 @@ contract Deployer {
     string internal chainIdAsString;
     mapping(string => bool) internal tags;
 
-    // --------------------------------------------------------------------------------------------
-    // Constrctor
-    // --------------------------------------------------------------------------------------------
+    bool internal _autoBroadcast = true;
 
-    /// @notice instantiate a deployer with the current context
+    Prank internal _prank;
+
+    /// @notice init a deployer with the current context
     /// the context is by default the current chainId
     /// but if the DEPLOYMENT_CONTEXT env variable is set, the context take that value
     /// The context allow you to organise deployments in a set as well as make specific configurations
-    constructor() {
+    function init() external {
+        if (bytes(chainIdAsString).length > 0) {
+            return;
+        }
         // TODO? allow to pass context in constructor
         uint256 currentChainID;
         assembly {
@@ -113,6 +204,29 @@ contract Deployer {
     // --------------------------------------------------------------------------------------------
     // Public Interface
     // --------------------------------------------------------------------------------------------
+
+    function autoBroadcasting() external view returns (bool) {
+        return _autoBroadcast;
+    }
+
+    function setAutoBroadcast(bool broadcast) external {
+        _autoBroadcast = broadcast;
+    }
+
+    function activatePrank(address addr) external {
+        _prank.active = true;
+        _prank.addr = addr;
+    }
+
+    function deactivatePrank() external {
+        _prank.active = false;
+        _prank.addr = address(0);
+    }
+
+    function prankStatus() external view returns (bool active, address addr) {
+        active = _prank.active;
+        addr = _prank.addr;
+    }
 
     /// @notice function that return all new deployments as an array
     function newDeployments() external view returns (DeployerDeployment[] memory) {
@@ -228,12 +342,7 @@ contract Deployer {
     /// @param deployed address of the deployed contract
     /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
     /// @param args arguments' bytes provided to the constructor
-    function save(
-        string memory name,
-        address deployed,
-        string memory artifact,
-        bytes memory args
-    ) public {
+    function save(string memory name, address deployed, string memory artifact, bytes memory args) public {
         return save(name, deployed, artifact, args, vm.getCode(artifact));
     }
 
@@ -242,11 +351,7 @@ contract Deployer {
     /// @param name deployment's name
     /// @param deployed address of the deployed contract
     /// @param artifact forge's artifact path <solidity file>.sol:<contract name>
-    function save(
-        string memory name,
-        address deployed,
-        string memory artifact
-    ) public {
+    function save(string memory name, address deployed, string memory artifact) public {
         return save(name, deployed, artifact, "", vm.getCode(artifact));
     }
 
@@ -319,4 +424,17 @@ contract Deployer {
             deployment.args = abi.decode(argsBytes, (bytes));
         } catch {}
     }
+}
+
+function getDeployer() returns (Deployer) {
+    address addr = 0x666f7267652d6465706C6f790000000000000000;
+    if (addr.code.length > 0) {
+        return Deployer(addr);
+    }
+    Vm vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+    bytes memory code = vm.getDeployedCode("Deployer.sol:GlobalDeployer");
+    vm.etch(addr, code);
+    GlobalDeployer deployer = GlobalDeployer(addr);
+    deployer.init();
+    return deployer;
 }

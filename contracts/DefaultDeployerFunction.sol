@@ -8,26 +8,41 @@ struct DeployOptions {
 }
 
 library DefaultDeployerFunction {
+    function prepareCall(Deployer deployer) internal {
+        prepareCall(deployer, address(0));
+    }
 
-    
+    function prepareCall(Deployer deployer, address sender) internal {
+        (bool prankActive, address prankAddress) = deployer.prankStatus();
+        bool autoBroadcast = deployer.autoBroadcasting();
+        if (prankActive) {
+            if (prankAddress != address(0)) {
+                vm.prank(prankAddress);
+            } else {
+                vm.prank(sender);
+            }
+        } else if (autoBroadcast) {
+            if (sender != address(0)) {
+                vm.broadcast(sender);
+            } else {
+                vm.broadcast();
+            }
+        }
+    }
+
     /// @notice generic deploy function (to be used with Deployer)
     ///  `using DefaultDeployerFunction with Deployer;`
     /// @param deployer contract that keep track of the deployments and save them
     /// @param name the deployment's name that will stored on disk in `<deployments>/<context>/<name>.json`
     /// @param artifact forge's artifact path `<solidity file>.sol:<contract name>`
     /// @param args encoded arguments for the contract's constructor
-    function deploy(
-        Deployer deployer,
-        string memory name,
-        string memory artifact,
-        bytes memory args
-    ) internal returns (address payable deployed) {
-        return _deploy(deployer, name, artifact, args, PrivateDeployOptions({
-            deterministic: false,
-            salt: 0
-        }));
+    function deploy(Deployer deployer, string memory name, string memory artifact, bytes memory args)
+        internal
+        returns (address payable deployed)
+    {
+        return _deploy(deployer, name, artifact, args, PrivateDeployOptions({deterministic: false, salt: 0}));
     }
-    
+
     /// @notice generic create2 deploy function (to be used with Deployer)
     ///  `using DefaultDeployerFunction with Deployer;`
     /// @param deployer contract that keep track of the deployments and save them
@@ -42,17 +57,13 @@ library DefaultDeployerFunction {
         bytes memory args,
         DeployOptions memory options
     ) internal returns (address payable deployed) {
-        return _deploy(deployer, name, artifact, args, PrivateDeployOptions({
-            deterministic: true,
-            salt: options.salt
-        }));
+        return _deploy(deployer, name, artifact, args, PrivateDeployOptions({deterministic: true, salt: options.salt}));
     }
 
-    
     // --------------------------------------------------------------------------------------------
     // PRIVATE
     // --------------------------------------------------------------------------------------------
-    Vm constant private vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+    Vm private constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
     function _deploy(
         Deployer deployer,
@@ -65,7 +76,8 @@ library DefaultDeployerFunction {
         if (existing == address(0)) {
             bytes memory bytecode = vm.getCode(artifact);
             bytes memory data = bytes.concat(bytecode, args);
-            vm.broadcast();
+            // if (deployer.autoBroadcast()) vm.broadcast();
+            prepareCall(deployer);
             if (options.deterministic) {
                 uint256 salt = options.salt;
                 assembly {
@@ -76,7 +88,7 @@ library DefaultDeployerFunction {
                     deployed := create(0, add(data, 0x20), mload(data))
                 }
             }
-        
+
             if (deployed == address(0)) {
                 revert(string.concat("Failed to deploy ", name));
             }
