@@ -7,6 +7,11 @@ struct DeployOptions {
     uint256 salt;
 }
 
+struct PrivateDeployOptions {
+    bool deterministic;
+    uint256 salt;
+}
+
 library DefaultDeployerFunction {
     function prepareCall(Deployer deployer) internal {
         prepareCall(deployer, address(0));
@@ -76,14 +81,20 @@ library DefaultDeployerFunction {
         if (existing == address(0)) {
             bytes memory bytecode = vm.getCode(artifact);
             bytes memory data = bytes.concat(bytecode, args);
-            // if (deployer.autoBroadcast()) vm.broadcast();
-            prepareCall(deployer);
             if (options.deterministic) {
+                // TODO configure factory ... per network (like hardhat-deploy)
+                // if (address(0x4e59b44847b379578588920cA78FbF26c0B4956C).code.length == 0) {
+                //     vm.sendRawTransaction(
+                //         hex"f8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222"
+                //     );
+                // }
                 uint256 salt = options.salt;
+                prepareCall(deployer);
                 assembly {
                     deployed := create2(0, add(data, 0x20), mload(data), salt)
                 }
             } else {
+                prepareCall(deployer);
                 assembly {
                     deployed := create(0, add(data, 0x20), mload(data))
                 }
@@ -97,9 +108,4 @@ library DefaultDeployerFunction {
             deployed = existing;
         }
     }
-}
-
-struct PrivateDeployOptions {
-    bool deterministic;
-    uint256 salt;
 }
