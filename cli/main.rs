@@ -58,6 +58,8 @@ struct ExportArgs {
     output: String,
     #[arg(short, long)]
     deployments: Option<String>,
+    #[arg(long)]
+    include_args: Option<bool>,
 }
 
 fn main() {
@@ -79,6 +81,7 @@ fn main() {
                 &args.deployment_context,
                 &args.output,
                 &args.deployments,
+                args.include_args.unwrap_or(false),
             ),
         },
         None => top(),
@@ -135,6 +138,7 @@ fn export(
     deployment_context: &str,
     out: &str,
     deployments: &Option<String>,
+    include_args: bool,
 ) {
     let root_folder = root.as_deref().unwrap_or(".");
     let deployments_folder = deployments.as_deref().unwrap_or("deployments");
@@ -143,6 +147,7 @@ fn export(
         root_folder,
         deployments_folder,
         deployment_context,
+        include_args,
     );
 
     forge_deploy_deployments::export_minimal_deployments(&deployments, out.split(",").collect());

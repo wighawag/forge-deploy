@@ -24,6 +24,7 @@ pub fn get_deployments(
     root_folder: &str,
     deployments_folder: &str,
     deployment_context: &str,
+    include_args: bool,
 ) -> ContextDeployments {
     let mut deployments = Map::new();
 
@@ -50,6 +51,20 @@ pub fn get_deployments(
                         let mut object = Map::new();
                         object.insert("address".to_string(), Value::String(res.address));
                         object.insert("abi".to_string(), Value::Array(res.abi));
+                        object.insert("tx_hash".to_string(), Value::String(res.tx_hash));
+                        if include_args {
+                            if let Some(args) = res.args {
+                                let values = args
+                                    .iter()
+                                    .map(|v| serde_json::to_value(v).expect("failed to convert"))
+                                    .collect();
+                                object.insert("args".to_string(), Value::Array(values));
+                            }
+                        }
+
+                        // object.insert("blockNumber".to_string(), Value::Array(res.abi));
+                        // object.insert("blockTimestamp".to_string(), Value::Array(res.abi));
+                        // object.insert("args".to_string(), Value::Array(res.abi));
                         deployments.insert(deployment_name.to_string(), Value::Object(object));
                     } else if filename.eq(".chainId") {
                         chain_id = fs::read_to_string(json_file_entry.path())
