@@ -171,7 +171,29 @@ pub fn get_last_deployments(
                                                             },
                                                         );
                                                     } else {
-                                                        eprintln!("could not find tx for in-memory deployed contract {} at {}", name, address);
+                                                        new_deployments.insert(
+                                                            format!(
+                                                                "{}::{}",
+                                                                deployment_context,
+                                                                name.to_string()
+                                                            ),
+                                                            DeploymentObject {
+                                                                name: name.to_string(),
+                                                                address: address.to_string(),
+                                                                bytecode: bytecode.to_string(),
+                                                                args_data: args_data.to_string(),
+                                                                tx_hash: "".to_string(),
+                                                                args: Some(vec![]),
+                                                                data: "".to_string(),
+                                                                contract_name: contract_name
+                                                                    .map(|s| s.to_string()),
+                                                                artifact_path: artifact_path
+                                                                    .to_string(),
+                                                                deployment_context:
+                                                                    deployment_context.to_string(),
+                                                                chain_id: chain_id.to_string(),
+                                                            },
+                                                        );
                                                     }
                                                 }
                                             } else {
