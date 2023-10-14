@@ -44,7 +44,7 @@ contract TagsReader {
     // --------------------------------------------------------------------------------------------
     // Public Interface
     // --------------------------------------------------------------------------------------------
-    function readTagsFromContext(string calldata context) external returns (string[] memory tags) {
+    function readTagsFromContext(string calldata context) external view returns (string[] memory tags) {
         string memory root = vm.projectRoot();
 
         // TODO configure file name ?
