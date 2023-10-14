@@ -157,7 +157,7 @@ contract GlobalDeployer is Deployer {
     string internal chainIdAsString;
     mapping(string => bool) internal tags;
 
-    bool internal _autoBroadcast = true;
+    bool internal _autoBroadcast = false;
 
     Prank internal _prank;
 
