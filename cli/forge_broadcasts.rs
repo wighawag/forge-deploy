@@ -7,18 +7,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value::Object;
 use serde_json::{from_str, Value};
 
-#[derive(Serialize, Deserialize)]
-#[derive(Debug)]
-struct Contract {
-    name: String,
-    addr: String,
-    bytecode: String,
-    args: String,
-    artifact: String,
-    deploymentContext: String,
-    chainIdAsString: String,
-}
-
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
