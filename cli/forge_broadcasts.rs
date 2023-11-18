@@ -7,6 +7,18 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value::Object;
 use serde_json::{from_str, Value};
 
+#[derive(Serialize, Deserialize)]
+#[derive(Debug)]
+struct Contract {
+    name: String,
+    addr: String,
+    bytecode: String,
+    args: String,
+    artifact: String,
+    deploymentContext: String,
+    chainIdAsString: String,
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
@@ -42,7 +54,7 @@ pub fn get_last_deployments(
     root_folder: &str,
     broadcast_folder: &str,
 ) -> HashMap<String, DeploymentObject> {
-    let re = Regex::new(r"\((.+?)\)").unwrap();
+    let re = Regex::new(r"\{(.+?)\}").unwrap();
 
     let folder_path_buf = Path::new(root_folder).join(broadcast_folder);
 
@@ -98,15 +110,19 @@ pub fn get_last_deployments(
                                                 let regex_result = re.captures_iter(value.as_str());
 
                                                 for cap in regex_result {
-                                                    let parts = cap[1].split(", ");
+                                                    let entry = cap[1].replace("\\\"", "").replace("\"\"", "");
+                                                    let parts = entry.split(", ");
                                                     let collection = parts.collect::<Vec<&str>>();
-                                                    let name = collection[0];
-                                                    let address = collection[1];
-                                                    let bytecode = collection[2];
-                                                    let args_data = collection[3];
-                                                    let artifact_full_path = collection[4];
-                                                    let deployment_context = collection[5];
-                                                    let chain_id = collection[6];
+                                                    let values: Vec<&str> = collection.iter()
+                                                                                        .filter_map(|part| part.splitn(2, ": ").nth(1))
+                                                                                        .collect();
+                                                    let name = values[0];
+                                                    let address = values[1];
+                                                    let bytecode = values[2];
+                                                    let args_data = values[3];
+                                                    let artifact_full_path = values[4];
+                                                    let deployment_context = values[5];
+                                                    let chain_id = values[6];
 
                                                     // if deployment_context.eq("31337") || deployment_context.eq("1337") {
                                                     //     // for now we skip on dev network if no specific deployment context were specified
