@@ -10,20 +10,25 @@ use serde_json::{from_str, Value};
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
-    r#type: String, // example: "0x02"
+    r#type: String,
+    // example: "0x02"
     from: String,
-    gas: String,           // example: "0xca531"
-    value: Option<String>, // example:  "0x0"
-    data: String,          // "0x..."
-    nonce: String,         // example: "0xd5"
-                           // "accessList": []
+    gas: String,
+    // example: "0xca531"
+    value: Option<String>,
+    // example:  "0x0"
+    data: String,
+    // "0x..."
+    nonce: String, // example: "0xd5"
+                   // "accessList": []
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct TransactionResult {
     hash: String,
-    transaction_type: String, // CREATE, CREATE2
+    transaction_type: String,
+    // CREATE, CREATE2
     contract_name: Option<String>,
     contract_address: Option<String>,
     arguments: Option<Vec<String>>,
@@ -98,7 +103,17 @@ pub fn get_last_deployments(
                                                 let regex_result = re.captures_iter(value.as_str());
 
                                                 for cap in regex_result {
-                                                    let parts = cap[1].split(", ");
+                                                    println!("cap[1]: {:?}", cap[1].to_string());
+
+                                                    let parts_string = cap[1]
+                                                        .to_string()
+                                                        .replace("\\", "")
+                                                        .replace("\"", "");
+
+                                                    let parts = parts_string.split(", ");                                                    //.map(|s| {
+                                                    //    s.replace("\\", "").replace("\"", "")
+                                                    //})
+                                                    //.collect();
                                                     let collection = parts.collect::<Vec<&str>>();
                                                     let name = collection[0];
                                                     let address = collection[1];
@@ -147,6 +162,20 @@ pub fn get_last_deployments(
 
                                                         // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
                                                         // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
+
+                                                        println!(
+                                                            "name: {} \
+                                                        address: {}, \
+                                                        artifact_path: {}, \
+                                                        contract_name: {}, \
+                                                        deployment_context: {}",
+                                                            name,
+                                                            address,
+                                                            artifact_path,
+                                                            contract_name.unwrap(),
+                                                            deployment_context
+                                                        );
+
                                                         new_deployments.insert(
                                                             format!(
                                                                 "{}::{}",
