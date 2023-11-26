@@ -98,8 +98,6 @@ pub fn get_last_deployments(
                                                 let regex_result = re.captures_iter(value.as_str());
 
                                                 for cap in regex_result {
-                                                    println!("cap[1]: {:?}", cap[1].to_string());
-
                                                     let parts_string = cap[1]
                                                         .to_string()
                                                         .replace("\\", "")
