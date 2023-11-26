@@ -10,15 +10,11 @@ use serde_json::{from_str, Value};
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
-    r#type: String,
-    // example: "0x02"
+    r#type: String, // example: "0x02"
     from: String,
-    gas: String,
-    // example: "0xca531"
-    value: Option<String>,
-    // example:  "0x0"
-    data: String,
-    // "0x..."
+    gas: String, // example: "0xca531"
+    value: Option<String>, // example:  "0x0"
+    data: String, // "0x..."
     nonce: String, // example: "0xd5"
                    // "accessList": []
 }
@@ -27,8 +23,7 @@ pub struct Transaction {
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct TransactionResult {
     hash: String,
-    transaction_type: String,
-    // CREATE, CREATE2
+    transaction_type: String, // CREATE, CREATE2
     contract_name: Option<String>,
     contract_address: Option<String>,
     arguments: Option<Vec<String>>,
@@ -162,19 +157,6 @@ pub fn get_last_deployments(
 
                                                         // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
                                                         // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
-
-                                                        println!(
-                                                            "name: {} \
-                                                        address: {}, \
-                                                        artifact_path: {}, \
-                                                        contract_name: {}, \
-                                                        deployment_context: {}",
-                                                            name,
-                                                            address,
-                                                            artifact_path,
-                                                            contract_name.unwrap(),
-                                                            deployment_context
-                                                        );
 
                                                         new_deployments.insert(
                                                             format!(
