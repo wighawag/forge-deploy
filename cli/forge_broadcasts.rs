@@ -42,7 +42,7 @@ pub fn get_last_deployments(
     root_folder: &str,
     broadcast_folder: &str,
 ) -> HashMap<String, DeploymentObject> {
-    let re = Regex::new(r"\{(.+?)\}").unwrap();
+    let re = Regex::new(r"\((.+?)\)").unwrap();
 
     let folder_path_buf = Path::new(root_folder).join(broadcast_folder);
 
@@ -101,16 +101,13 @@ pub fn get_last_deployments(
                                                     let entry = cap[1].replace("\\\"", "").replace("\"\"", "");
                                                     let parts = entry.split(", ");
                                                     let collection = parts.collect::<Vec<&str>>();
-                                                    let values: Vec<&str> = collection.iter()
-                                                                                        .filter_map(|part| part.splitn(2, ": ").nth(1))
-                                                                                        .collect();
-                                                    let name = values[0];
-                                                    let address = values[1];
-                                                    let bytecode = values[2];
-                                                    let args_data = values[3];
-                                                    let artifact_full_path = values[4];
-                                                    let deployment_context = values[5];
-                                                    let chain_id = values[6];
+                                                    let name = collection[0];
+                                                    let address = collection[1];
+                                                    let bytecode = collection[2];
+                                                    let args_data = collection[3];
+                                                    let artifact_full_path = collection[4];
+                                                    let deployment_context = collection[5];
+                                                    let chain_id = collection[6];
 
                                                     // if deployment_context.eq("31337") || deployment_context.eq("1337") {
                                                     //     // for now we skip on dev network if no specific deployment context were specified
