@@ -68,8 +68,7 @@ pub struct ASTJSON {
 pub struct ArtifactJSON {
     pub abi: Vec<Value>,
     pub bytecode: BytecodeJSON,
-    pub metadata: Option<Value>,
-    pub ast: ASTJSON,
+    pub metadata: Option<Value>
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
