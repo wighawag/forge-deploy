@@ -44,7 +44,7 @@ contract TagsReader {
     // --------------------------------------------------------------------------------------------
     // Public Interface
     // --------------------------------------------------------------------------------------------
-    function readTagsFromContext(string calldata context) external returns (string[] memory tags) {
+    function readTagsFromContext(string calldata context) external view returns (string[] memory tags) {
         string memory root = vm.projectRoot();
 
         // TODO configure file name ?
@@ -157,7 +157,7 @@ contract GlobalDeployer is Deployer {
     string internal chainIdAsString;
     mapping(string => bool) internal tags;
 
-    bool internal _autoBroadcast = true;
+    bool internal _autoBroadcast = false;
 
     Prank internal _prank;
 
@@ -166,7 +166,6 @@ contract GlobalDeployer is Deployer {
     /// but if the DEPLOYMENT_CONTEXT env variable is set, the context take that value
     /// The context allow you to organise deployments in a set as well as make specific configurations
     function init() external {
-        _autoBroadcast = true; // needed as we etch the deployed code and so the initialization in the declaration above is not taken in consideration
         if (bytes(chainIdAsString).length > 0) {
             return;
         }
