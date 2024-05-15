@@ -132,7 +132,7 @@ pub fn get_last_deployments(
                                                             transaction_result.arguments.clone();
                                                         let data = transaction_result
                                                             .transaction
-                                                            .data
+                                                            .input
                                                             .to_string();
                                                         let tx_hash =
                                                             transaction_result.hash.to_string();
