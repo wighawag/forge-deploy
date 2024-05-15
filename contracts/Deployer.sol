@@ -382,7 +382,7 @@ contract GlobalDeployer is Deployer {
         }
     }
 
-    function _getDeploymentContext() private returns (string memory context) {
+    function _getDeploymentContext() private view returns (string memory context) {
         // no deploymentContext provided we fallback on chainID
         uint256 currentChainID;
         assembly {
