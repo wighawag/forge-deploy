@@ -10,7 +10,6 @@ use serde_json::{from_str, Value};
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
-    r#type: String, // example: "0x02"
     from: String,
     gas: String,           // example: "0xca531"
     value: Option<String>, // example:  "0x0"
