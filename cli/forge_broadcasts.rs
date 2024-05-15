@@ -13,7 +13,7 @@ pub struct Transaction {
     from: String,
     gas: String,           // example: "0xca531"
     value: Option<String>, // example:  "0x0"
-    data: String,          // "0x..."
+    input: String,          // "0x..."
     nonce: String,         // example: "0xd5"
                            // "accessList": []
 }
