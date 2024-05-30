@@ -168,6 +168,7 @@ pub fn get_last_deployments(
                                                                 deployment_context:
                                                                     deployment_context.to_string(),
                                                                 chain_id: chain_id.to_string(),
+                                                                artifact_full_path: artifact_full_path.to_string(),
                                                             },
                                                         );
                                                     } else {
@@ -192,6 +193,7 @@ pub fn get_last_deployments(
                                                                 deployment_context:
                                                                     deployment_context.to_string(),
                                                                 chain_id: chain_id.to_string(),
+                                                                artifact_full_path: artifact_full_path.to_string(),
                                                             },
                                                         );
                                                     }

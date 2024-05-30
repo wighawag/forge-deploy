@@ -56,6 +56,8 @@ pub fn generate_deployments(
             args: value.args.clone(),
             data: value.data.to_string(),
             tx_hash: value.tx_hash.to_string(),
+            artifact_path: value.artifact_path.to_string(),
+            artifact_full_path: value.artifact_full_path.to_string(),
         })
         .expect("Failed to stringify");
         fs::write(file_path_buf, data).expect("failed to write file");

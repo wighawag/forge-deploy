@@ -48,6 +48,7 @@ pub struct DeploymentObject {
     pub data: String,
     pub contract_name: Option<String>,
     pub artifact_path: String,
+    pub artifact_full_path: String,
     pub deployment_context: String,
     pub chain_id: String,
 }
@@ -96,4 +97,6 @@ pub struct DeploymentJSON {
     pub tx_hash: String,
     pub args: Option<Vec<String>>,
     pub data: String,
+    pub artifact_path: String,
+    pub artifact_full_path: String
 }
