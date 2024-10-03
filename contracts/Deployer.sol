@@ -44,7 +44,7 @@ contract TagsReader {
     // --------------------------------------------------------------------------------------------
     // Public Interface
     // --------------------------------------------------------------------------------------------
-    function readTagsFromContext(string calldata context) external returns (string[] memory tags) {
+    function readTagsFromContext(string calldata context) external view returns (string[] memory tags) {
         string memory root = vm.projectRoot();
 
         // TODO configure file name ?
@@ -383,7 +383,7 @@ contract GlobalDeployer is Deployer {
         }
     }
 
-    function _getDeploymentContext() private returns (string memory context) {
+    function _getDeploymentContext() private view returns (string memory context) {
         // no deploymentContext provided we fallback on chainID
         uint256 currentChainID;
         assembly {
