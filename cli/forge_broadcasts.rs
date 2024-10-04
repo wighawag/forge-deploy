@@ -48,6 +48,9 @@ pub fn get_last_deployments(
 
     let mut new_deployments: HashMap<String, DeploymentObject> = HashMap::new();
 
+    // return early if directory does not exist
+    if folder_path_buf.is_dir() { return new_deployments; }
+
     for script_dir in fs::read_dir(folder_path_buf).unwrap() {
         match script_dir {
             Ok(script_dir) => {
