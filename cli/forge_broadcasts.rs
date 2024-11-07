@@ -12,11 +12,11 @@ use serde_json::{from_str, Value};
 pub struct Transaction {
     r#type: String, // example: "0x02"
     from: String,
-    gas: String,           // example: "0xca531"
+    gas: String, // example: "0xca531"
     value: Option<String>, // example:  "0x0"
-    data: String,          // "0x..."
-    nonce: String,         // example: "0xd5"
-                           // "accessList": []
+    data: String, // "0x..."
+    nonce: String, // example: "0xd5"
+                   // "accessList": []
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
@@ -103,7 +103,15 @@ pub fn get_last_deployments(
                                                 let regex_result = re.captures_iter(value.as_str());
 
                                                 for cap in regex_result {
-                                                    let parts = cap[1].split(", ");
+                                                    let parts_string = cap[1]
+                                                        .to_string()
+                                                        .replace("\\", "")
+                                                        .replace("\"", "");
+
+                                                    let parts = parts_string.split(", ");                                                    //.map(|s| {
+                                                    //    s.replace("\\", "").replace("\"", "")
+                                                    //})
+                                                    //.collect();
                                                     let collection = parts.collect::<Vec<&str>>();
                                                     let name = collection[0];
                                                     let address = collection[1];
@@ -152,6 +160,7 @@ pub fn get_last_deployments(
 
                                                         // println!("{}:{}", artifact_path, contract_name.unwrap_or("unknown"));
                                                         // println!("{} address: {}, artifact_path: {}, contract_name: {}, deployment_context: {}", name, address, artifact_path, contract_name, deployment_context);
+
                                                         new_deployments.insert(
                                                             format!(
                                                                 "{}::{}",
