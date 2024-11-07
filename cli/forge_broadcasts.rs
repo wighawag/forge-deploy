@@ -10,11 +10,10 @@ use serde_json::{from_str, Value};
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "camelCase"))]
 pub struct Transaction {
-    r#type: String, // example: "0x02"
     from: String,
     gas: String,           // example: "0xca531"
     value: Option<String>, // example:  "0x0"
-    data: String,          // "0x..."
+    input: String,          // "0x..."
     nonce: String,         // example: "0xd5"
                            // "accessList": []
 }
@@ -103,7 +102,8 @@ pub fn get_last_deployments(
                                                 let regex_result = re.captures_iter(value.as_str());
 
                                                 for cap in regex_result {
-                                                    let parts = cap[1].split(", ");
+                                                    let entry = cap[1].replace("\\\"", "").replace("\"\"", "");
+                                                    let parts = entry.split(", ");
                                                     let collection = parts.collect::<Vec<&str>>();
                                                     let name = collection[0];
                                                     let address = collection[1];
@@ -137,7 +137,7 @@ pub fn get_last_deployments(
                                                             transaction_result.arguments.clone();
                                                         let data = transaction_result
                                                             .transaction
-                                                            .data
+                                                            .input
                                                             .to_string();
                                                         let tx_hash =
                                                             transaction_result.hash.to_string();
@@ -173,10 +173,34 @@ pub fn get_last_deployments(
                                                                 deployment_context:
                                                                     deployment_context.to_string(),
                                                                 chain_id: chain_id.to_string(),
+                                                                artifact_full_path: artifact_full_path.to_string(),
                                                             },
                                                         );
                                                     } else {
-                                                        eprintln!("could not find tx for in-memory deployed contract {} at {}", name, address);
+                                                        new_deployments.insert(
+                                                            format!(
+                                                                "{}::{}",
+                                                                deployment_context,
+                                                                name.to_string()
+                                                            ),
+                                                            DeploymentObject {
+                                                                name: name.to_string(),
+                                                                address: address.to_string(),
+                                                                bytecode: bytecode.to_string(),
+                                                                args_data: args_data.to_string(),
+                                                                tx_hash: "".to_string(),
+                                                                args: Some(vec![]),
+                                                                data: "".to_string(),
+                                                                contract_name: contract_name
+                                                                    .map(|s| s.to_string()),
+                                                                artifact_path: artifact_path
+                                                                    .to_string(),
+                                                                deployment_context:
+                                                                    deployment_context.to_string(),
+                                                                chain_id: chain_id.to_string(),
+                                                                artifact_full_path: artifact_full_path.to_string(),
+                                                            },
+                                                        );
                                                     }
                                                 }
                                             } else {
