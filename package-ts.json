@@ -1,0 +1,31 @@
+{
+  "name": "forge-deploy-ts",
+  "version": "0.2.0-rc.1",
+  "description": "A TypeScript CLI that keeps track of deployments by name in forge.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "bin": {
+    "forge-deploy": "./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wighawag/forge-deploy"
+  },
+  "homepage": "https://github.com/wighawag/forge-deploy",
+  "files": ["dist", "README.md", "LICENSE"],
+  "dependencies": {
+    "commander": "^12.0.0",
+    "handlebars": "^4.7.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
